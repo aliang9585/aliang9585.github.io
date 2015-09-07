@@ -1,0 +1,753 @@
+<!doctype html>
+<html class="theme-next use-motion theme-next-mist">
+<head>
+    
+
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5"/>
+
+
+
+  <link href='//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+
+
+<link rel="stylesheet" type="text/css" href="/css/main.css?v=0.4.4"/>
+
+
+    <meta name="description" content="IOS技术总结" />
+
+
+
+  <meta name="keywords" content="UICollectionViewLayout,翻译," />
+
+
+
+
+
+  <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.4" />
+
+
+<meta name="description" content="官方文档: UICollectionViewLayout Class Reference
+
+继承关系：
+
+NSObject
+UICollectionViewLayout
+UICollectionViewFlowLayout
+UICollectionViewTransitionLayout
+
+
+
+
+
+遵从协议：
+
+NSCoding
+NSObject
+
+UICollectionViewLayout是一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="自定义UICollectionViewLayout（一）UICollectionViewLayout Class Reference翻译">
+<meta property="og:url" content="http://aliang9585.github.io/2015/08/10/自定义UICollectionViewLayout（一）/index.html">
+<meta property="og:site_name" content="LYL's Blog">
+<meta property="og:description" content="官方文档: UICollectionViewLayout Class Reference
+
+继承关系：
+
+NSObject
+UICollectionViewLayout
+UICollectionViewFlowLayout
+UICollectionViewTransitionLayout
+
+
+
+
+
+遵从协议：
+
+NSCoding
+NSObject
+
+UICollectionViewLayout是一">
+<meta property="og:updated_time" content="2015-09-07T15:03:39.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="自定义UICollectionViewLayout（一）UICollectionViewLayout Class Reference翻译">
+<meta name="twitter:description" content="官方文档: UICollectionViewLayout Class Reference
+
+继承关系：
+
+NSObject
+UICollectionViewLayout
+UICollectionViewFlowLayout
+UICollectionViewTransitionLayout
+
+
+
+
+
+遵从协议：
+
+NSCoding
+NSObject
+
+UICollectionViewLayout是一">
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: 'post'
+  };
+</script>
+
+    <title> 自定义UICollectionViewLayout（一）UICollectionViewLayout Class Reference翻译 // LYL's Blog </title>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage" lang="">
+<!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?a7a4364608485ad7bc5d2abeacd05591";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+<div class="container one-column page-post-detail">
+    <div class="headband"></div>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+        <div class="header-inner"><h1 class="site-meta">
+  <span class="logo-line-before"><i></i></span>
+  <a href="/" class="brand" rel="start">
+      <span class="logo">
+        <i class="icon-logo"></i>
+      </span>
+      <span class="site-title">LYL's Blog</span>
+  </a>
+  <span class="logo-line-after"><i></i></span>
+</h1>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon icon-home"></i> <br />
+            首頁
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            <i class="menu-item-icon icon-categories"></i> <br />
+            分類
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            <i class="menu-item-icon icon-about"></i> <br />
+            關於
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            <i class="menu-item-icon icon-archives"></i> <br />
+            歸檔
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            <i class="menu-item-icon icon-tags"></i> <br />
+            標籤
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+        </div>
+    </header>
+
+    <main id="main" class="main">
+        <div class="main-inner">
+            <div id="content" class="content">
+                
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      
+      
+        <h1 class="post-title" itemprop="name headline">
+          
+          
+            
+              自定义UICollectionViewLayout（一）UICollectionViewLayout Class Reference翻译
+            
+          
+        </h1>
+      
+
+      <div class="post-meta">
+        <span class="post-time">
+          發表於
+          <time itemprop="dateCreated" datetime="2015-08-10T22:19:36+08:00" content="2015-08-10">
+            2015-08-10
+          </time>
+        </span>
+
+        
+
+        
+          
+            <span class="post-comments-count">
+            &nbsp; | &nbsp;
+            <a href="/2015/08/10/自定义UICollectionViewLayout（一）/#comments" itemprop="discussionUrl">
+              <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2015/08/10/自定义UICollectionViewLayout（一）/" itemprop="commentsCount"></span>
+            </a>
+          </span>
+          
+        
+      </div>
+    </header>
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><blockquote>
+<p><a href="https://developer.apple.com/library/ios/documentation/UIKit/Reference/UICollectionViewLayout_class/index.html" target="_blank" rel="external">官方文档: UICollectionViewLayout Class Reference</a></p>
+</blockquote>
+<p>继承关系：</p>
+<ul>
+<li>NSObject<ul>
+<li>UICollectionViewLayout<ul>
+<li>UICollectionViewFlowLayout</li>
+<li>UICollectionViewTransitionLayout</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>遵从协议：</p>
+<ul>
+<li>NSCoding</li>
+<li>NSObject</li>
+</ul>
+<p>UICollectionViewLayout是一个抽象的基础的layout object，你可以使用UICollectionViewLayout的子类来生成布局信息，以供collection view使用。layout object决定如何放置cells、supplementary views、 decoration views，并在collection view请求这些信息时能够及时提供。当collection view获取到这些信息之后，会通知相应的视图来呈现。</p>
+<p>当你需要使用布局对象时，必须要使用UICollectionViewLayout的子类。当你考虑自定义UICollectionViewLayout的子类时，请先查看一下 <a href="https://developer.apple.com/library/ios/documentation/UIKit/Reference/UICollectionViewFlowLayout_class/index.html#//apple_ref/occ/cl/UICollectionViewFlowLayout" target="_blank" rel="external">UICollectionViewFlowLayout</a>是否已经可以满足你的要求。</p>
+<a id="more"></a>
+<h3 id="Subclassing_Notes（子类注意事项）">Subclassing Notes（子类注意事项）</h3><p>layout object的主要任务是向UICollectionView提供cells、supplementary views、 decoration views的位置、大小信息。layout object并不为它的使用者创建任何视图，创建视图的工作由collection view的 data source来完成。layout object只定义可视元素的位置、大小信息。</p>
+<p>UICollectionView需要布局三类可视元素：</p>
+<ol>
+<li><strong>Cells</strong>是layout object管控布局的主要对象。每个cell用于呈现数据集合中的单个元素。一个collection view可以拥有一组或多组cells，每组被称为一个section。layout object的主要任务就是在collection view的内容区域排列这些cells。</li>
+<li><p><strong>Supplementary views</strong>（supplementary：补充的 ; 额外的; 附加的）supplementary views 也用于呈现数据，但和cells有所区别：</p>
+<ul>
+<li>supplementary views不能够被用户选中，而cells能够被用户选中；</li>
+<li>supplementary views主要用于section或者整个collection view的header 或footer；</li>
+<li>supplementary views是可选的，如何使用、在哪放置都在layout object中定义。</li>
+</ul>
+</li>
+<li><p><strong>Decoration views</strong>顾名思义是纯粹的装饰性视图，它不可选，与collection view的数据无关。和supplementary views一样，如何使用、在哪放置都在layout object中定义。</p>
+</li>
+</ol>
+<p>collection view会多次向自己的layout object请求这些可视元素的布局信息，每个cell或其它视图能够呈现在屏幕上对应位置所依赖的信息全都来自layout object。同样的，collection view新增或删除items时，layout object会为这些新增或删除的items生成额外的布局信息。不过，collection view只会对屏幕上可见的对象进行布局。</p>
+<h4 id="Methods_to_Override（需要重写的方法）">Methods to Override（需要重写的方法）</h4><p>每个 layout object 都应该实现以下几个方法:</p>
+<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">collectionViewContentSize</span><br><span class="line"></span><br><span class="line"><span class="label">layoutAttributesForElementsInRect:</span></span><br><span class="line"></span><br><span class="line"><span class="label">layoutAttributesForItemAtIndexPath:</span></span><br><span class="line"></span><br><span class="line"><span class="label">layoutAttributesForSupplementaryViewOfKind:</span>atIndexPath: (if your layout supports supplementary views)</span><br><span class="line"></span><br><span class="line"><span class="label">layoutAttributesForDecorationViewOfKind:</span>atIndexPath: (if your layout supports decoration views)</span><br><span class="line"></span><br><span class="line"><span class="label">shouldInvalidateLayoutForBoundsChange:</span></span><br></pre></td></tr></table></figure>
+<p>这些方法提供了collection view将内容呈现在屏幕上所需的基本的布局信息，当然，你的布局中如果不考虑使用 support supplementary 或者 decoration views ，那就不要实现相应的方法。</p>
+<p>当collection view的有数据项插入或者删除时，collection view会请求layout object更新布局信息。尤其是，当移动、新增或者删除数据时，必须更新这些数据项的布局信息以反映它们新的位置。对于移动的数据项，collection view使用标准的方法（？）取得其更新后的布局信；而对于新增或者删除的数据项，collection view会请求一些特殊的方法，你需要重写这些方法以提供合适的布局信息。</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">initialLayoutAttributesForAppearingItemAtIndexPath</span>:</span><br><span class="line"></span><br><span class="line"><span class="attribute">initialLayoutAttributesForAppearingSupplementaryElementOfKind</span>:<span class="attribute">atIndexPath</span>:</span><br><span class="line"></span><br><span class="line"><span class="attribute">initialLayoutAttributesForAppearingDecorationElementOfKind</span>:<span class="attribute">atIndexPath</span>:</span><br><span class="line"></span><br><span class="line"><span class="attribute">finalLayoutAttributesForDisappearingItemAtIndexPath</span>:</span><br><span class="line"></span><br><span class="line"><span class="attribute">finalLayoutAttributesForDisappearingSupplementaryElementOfKind</span>:<span class="attribute">atIndexPath</span>:</span><br><span class="line"></span><br><span class="line"><span class="attribute">finalLayoutAttributesForDisappearingDecorationElementOfKind</span>:<span class="attribute">atIndexPath</span>:</span><br></pre></td></tr></table></figure>
+<p>除了这些方法外，你还可以重写以下方法：</p>
+<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="label">prepareForCollectionViewUpdates:</span></span><br><span class="line"></span><br><span class="line">finalizeCollectionViewUpdates</span><br></pre></td></tr></table></figure>
+<ul>
+<li>重写 <code>prepareForCollectionViewUpdates:</code> 处理任何布局相关的准备工作；</li>
+<li>重写 <code>finalizeCollectionViewUpdates</code> 用于向全局animation block中添加动画，或者实现最终的布局相关任务。</li>
+</ul>
+<h4 id="Optimizing_Layout_Performance_Using_Invalidation_Contexts（使用“让上下文无效”的方法来优化布局呈现）">Optimizing Layout Performance Using Invalidation Contexts（使用“让上下文无效”的方法来优化布局呈现）</h4><p>当设计你的自定义布局时，你可以只让真正改变的那一部分元素无效，从而提高效率。当你改变items时，可以调用 <code>invalidateLayout</code> 方法，强制collection view计算其所有布局信息。显然，这并不高效。更好的解决办法是重新计算真正发生改变的布局信息，即invalidation context。invalidation context让你具体说明layout的哪一部分发生了改变，这样一来 layout object 可以使重新计算的部分最小化。</p>
+<p>当你需要自定义invalidation context时，需要继承     <code>UICollectionViewLayoutInvalidationContext</code> 。在你的这个子类中，定义相关属性，这些属性用以描绘你的布局数据中哪些可以独自重新计算。在运行时一旦需要使布局失效，创建你自定义invalidation context的实例，并指出实例中的属性是基于哪些布局信息发生改变而起作用的，并将这个实例传递给布局对象的 <code>invalidateLayoutWithContext:</code> 方法。你自定义的布局对象所实现的<code>invalidateLayoutWithContext:</code>方法中，可以使用该invalidation context实例，只重新计算部分布局信息而不是计算全部。<br>（这一段不太好翻译，大家觉得翻译有问题的可看下原文：To define a custom invalidation context for your layout, subclass the UICollectionViewLayoutInvalidationContext class. In your subclass, define custom properties that represent the parts of your layout data that can be recomputed independently. When you need to invalidate your layout at runtime, create an instance of your invalidation context subclass, configure the custom properties based on what layout information changed, and pass that object to your layout’s invalidateLayoutWithContext: method. Your custom implementation of that method can use the information in the invalidation context to recompute only the portions of your layout that changed.）</p>
+<p>当你自定义invalidation context之后，需要重写 <code>invalidationContextClass</code>方法返回这个自定义invalidation context。当collection view需要invalidation context时，它会总是创建你指定invalidation context类实例。因此通过<code>invalidationContextClass</code>方法返回自定义invalidation context，可以确保你的布局对象总是持有这个自定义invalidation context。</p>
+<h3 id="Getting_the_Collection_View_Information（获取Collection_View的信息）">Getting the Collection View Information（获取Collection View的信息）</h3><figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">collectionView  Property </span><br><span class="line"></span><br><span class="line"><span class="bullet">- </span>collectionViewContentSize</span><br></pre></td></tr></table></figure>
+<h3 id="Providing_Layout_Attributes（提供布局属性）">Providing Layout Attributes（提供布局属性）</h3><figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">+ layoutAttributesClass</span><br><span class="line">-<span class="ruby"> prepareLayout</span><br><span class="line"></span>-<span class="ruby"> <span class="symbol">layoutAttributesForElementsInRect:</span></span><br><span class="line"></span>-<span class="ruby"> <span class="symbol">layoutAttributesForItemAtIndexPath:</span></span><br><span class="line"></span>-<span class="ruby"> <span class="symbol">layoutAttributesForSupplementaryViewOfKind:</span><span class="symbol">atIndexPath:</span></span><br><span class="line"></span>-<span class="ruby"> <span class="symbol">layoutAttributesForDecorationViewOfKind:</span><span class="symbol">atIndexPath:</span></span><br><span class="line"></span>-<span class="ruby"> <span class="symbol">targetContentOffsetForProposedContentOffset:</span></span><br><span class="line"></span>-<span class="ruby"> <span class="symbol">targetContentOffsetForProposedContentOffset:</span><span class="symbol">withScrollingVelocity:</span></span></span><br></pre></td></tr></table></figure>
+<h3 id="Responding_to_Collection_View_Updates_（相应Collection_View更新）">Responding to Collection View Updates （相应Collection View更新）</h3><figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">-<span class="ruby"> <span class="symbol">prepareForCollectionViewUpdates:</span></span><br><span class="line"></span>-<span class="ruby"> finalizeCollectionViewUpdates</span><br><span class="line"></span>-<span class="ruby"> <span class="symbol">indexPathsToInsertForSupplementaryViewOfKind:</span></span><br><span class="line"></span>-<span class="ruby"> <span class="symbol">indexPathsToInsertForDecorationViewOfKind:</span></span><br><span class="line"></span>-<span class="ruby"> <span class="symbol">initialLayoutAttributesForAppearingItemAtIndexPath:</span></span><br><span class="line"></span>-<span class="ruby"> <span class="symbol">initialLayoutAttributesForAppearingSupplementaryElementOfKind:</span><span class="symbol">atIndexPath:</span></span><br><span class="line"></span>-<span class="ruby"> <span class="symbol">initialLayoutAttributesForAppearingDecorationElementOfKind:</span><span class="symbol">atIndexPath:</span></span><br><span class="line"></span>-<span class="ruby"> <span class="symbol">indexPathsToDeleteForSupplementaryViewOfKind:</span></span><br><span class="line"></span>-<span class="ruby"> <span class="symbol">indexPathsToDeleteForDecorationViewOfKind:</span></span><br><span class="line"></span>-<span class="ruby"> <span class="symbol">finalLayoutAttributesForDisappearingItemAtIndexPath:</span></span><br><span class="line"></span>-<span class="ruby"> <span class="symbol">finalLayoutAttributesForDisappearingSupplementaryElementOfKind:</span><span class="symbol">atIndexPath:</span></span><br><span class="line"></span>-<span class="ruby"> <span class="symbol">finalLayoutAttributesForDisappearingDecorationElementOfKind:</span><span class="symbol">atIndexPath:</span></span></span><br></pre></td></tr></table></figure>
+<h3 id="Invalidating_the_Layout（使布局失效）">Invalidating the Layout（使布局失效）</h3><figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">-<span class="ruby"> invalidateLayout</span><br><span class="line"></span>-<span class="ruby"> <span class="symbol">invalidateLayoutWithContext:</span></span><br><span class="line"></span>+ invalidationContextClass</span><br><span class="line">-<span class="ruby"> <span class="symbol">shouldInvalidateLayoutForBoundsChange:</span></span><br><span class="line"></span>-<span class="ruby"> <span class="symbol">invalidationContextForBoundsChange:</span></span><br><span class="line"></span>-<span class="ruby"> <span class="symbol">shouldInvalidateLayoutForPreferredLayoutAttributes:</span><span class="symbol">withOriginalAttributes:</span></span><br><span class="line"></span>-<span class="ruby"> <span class="symbol">invalidationContextForPreferredLayoutAttributes:</span><span class="symbol">withOriginalAttributes:</span></span></span><br></pre></td></tr></table></figure>
+<h3 id="Coordinating_Animated_Changes_（协调动画改变）">Coordinating Animated Changes （协调动画改变）</h3><figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-<span class="ruby"> <span class="symbol">prepareForAnimatedBoundsChange:</span></span><br><span class="line"></span>-<span class="ruby"> finalizeAnimatedBoundsChange</span></span><br></pre></td></tr></table></figure>
+<h3 id="Transitioning_Between_Layouts_（Layouts之间过渡）">Transitioning Between Layouts （Layouts之间过渡）</h3><figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">-<span class="ruby"> <span class="symbol">prepareForTransitionFromLayout:</span></span><br><span class="line"></span>-<span class="ruby"> <span class="symbol">prepareForTransitionToLayout:</span></span><br><span class="line"></span>-<span class="ruby"> finalizeLayoutTransition</span></span><br></pre></td></tr></table></figure>
+<h3 id="Registering_Decoration_Views（注册Decoration_Views）">Registering Decoration Views（注册Decoration Views）</h3><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">- <span class="string">registerClass:</span><span class="string">forDecorationViewOfKind:</span></span><br><span class="line">- <span class="string">registerNib:</span><span class="string">forDecorationViewOfKind:</span></span><br></pre></td></tr></table></figure>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/UICollectionViewLayout/" rel="tag">#UICollectionViewLayout</a>
+          
+            <a href="/tags/翻译/" rel="tag">#翻译</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/07/15/内存管理剖析-ARC/" rel="next">内存管理剖析(ARC)</a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+            </div>
+
+            
+
+            
+              <div class="comments" id="comments">
+                
+                  <div id="disqus_thread">
+                    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+                  </div>
+                
+              </div>
+            
+        </div>
+
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目錄
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            本站概覽
+          </li>
+        </ul>
+      
+
+      <section class="site-overview">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="/avatar.png" alt="YL" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">YL</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description">IOS技术总结</p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">2</span>
+              <span class="site-state-item-name">文章</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">0</span>
+              <span class="site-state-item-name">分類</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">4</span>
+              <span class="site-state-item-name">標籤</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://aliang9585.github.io" target="_blank">GitHub</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/ytlvy" target="_blank">Twitter</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://nshipster.com" target="_blank">NSHipster</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.mikeash.com/pyblog" target="_blank">NSBlog</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.objc.io" target="_blank">objcio</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.raywenderlich.com" target="_blank">raywenderlich</a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+          <div class="cc-license motion-element" itemprop="license">
+            <a href="http://creativecommons.org/licenses/by-nc-sa/4.0" class="cc-opacity" target="_blank">
+              <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons" />
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator"></div>
+          <div class="post-toc">
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Subclassing_Notes（子类注意事项）"><span class="nav-number">1.</span> <span class="nav-text">Subclassing Notes（子类注意事项）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Methods_to_Override（需要重写的方法）"><span class="nav-number">1.1.</span> <span class="nav-text">Methods to Override（需要重写的方法）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Optimizing_Layout_Performance_Using_Invalidation_Contexts（使用“让上下文无效”的方法来优化布局呈现）"><span class="nav-number">1.2.</span> <span class="nav-text">Optimizing Layout Performance Using Invalidation Contexts（使用“让上下文无效”的方法来优化布局呈现）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Getting_the_Collection_View_Information（获取Collection_View的信息）"><span class="nav-number">2.</span> <span class="nav-text">Getting the Collection View Information（获取Collection View的信息）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Providing_Layout_Attributes（提供布局属性）"><span class="nav-number">3.</span> <span class="nav-text">Providing Layout Attributes（提供布局属性）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Responding_to_Collection_View_Updates_（相应Collection_View更新）"><span class="nav-number">4.</span> <span class="nav-text">Responding to Collection View Updates （相应Collection View更新）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Invalidating_the_Layout（使布局失效）"><span class="nav-number">5.</span> <span class="nav-text">Invalidating the Layout（使布局失效）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Coordinating_Animated_Changes_（协调动画改变）"><span class="nav-number">6.</span> <span class="nav-text">Coordinating Animated Changes （协调动画改变）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Transitioning_Between_Layouts_（Layouts之间过渡）"><span class="nav-number">7.</span> <span class="nav-text">Transitioning Between Layouts （Layouts之间过渡）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Registering_Decoration_Views（注册Decoration_Views）"><span class="nav-number">8.</span> <span class="nav-text">Registering Decoration Views（注册Decoration Views）</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator"></div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+    </main>
+
+    <footer id="footer" class="footer">
+        <div class="footer-inner">
+            <div class="copyright" >
+  
+  &copy; &nbsp; 
+  <span itemprop="copyrightYear">2015</span>
+  <span class="with-love">
+    <i class="icon-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">YL</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 強力驅動
+</div>
+
+<div class="theme-info">
+  主題 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+        </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+</div>
+
+<script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+  
+    
+    
+
+  
+
+    <script type="text/javascript">
+      var disqus_shortname = 'aliang9585githubio';
+      var disqus_identifier = '2015/08/10/自定义UICollectionViewLayout（一）/';
+      var disqus_title = '自定义UICollectionViewLayout（一）UICollectionViewLayout Class Reference翻译';
+      var disqus_url = 'http://aliang9585.github.io/2015/08/10/自定义UICollectionViewLayout（一）/';
+
+      function run_disqus_script(disqus_script){
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+
+      run_disqus_script('count.js');
+      
+        run_disqus_script('embed.js');
+      
+    </script>
+  
+
+
+  
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.4"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.4"></script>
+  
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/js/motion_global.js?v=0.4.4" id="motion.global"></script>
+
+
+
+  <script type="text/javascript" src="/js/search-toggle.js"></script>
+
+
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.4" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+          var self = this;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      $(indicator).velocity('stop').velocity({
+        opacity: action === 'show' ? 0.4 : 0
+      }, { duration: 100 });
+    }
+
+  });
+</script>
+
+
+  <script type="text/javascript" id="sidebar.nav">
+    $(document).ready(function () {
+      var html = $('html');
+
+      $('.sidebar-nav li').on('click', function () {
+        var item = $(this);
+        var activeTabClassName = 'sidebar-nav-active';
+        var activePanelClassName = 'sidebar-panel-active';
+        if (item.hasClass(activeTabClassName)) {
+          return;
+        }
+
+        var currentTarget = $('.' + activePanelClassName);
+        var target = $('.' + item.data('target'));
+
+        currentTarget.velocity('transition.slideUpOut', 200, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', 200)
+            .addClass(activePanelClassName);
+        });
+
+        item.siblings().removeClass(activeTabClassName);
+        item.addClass(activeTabClassName);
+      });
+
+      $('.post-toc a').on('click', function (e) {
+        e.preventDefault();
+        var offset = $(escapeSelector(this.getAttribute('href'))).offset().top;
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        });
+      });
+
+      // Expand sidebar on post detail page by default, when post has a toc.
+      var $tocContent = $('.post-toc-content');
+      if (isDesktop() && CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    });
+  </script>
+
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        if (CONFIG.sidebar === 'always') {
+            displaySidebar();
+        }
+    });
+</script>
+
+
+
+
+
+
+
+
+<!-- lazyload -->
+<script type="text/javascript" src="/js/lazyload.js"></script>
+<script type="text/javascript">
+    jQuery(function () {
+        jQuery("#posts img").lazyload({
+            placeholder: "/images/loading.gif",
+            effect: "fadeIn"
+        });
+    });
+</script>
+</body>
+</html>
