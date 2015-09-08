@@ -1,0 +1,721 @@
+<!doctype html>
+<html class="theme-next use-motion theme-next-mist">
+<head>
+    
+
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5"/>
+
+
+
+  <link href='//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+
+
+<link rel="stylesheet" type="text/css" href="/css/main.css?v=0.4.4"/>
+
+
+    <meta name="description" content="IOS技术总结" />
+
+
+
+  <meta name="keywords" content="UICollectionViewLayout,翻译," />
+
+
+
+
+
+  <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.4" />
+
+
+<meta name="description" content="官方文档:Creating Custom Layouts
+
+在自定义布局之前，请先考虑你是否真的需要这样做。 UICollectionViewFlowLayout已经为你提供了大量、效率优化过的行为，您可以通过不同的方式来实现多类典型布局。只有如下情况，你才需要自定义布局：
+
+非网格或者线性布局——基础的断裂性布局 based breaking layout（各item排列成一行，直到这一行排满，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="自定义UICollectionViewLayout（二）Creating Custom Layouts翻译">
+<meta property="og:url" content="http://aliang9585.github.io/2015/08/15/自定义UICollectionViewLayout（二）/index.html">
+<meta property="og:site_name" content="LYL's Blog">
+<meta property="og:description" content="官方文档:Creating Custom Layouts
+
+在自定义布局之前，请先考虑你是否真的需要这样做。 UICollectionViewFlowLayout已经为你提供了大量、效率优化过的行为，您可以通过不同的方式来实现多类典型布局。只有如下情况，你才需要自定义布局：
+
+非网格或者线性布局——基础的断裂性布局 based breaking layout（各item排列成一行，直到这一行排满，">
+<meta property="og:image" content="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/Art/cv_layout_process_2x.png">
+<meta property="og:image" content="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/Art/cv_visible_elements_2x.png">
+<meta property="og:updated_time" content="2015-09-08T13:54:30.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="自定义UICollectionViewLayout（二）Creating Custom Layouts翻译">
+<meta name="twitter:description" content="官方文档:Creating Custom Layouts
+
+在自定义布局之前，请先考虑你是否真的需要这样做。 UICollectionViewFlowLayout已经为你提供了大量、效率优化过的行为，您可以通过不同的方式来实现多类典型布局。只有如下情况，你才需要自定义布局：
+
+非网格或者线性布局——基础的断裂性布局 based breaking layout（各item排列成一行，直到这一行排满，">
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: 'post'
+  };
+</script>
+
+    <title> 自定义UICollectionViewLayout（二）Creating Custom Layouts翻译 // LYL's Blog </title>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage" lang="">
+<!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?a7a4364608485ad7bc5d2abeacd05591";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+<div class="container one-column page-post-detail">
+    <div class="headband"></div>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+        <div class="header-inner"><h1 class="site-meta">
+  <span class="logo-line-before"><i></i></span>
+  <a href="/" class="brand" rel="start">
+      <span class="logo">
+        <i class="icon-logo"></i>
+      </span>
+      <span class="site-title">LYL's Blog</span>
+  </a>
+  <span class="logo-line-after"><i></i></span>
+</h1>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon icon-home"></i> <br />
+            首頁
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            <i class="menu-item-icon icon-categories"></i> <br />
+            分類
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            <i class="menu-item-icon icon-about"></i> <br />
+            關於
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            <i class="menu-item-icon icon-archives"></i> <br />
+            歸檔
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            <i class="menu-item-icon icon-tags"></i> <br />
+            標籤
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+        </div>
+    </header>
+
+    <main id="main" class="main">
+        <div class="main-inner">
+            <div id="content" class="content">
+                
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      
+      
+        <h1 class="post-title" itemprop="name headline">
+          
+          
+            
+              自定义UICollectionViewLayout（二）Creating Custom Layouts翻译
+            
+          
+        </h1>
+      
+
+      <div class="post-meta">
+        <span class="post-time">
+          發表於
+          <time itemprop="dateCreated" datetime="2015-08-15T07:22:17+08:00" content="2015-08-15">
+            2015-08-15
+          </time>
+        </span>
+
+        
+
+        
+          
+            <span class="post-comments-count">
+            &nbsp; | &nbsp;
+            <a href="/2015/08/15/自定义UICollectionViewLayout（二）/#comments" itemprop="discussionUrl">
+              <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2015/08/15/自定义UICollectionViewLayout（二）/" itemprop="commentsCount"></span>
+            </a>
+          </span>
+          
+        
+      </div>
+    </header>
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><blockquote>
+<p><a href="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/CreatingCustomLayouts/CreatingCustomLayouts.html#//apple_ref/doc/uid/TP40012334-CH5-SW1" target="_blank" rel="external">官方文档:Creating Custom Layouts</a></p>
+</blockquote>
+<p>在自定义布局之前，请先考虑你是否真的需要这样做。<a href="https://developer.apple.com/library/ios/documentation/UIKit/Reference/UICollectionViewFlowLayout_class/index.html#//apple_ref/occ/cl/UICollectionViewFlowLayout" target="_blank" rel="external"> UICollectionViewFlowLayout</a>已经为你提供了大量、效率优化过的行为，您可以通过不同的方式来实现多类典型布局。只有如下情况，你才需要自定义布局：</p>
+<ul>
+<li>非网格或者线性布局——基础的断裂性布局 based breaking layout（各item排列成一行，直到这一行排满，会另起一行，如此重复直到所有item全部排列完毕）或者必须在不同方向上的滚动的布局。</li>
+<li>你需要频繁的改变所有cells的位置，且修改已有布局类的工作量大于自定义布局的工作量。</li>
+</ul>
+<p>好消息是，基于API的观点，实现自定义布局并不困难。最难的部分在于计算布局中items的位置。一旦你直到了这些items的位置，那么为collection view提供布局信息将会轻而易举。</p>
+<a id="more"></a>
+<h2 id="Subclassing_UICollectionViewLayout_（创建UICollectionViewLayout的子类）">Subclassing UICollectionViewLayout （创建UICollectionViewLayout的子类）</h2><p><code>UICollectionViewLayout</code>为你的布局设计提供了入口，自定义布局需要继承它。UICollectionViewLayout要求您必须实现少量的几个方法，如此便可支撑布局类的核心行为。至于其它的方法，您可以根据需要进行重写来对布局行为稍作调整。这些核心方法处理了以下几个至关重要的任务：</p>
+<ul>
+<li>具体说明滚动区域的size。</li>
+<li>向cells和views提供组成布局的attribute objects，以便collection view可以把cells和views放置在正确的位置。</li>
+</ul>
+<p>虽然你的自定义布局可以只实现核心方法，但实现几个可选的方法会使你的布局更有吸引力。</p>
+<p>布局对象使用data source提供的信息来创建布局。你的布局对象如果需要与data source通信，可以调用属性 <code>collectionView</code> 中的相关方法，属性 <code>collectionView</code> 在任何布局方法中都是很容易获得的。在自定义布局的过程中，需要牢记哪些是collectionView可以知晓的，哪些是collectionView不知道的，原因在于布局进程启动后，collection view无法追踪布局或者视图的位置。因此，尽管布局对象没有限制你调用collectionView的任何方法，切莫依赖collectionView（除了必要的数据）来计算布局。</p>
+<h3 id="Understanding_the_Core_Layout_Process_（理解核心布局过程）">Understanding the Core Layout Process （理解核心布局过程）</h3><p>collection view直接与你的自定义布局对象配合，从而管理整个布局过程。当collection view检查到自己需要布局信息时，会向你的布局对象发起请求。比如，当collection view第一次显示或者大小发生改变时，就会向布局对象发起请求。你也可以调用布局对象的 <code>invalidateLayout</code> 方法，明确地告知collection view去更新布局。<code>invalidateLayout</code> 方法会放弃原有的布局信息，并强制布局对象生成新的布局信息。</p>
+<blockquote>
+<p>注：请注意不要混淆布局对象的 <code>invalidateLayout</code> 方法与collection view的 <code>reloadData</code> 方法。调用 <code>invalidateLayout</code> 方法不一定导致collection view放弃现有的cells或子视图，而是当collection view移动、添加或删除item时，如果有必要，强制布局对象重新计算所有的布局属性。如果数据源中的数据发生改变，那么调用 <code>reloadData</code> 方法是最合适的。<code>invalidateLayout</code>也好，<code>reloadData</code>也罢，不管你如何启动布局更新，实际的布局过程都是一样的。</p>
+</blockquote>
+<p>在布局过程中，collection view会调用你的布局对象中的特定方法，这些特定方法为你提供了计算items位置的机会，并提供给collection view它所需要的主要信息。另外还有一些方法（preceding methods前置方法）也会被调用，但这些方法在布局过程中总是按照如下顺序被调用：</p>
+<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">prepareLayout</span><br><span class="line">collectionViewContentSize</span><br><span class="line"><span class="label">layoutAttributesForElementsInRect:</span></span><br></pre></td></tr></table></figure>
+<ol>
+<li>使用<code>prepareLayout</code>方法执行提供布局信息之前所需要的计算</li>
+<li>使用<code>collectionViewContentSize</code>方法返回初始计算的整个内容区域的总体尺寸</li>
+<li>使用<code>layoutAttributesForElementsInRect:</code>方法返回指定的矩形内的cells或其它视图的属性</li>
+</ol>
+<p>下图描述了你如何使用preceding methods来生成布局信息：</p>
+<p><img src="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/Art/cv_layout_process_2x.png" alt="Figure 5-1  Laying out your custom content"></p>
+<p>你的布局对象为了确定cells或其它视图的位置所需要的任何计算都可以在 <code>prepareLayout</code>方法中执行。至少，你应该计算出内容区域的整体尺寸，以便在第二步返回这个尺寸。</p>
+<p>collection view根据这个尺寸配置其滚动视图，举例来说，如果你计算出的内容区域尺寸在横向和纵向上都超出了屏幕边界，那么滚动视图就会调整其滚动策略，使之横向纵向都可以滚动。不像<code>UICollectionViewFlowLayout</code>那样，默认情况下不会调整自己内容区域的布局，而只能在一个方向上滚动。</p>
+<p>在当前滚动位置的基础上，collection view会调用<code>layoutAttributesForElementsInRect:</code>方法获取指定的矩形内的cells或其它视图的属性。这个矩形和可见区域相同也可能不同。当返回该信息之后，核心布局过程到此结束。</p>
+<p>核心布局过程结束之后，cells或其它视图的属性一直保持不变，直到collection view使其布局失效。调用布局对象的<code>invalidateLayout</code>方法，将会使布局过程再次执行，将会重新开始调用<code>prepareLayout</code>方法。collection view在滚动过程中也会自动使布局失效。当用户滚动内容时，collection view会调用<code>shouldInvalidateLayoutForBoundsChange:</code>方法，当该方法返回YES时，collection view会使布局失效。</p>
+<blockquote>
+<p>注： 请牢记：调用<code>invalidateLayout</code>方法不会立即触发布局更新过程，事实上该方法仅仅标记出“布局与数据不一致，需要更新”，在下一次的视图更新周期中(view update cycle)，collection view 会检查到其布局对象是否已经成为脏数据，如果是则更新布局对象。事实上，你可以连续调用该方法多次，但并不是每次都会触发布局立即更新。</p>
+</blockquote>
+<h3 id="Creating_Layout_Attributes（创建布局属性）">Creating Layout Attributes（创建布局属性）</h3><p>布局属性对象（attributes objects）是<code>UICollectionViewLayoutAttributes</code>类的实例。这些实例可以用多种方式创建。当你的应用程序并不需要处理上千个items时，在准备布局时，创建这些实例是有意义的，因为布局信息可以被缓存和引用，而不是持续在计算。如果计算所有属性的开销远大于缓存的开销，那么就创建属性吧。 （这段翻译的很不好，还是看原文吧： When your app is not dealing with thousands of items, it makes sense to create these instances while preparing the layout, because the layout information can be cached and referenced rather than computed on the fly.If the costs of computing all the attributes up front outweighs the benefits of caching in your app, it is just as easy to create attributes in the moment when they are requested）</p>
+<p>创建<code>UICollectionViewLayoutAttributes</code>类的实例，可以用如下类方法：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">layoutAttributesForCellWithIndexPath:</span></span><br><span class="line"><span class="string">layoutAttributesForSupplementaryViewOfKind:</span><span class="string">withIndexPath:</span></span><br><span class="line"><span class="string">layoutAttributesForDecorationViewOfKind:</span><span class="string">withIndexPath:</span></span><br></pre></td></tr></table></figure>
+<p>你需要根据不同的视图类型选择相应的类方法， 因为collection view会根据不同的属性实例去请求数据源中对应的视图信息。使用不正确的类方法会导致collection view在错误的地方创建错误的视图，从而和你期望的布局不符。</p>
+<p>创建完属性对象之后，设置相应视图的相关属性。至少，需要设置视图的位置和尺寸。倘若你的布局中，视图有重叠的部分，那么你可以指定一个值给<code>zIndex</code>属性,以确保这些视图按照一致的顺序重叠。其它一些属性，例如可以让你控制cells或views的可见性和外观，可以根据需要进行设置。如果标准的attributes class不能满足你的需求，你可以创建其子类，扩展其存储内容。创建layout attributes子类时，必须实现 <code>isEqual:</code> 方法来比较两个layout attributes子类是否相同， 因为collection view 将会用到该方法。</p>
+<p>更多内容请参考<a href="https://developer.apple.com/library/ios/documentation/UIKit/Reference/UICollectionViewLayoutAttributes_class/index.html#//apple_ref/doc/uid/TP40012183" target="_blank" rel="external">UICollectionViewLayoutAttributes Class Reference</a>.</p>
+<h3 id="Preparing_the_Layout_(准备布局)">Preparing the Layout (准备布局)</h3><p>在布局周期的开始阶段，布局对象在启动布局过程之前，会先调用<code>prepareLayout</code>方法。该方法为你提供了预先计算的机会，在该方法中不需要实现自定义布局，而是根据需要仅做初始信息的计算。该方法调用之后，你的布局对象必须要有足够的信息可以计算出内容区域的整体尺寸，以便下一过程使用。初始信息，至少是可以计算出内容区域的整体尺寸，至多则是存储所有的layout attributes。使用<code>prepareLayout</code>方法，是为你的应用程序提供基础信息，是为了进行有意义的前置计算，如果想看到<code>prepareLayout</code>方法是什么样子的，请参考<a href="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/AWorkedExample/AWorkedExample.html#//apple_ref/doc/uid/TP40012334-CH8-SW1" target="_blank" rel="external">see Preparing the Layout</a>.</p>
+<h3 id="Providing_Layout_Attributes_for_Items_in_a_Given_Rectangle_（提供指定矩形区域内的布局属性）">Providing Layout Attributes for Items in a Given Rectangle （提供指定矩形区域内的布局属性）</h3><p>在布局周期的最后阶段，collection view会调用布局对象的 <code>layoutAttributesForElementsInRect:</code>方法，该方法的目的是为所有在指定区域内的cells、supplementary views、decoration views 提供layout attributes。对于一个比较大的可滚动区域来说，collection view只会请求可见部分的cells的属性。如下图所示：collection view只会要求布局对象提供6-20的cell及header2的layout attributes。你必须能够提供随意一段内容区域的layout attributes，这些属性可能被插入或删除items的动画使用。</p>
+<p><img src="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/Art/cv_visible_elements_2x.png" alt="Figure 5-2  Laying out only the visible views"></p>
+<p>由于<code>layoutAttributesForElementsInRect:</code>方法是在<code>prepareLayout</code>方法之后才会调用，因此你应该拥有了足够多的信息来返回或创建所需属性。实现<code>layoutAttributesForElementsInRect:</code>方法遵从以下步骤：</p>
+<ol>
+<li>遍历<code>prepareLayout</code>方法生成的数据,根据这些数据生成属性，这些属性要么来自缓存，要么创建新的。</li>
+<li>检查每个item的frame是否与<code>layoutAttributesForElementsInRect:</code>方法传递的rect相交。</li>
+<li>对每个item，添加相应的<code>UICollectionViewLayoutAttributes</code>对象数组。</li>
+<li>返回这个layout attributes数组给collection view。</li>
+</ol>
+<p>你可以在<code>prepareLayout</code>方法中创建<code>UICollectionViewLayoutAttributes</code>对象，也可以在之后的<code>layoutAttributesForElementsInRect:</code>方法中创建，这取决于你如何管理你的布局信息。在实现你的程序时，要牢记缓存布局信息的好处。重复计算cell的layout attributes是一个相当耗费性能的操作，会极大的影响应用程序的性能。也就是说，当你的collection view管理的item数量庞大时，请求布局对象时将会耗费更多的性能来创建这些layout attributes。</p>
+<blockquote>
+<p>布局对象还需要有能力提供layout attributes  应对单个item的特殊需求。collection view 可能在常规布局过程之外，包括创建动画，都需要这些特殊信息。更多信息请参考<a href="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/CreatingCustomLayouts/CreatingCustomLayouts.html#//apple_ref/doc/uid/TP40012334-CH5-SW2" target="_blank" rel="external">Providing Layout Attributes On Demand</a></p>
+</blockquote>
+<p>如果你希望看到实现<code>layoutAttributesForElementsInRect:</code>方法具体的例子，请参考<a href="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/AWorkedExample/AWorkedExample.html#//apple_ref/doc/uid/TP40012334-CH8-SW9" target="_blank" rel="external">Providing Layout Attributes</a>。</p>
+<h3 id="Providing_Layout_Attributes_On_Demand_（根据具体需求提供布局属性）">Providing Layout Attributes On Demand （根据具体需求提供布局属性）</h3><p>collection view 在常规布局过程之外,会定期请求你的布局对象， 要求布局对象提供个别item的属性。举例来说，当为某个item配置插入或删除动画时，collection view会请求这个item的属性。你的布局对象必须准备好可以提供每一个cell、supplementary view、decoration view的layout attributes，你可以通过重写下面几个方法来实现：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">layoutAttributesForItemAtIndexPath:</span></span><br><span class="line"><span class="string">layoutAttributesForSupplementaryViewOfKind:</span><span class="string">atIndexPath:</span></span><br><span class="line"><span class="string">layoutAttributesForDecorationViewOfKind:</span><span class="string">atIndexPath:</span></span><br></pre></td></tr></table></figure>
+<p>在你的方法实现中，必须取回当前的layout attributes。每一个自定义布局对象都应该实现<code>layoutattributesforitematindexpath：</code>方法。如果你的布局对象不包含supplementary views，那么无需实现<code>layoutAttributesForSupplementaryViewOfKind:atIndexPath:</code>方法。同样，如果你的布局对象不包含decoration views，那么无需实现<code>layoutAttributesForDecorationViewOfKind:atIndexPath:</code>方法。在返回属性的过程中，你不能更新layout attributes。如果你需要更新布局信息，使布局对象失效，并在下一个布局周期中更新布局对象的数据。</p>
+<h3 id="Connecting_Your_Custom_Layout_for_Use_（使用你的自定义布局）">Connecting Your Custom Layout for Use （使用你的自定义布局）</h3><p>有两种方式让你的自定义布局和collection view相关联：纯代码的方式和storyboards的方式。collection view 链接布局可以通过它的一个可写属性 - <code>collectionViewLayout</code>。如果要把collection view的布局设置成你的自定义布局，只需创建自定义布局示例，赋值给collection view的<code>collectionViewLayout</code>属性即可。</p>
+<figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">self.collectionView.collectionViewLayout = <span class="comment">[<span class="comment">[MyCustomLayout alloc]</span> init]</span>;</span><br></pre></td></tr></table></figure>
+<p>对于storyboards，打开‘Document Outline’面板，选择你的collection view（它在您的控制器的下拉菜单中）。选中collection view之后，在‘Utilities’面板中，打开‘Attributes inspector’（译者注：即右边面板顶部的第4个按钮），在‘Collection View’标签下面，找到‘Layout’，把它的选项由‘Flow’改为‘Custom’，这时你会发现下面的‘Scroll Direction’ 变成了 ‘Class’，这时你可以选择自定义布局Class了。</p>
+<h2 id="Making_Your_Custom_Layouts_More_Engaging_（使你的自定义布局更有吸引力）">Making Your Custom Layouts More Engaging （使你的自定义布局更有吸引力）</h2><p>在布局过程中，为每一个cell或者view提供layout attributes是硬性要求，但还有一些其它的行为可以增加用户体验。实现这些行为是可选的，但是还是推荐您实现。</p>
+<h3 id="Elevating_Content_Through_Supplementary_Views_（通过补充视图来提升内容）">Elevating Content Through Supplementary Views （通过补充视图来提升内容）</h3><p>未完待续。。。。。。</p>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/UICollectionViewLayout/" rel="tag">#UICollectionViewLayout</a>
+          
+            <a href="/tags/翻译/" rel="tag">#翻译</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/08/10/自定义UICollectionViewLayout（一）/" rel="next">自定义UICollectionViewLayout（一）UICollectionViewLayout Class Reference翻译</a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+            </div>
+
+            
+
+            
+              <div class="comments" id="comments">
+                
+                  <div id="disqus_thread">
+                    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+                  </div>
+                
+              </div>
+            
+        </div>
+
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目錄
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            本站概覽
+          </li>
+        </ul>
+      
+
+      <section class="site-overview">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="/avatar.png" alt="YL" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">YL</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description">IOS技术总结</p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">7</span>
+              <span class="site-state-item-name">文章</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">0</span>
+              <span class="site-state-item-name">分類</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">9</span>
+              <span class="site-state-item-name">標籤</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://aliang9585.github.io" target="_blank">GitHub</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/ytlvy" target="_blank">Twitter</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://nshipster.com" target="_blank">NSHipster</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.mikeash.com/pyblog" target="_blank">NSBlog</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.objc.io" target="_blank">objcio</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.raywenderlich.com" target="_blank">raywenderlich</a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+          <div class="cc-license motion-element" itemprop="license">
+            <a href="http://creativecommons.org/licenses/by-nc-sa/4.0" class="cc-opacity" target="_blank">
+              <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons" />
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator"></div>
+          <div class="post-toc">
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Subclassing_UICollectionViewLayout_（创建UICollectionViewLayout的子类）"><span class="nav-number">1.</span> <span class="nav-text">Subclassing UICollectionViewLayout （创建UICollectionViewLayout的子类）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Understanding_the_Core_Layout_Process_（理解核心布局过程）"><span class="nav-number">1.1.</span> <span class="nav-text">Understanding the Core Layout Process （理解核心布局过程）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Creating_Layout_Attributes（创建布局属性）"><span class="nav-number">1.2.</span> <span class="nav-text">Creating Layout Attributes（创建布局属性）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Preparing_the_Layout_(准备布局)"><span class="nav-number">1.3.</span> <span class="nav-text">Preparing the Layout (准备布局)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Providing_Layout_Attributes_for_Items_in_a_Given_Rectangle_（提供指定矩形区域内的布局属性）"><span class="nav-number">1.4.</span> <span class="nav-text">Providing Layout Attributes for Items in a Given Rectangle （提供指定矩形区域内的布局属性）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Providing_Layout_Attributes_On_Demand_（根据具体需求提供布局属性）"><span class="nav-number">1.5.</span> <span class="nav-text">Providing Layout Attributes On Demand （根据具体需求提供布局属性）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Connecting_Your_Custom_Layout_for_Use_（使用你的自定义布局）"><span class="nav-number">1.6.</span> <span class="nav-text">Connecting Your Custom Layout for Use （使用你的自定义布局）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Making_Your_Custom_Layouts_More_Engaging_（使你的自定义布局更有吸引力）"><span class="nav-number">2.</span> <span class="nav-text">Making Your Custom Layouts More Engaging （使你的自定义布局更有吸引力）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Elevating_Content_Through_Supplementary_Views_（通过补充视图来提升内容）"><span class="nav-number">2.1.</span> <span class="nav-text">Elevating Content Through Supplementary Views （通过补充视图来提升内容）</span></a></li></ol></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator"></div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+    </main>
+
+    <footer id="footer" class="footer">
+        <div class="footer-inner">
+            <div class="copyright" >
+  
+  &copy; &nbsp; 
+  <span itemprop="copyrightYear">2015</span>
+  <span class="with-love">
+    <i class="icon-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">YL</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 強力驅動
+</div>
+
+<div class="theme-info">
+  主題 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+        </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+</div>
+
+<script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+  
+    
+    
+
+  
+
+    <script type="text/javascript">
+      var disqus_shortname = 'aliang9585githubio';
+      var disqus_identifier = '2015/08/15/自定义UICollectionViewLayout（二）/';
+      var disqus_title = '自定义UICollectionViewLayout（二）Creating Custom Layouts翻译';
+      var disqus_url = 'http://aliang9585.github.io/2015/08/15/自定义UICollectionViewLayout（二）/';
+
+      function run_disqus_script(disqus_script){
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+
+      run_disqus_script('count.js');
+      
+        run_disqus_script('embed.js');
+      
+    </script>
+  
+
+
+  
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.4"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.4"></script>
+  
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/js/motion_global.js?v=0.4.4" id="motion.global"></script>
+
+
+
+  <script type="text/javascript" src="/js/search-toggle.js"></script>
+
+
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.4" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+          var self = this;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      $(indicator).velocity('stop').velocity({
+        opacity: action === 'show' ? 0.4 : 0
+      }, { duration: 100 });
+    }
+
+  });
+</script>
+
+
+  <script type="text/javascript" id="sidebar.nav">
+    $(document).ready(function () {
+      var html = $('html');
+
+      $('.sidebar-nav li').on('click', function () {
+        var item = $(this);
+        var activeTabClassName = 'sidebar-nav-active';
+        var activePanelClassName = 'sidebar-panel-active';
+        if (item.hasClass(activeTabClassName)) {
+          return;
+        }
+
+        var currentTarget = $('.' + activePanelClassName);
+        var target = $('.' + item.data('target'));
+
+        currentTarget.velocity('transition.slideUpOut', 200, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', 200)
+            .addClass(activePanelClassName);
+        });
+
+        item.siblings().removeClass(activeTabClassName);
+        item.addClass(activeTabClassName);
+      });
+
+      $('.post-toc a').on('click', function (e) {
+        e.preventDefault();
+        var offset = $(escapeSelector(this.getAttribute('href'))).offset().top;
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        });
+      });
+
+      // Expand sidebar on post detail page by default, when post has a toc.
+      var $tocContent = $('.post-toc-content');
+      if (isDesktop() && CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    });
+  </script>
+
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        if (CONFIG.sidebar === 'always') {
+            displaySidebar();
+        }
+    });
+</script>
+
+
+
+
+
+
+
+
+<!-- lazyload -->
+<script type="text/javascript" src="/js/lazyload.js"></script>
+<script type="text/javascript">
+    jQuery(function () {
+        jQuery("#posts img").lazyload({
+            placeholder: "/images/loading.gif",
+            effect: "fadeIn"
+        });
+    });
+</script>
+</body>
+</html>

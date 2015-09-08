@@ -1,0 +1,764 @@
+<!doctype html>
+<html class="theme-next use-motion theme-next-mist">
+<head>
+    
+
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5"/>
+
+
+
+  <link href='//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+
+
+<link rel="stylesheet" type="text/css" href="/css/main.css?v=0.4.4"/>
+
+
+    <meta name="description" content="IOS技术总结" />
+
+
+
+  <meta name="keywords" content="MRC,Memor," />
+
+
+
+
+
+  <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.4" />
+
+
+<meta name="description" content="参考文章：
+
+iPhone/Mac Objective-C内存管理教程和原理剖析-VinceYuan
+
+第一章：基本原理1、Objective-C的对象生成于堆之上，生成之后，需要一个指针来指向它。1ClassA *obj1 = [[ClassA alloc] init];
+2、Objective-C的对象在使用完成之后不会自动销毁，需要执行dealloc来释放空间（销毁），否则内存泄露。1[ob">
+<meta property="og:type" content="article">
+<meta property="og:title" content="内存管理剖析(MRC)">
+<meta property="og:url" content="http://aliang9585.github.io/2015/07/15/内存管理剖析(MRC)/index.html">
+<meta property="og:site_name" content="LYL's Blog">
+<meta property="og:description" content="参考文章：
+
+iPhone/Mac Objective-C内存管理教程和原理剖析-VinceYuan
+
+第一章：基本原理1、Objective-C的对象生成于堆之上，生成之后，需要一个指针来指向它。1ClassA *obj1 = [[ClassA alloc] init];
+2、Objective-C的对象在使用完成之后不会自动销毁，需要执行dealloc来释放空间（销毁），否则内存泄露。1[ob">
+<meta property="og:updated_time" content="2015-09-08T13:58:34.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="内存管理剖析(MRC)">
+<meta name="twitter:description" content="参考文章：
+
+iPhone/Mac Objective-C内存管理教程和原理剖析-VinceYuan
+
+第一章：基本原理1、Objective-C的对象生成于堆之上，生成之后，需要一个指针来指向它。1ClassA *obj1 = [[ClassA alloc] init];
+2、Objective-C的对象在使用完成之后不会自动销毁，需要执行dealloc来释放空间（销毁），否则内存泄露。1[ob">
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: 'post'
+  };
+</script>
+
+    <title> 内存管理剖析(MRC) // LYL's Blog </title>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage" lang="">
+<!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?a7a4364608485ad7bc5d2abeacd05591";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+<div class="container one-column page-post-detail">
+    <div class="headband"></div>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+        <div class="header-inner"><h1 class="site-meta">
+  <span class="logo-line-before"><i></i></span>
+  <a href="/" class="brand" rel="start">
+      <span class="logo">
+        <i class="icon-logo"></i>
+      </span>
+      <span class="site-title">LYL's Blog</span>
+  </a>
+  <span class="logo-line-after"><i></i></span>
+</h1>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon icon-home"></i> <br />
+            首頁
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            <i class="menu-item-icon icon-categories"></i> <br />
+            分類
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            <i class="menu-item-icon icon-about"></i> <br />
+            關於
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            <i class="menu-item-icon icon-archives"></i> <br />
+            歸檔
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            <i class="menu-item-icon icon-tags"></i> <br />
+            標籤
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+        </div>
+    </header>
+
+    <main id="main" class="main">
+        <div class="main-inner">
+            <div id="content" class="content">
+                
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      
+      
+        <h1 class="post-title" itemprop="name headline">
+          
+          
+            
+              内存管理剖析(MRC)
+            
+          
+        </h1>
+      
+
+      <div class="post-meta">
+        <span class="post-time">
+          發表於
+          <time itemprop="dateCreated" datetime="2015-07-15T00:00:00+08:00" content="2015-07-15">
+            2015-07-15
+          </time>
+        </span>
+
+        
+
+        
+          
+            <span class="post-comments-count">
+            &nbsp; | &nbsp;
+            <a href="/2015/07/15/内存管理剖析(MRC)/#comments" itemprop="discussionUrl">
+              <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2015/07/15/内存管理剖析(MRC)/" itemprop="commentsCount"></span>
+            </a>
+          </span>
+          
+        
+      </div>
+    </header>
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><p>参考文章：</p>
+<blockquote>
+<p><a href="http://www.cnblogs.com/VinceYuan/archive/2010/03/08/1680488.html" target="_blank" rel="external">iPhone/Mac Objective-C内存管理教程和原理剖析-VinceYuan</a></p>
+</blockquote>
+<h2 id="第一章：基本原理">第一章：基本原理</h2><h5 id="1、Objective-C的对象生成于堆之上，生成之后，需要一个指针来指向它。">1、Objective-C的对象生成于堆之上，生成之后，需要一个指针来指向它。</h5><figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ClassA *obj1 = <span class="comment">[<span class="comment">[ClassA alloc]</span> init]</span>;</span><br></pre></td></tr></table></figure>
+<h5 id="2、Objective-C的对象在使用完成之后不会自动销毁，需要执行dealloc来释放空间（销毁），否则内存泄露。">2、Objective-C的对象在使用完成之后不会自动销毁，需要执行dealloc来释放空间（销毁），否则内存泄露。</h5><figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">[obj1 dealloc]</span><span class="comment">;</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>这带来了一个问题。下面代码中obj2是否需要调用dealloc？</p>
+</blockquote>
+<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ClassA *obj1 = [[ClassA alloc] init]<span class="comment">;</span></span><br><span class="line">ClassA *obj2 = obj1<span class="comment">;</span></span><br><span class="line">[obj1 hello]<span class="comment">; //输出hello</span></span><br><span class="line">[obj1 dealloc]<span class="comment">;</span></span><br><span class="line">[obj2 hello]<span class="comment">; //能够执行这一行和下一行吗？</span></span><br><span class="line">[obj2 dealloc]<span class="comment">;</span></span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<blockquote>
+<p>不能，因为obj1和obj2只是指针，它们指向同一个对象，[obj1 dealloc]已经销毁这个对象了，不能再调用[obj2 hello]和[obj2 dealloc]。obj2实际上是个无效指针。如何避免无效指针？请看下一条。</p>
+</blockquote>
+<h5 id="3、Objective-C采用了引用计数(ref_count或者retain_count)。对象的内部保存一个数字，表示被引用的次数。例如，某个对象被两个指针所指向（引用）那么它的retain_count为2。需要销毁对象的时候，不直接调用dealloc，而是调用release。release会让retain_count减1，只有retain_count等于0，系统才会调用dealloc真正销毁这个对象。">3、Objective-C采用了引用计数(ref count或者retain count)。对象的内部保存一个数字，表示被引用的次数。例如，某个对象被两个指针所指向（引用）那么它的retain count为2。需要销毁对象的时候，不直接调用dealloc，而是调用release。release会让retain count减1，只有retain count等于0，系统才会调用dealloc真正销毁这个对象。</h5><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//对象生成时，retain count = 1</span><br><span class="line">ClassA *obj1 = [[ClassA alloc] init]; </span><br><span class="line"></span><br><span class="line">//<span class="operator"><span class="keyword">release</span>使retain <span class="keyword">count</span>减<span class="number">1</span>，retain <span class="keyword">count</span> = <span class="number">0</span>，</span><br><span class="line">//dealloc自动被调用,对象被销毁</span><br><span class="line">[obj1 <span class="keyword">release</span>];</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>我们回头看看刚刚那个无效指针的问题，把dealloc改成release解决了吗？</p>
+</blockquote>
+<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ClassA *obj1 = [[ClassA alloc] init]<span class="comment">; //retain count = 1</span></span><br><span class="line">ClassA *obj2 = obj1<span class="comment">; //retain count = 1</span></span><br><span class="line">[obj1 hello]<span class="comment">; //输出hello</span></span><br><span class="line">[obj1 release]<span class="comment">; //retain count = 0，对象被销毁</span></span><br><span class="line">[obj2 hello]<span class="comment">;</span></span><br><span class="line">[obj2 release]<span class="comment">;</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>[obj1 release]之后，obj2依然是个无效指针。问题依然没有解决。解决方法见下一条。</p>
+</blockquote>
+<h5 id="4、Objective-C指针赋值时，retain_count不会自动增加，需要手动retain。">4、Objective-C指针赋值时，retain count不会自动增加，需要手动retain。</h5><figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="constant">ClassA *obj1</span> = [[ClassA alloc] init]; <span class="comment">//retain count = 1</span></span><br><span class="line"><span class="constant">ClassA *obj2</span> = obj1; <span class="comment">//retain count = 1</span></span><br><span class="line">[obj2 retain]; <span class="comment">//retain count = 2</span></span><br><span class="line">[obj1 hello]; <span class="comment">//输出hello</span></span><br><span class="line">[obj1 release]; <span class="comment">//retain count = 2 – 1 = 1</span></span><br><span class="line">[obj2 hello]; <span class="comment">//输出hello</span></span><br><span class="line">[obj2 release]; <span class="comment">//retain count = 0，对象被销毁</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>问题解决！注意，如果没有调用[obj2 release]，这个对象的retain count始终为1，不会被销毁，内存泄露。这样的确不会内存泄露，但似乎有点麻烦，有没有简单点的方法？见下一条。</p>
+</blockquote>
+<h5 id="5、autorelease_pool（自动释放对象池），在遵守一些规则的情况下，可以自动释放对象。">5、autorelease pool（自动释放对象池），在遵守一些规则的情况下，可以自动释放对象。</h5><blockquote>
+<p> 5.1 、新生成的对象，只要调用autorelease就行了，无需再调用release！</p>
+</blockquote>
+<figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ClassA *obj1 = <span class="comment">[<span class="comment">[<span class="comment">[ClassA alloc]</span> init]</span> autorelease]</span>; //retain count = 1 但无需调用release</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p> 5.2、对于存在指针赋值的情况，代码与前面类似。</p>
+</blockquote>
+<figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="constant">ClassA *obj1</span> = [[[ClassA alloc] init] autorelease]; <span class="comment">//retain count = 1</span></span><br><span class="line"><span class="constant">ClassA *obj2</span> = obj1; <span class="comment">//retain count = 1</span></span><br><span class="line">[obj2 retain]; <span class="comment">//retain count = 2</span></span><br><span class="line">[obj1 hello]; <span class="comment">//输出hello</span></span><br><span class="line"><span class="comment">//对于obj1，无需调用（实际上不能调用）release</span></span><br><span class="line">[obj2 hello]; <span class="comment">//输出hello</span></span><br><span class="line">[obj2 release]; <span class="comment">//retain count = 2-1 = 1</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>细心的读者肯定能发现这个对象没有被销毁，何时销毁呢？谁去销毁它？请看下一条。</p>
+</blockquote>
+<h5 id="6、autorelease_pool原理剖析。">6、autorelease pool原理剖析。</h5><blockquote>
+<h6 id="6-1_autorelease_pool不是天生的，需要手动创立。只不过在新建一个iphone项目时，xcode会自动帮你写好。autorelease_pool的真名是NSAutoreleasePool。">6.1 autorelease pool不是天生的，需要手动创立。只不过在新建一个iphone项目时，xcode会自动帮你写好。autorelease pool的真名是NSAutoreleasePool。</h6></blockquote>
+<figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">NSAutoreleasePool *pool = <span class="comment">[<span class="comment">[NSAutoreleasePool alloc]</span> init]</span>;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<h6 id="6-2_NSAutoreleasePool内部包含一个数组（NSMutableArray），用来保存声明为autorelease的所有对象。如果一个对象声明为autorelease，系统所做的工作就是把这个对象加入到这个数组中去。">6.2 NSAutoreleasePool内部包含一个数组（NSMutableArray），用来保存声明为autorelease的所有对象。如果一个对象声明为autorelease，系统所做的工作就是把这个对象加入到这个数组中去。</h6></blockquote>
+<figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ClassA *obj1 = <span class="comment">[<span class="comment">[<span class="comment">[ClassA alloc]</span> init]</span> autorelease]</span>;</span><br><span class="line">//retain count = 1，把此对象加入autorelease pool中</span><br></pre></td></tr></table></figure>
+<blockquote>
+<h6 id="6-3_NSAutoreleasePool自身在销毁的时候，会遍历一遍这个数组，release数组中的每个成员。如果此时数组中成员的retain_count为1，那么release之后，retain_count为0，对象正式被销毁。如果此时数组中成员的retain_count大于1，那么release之后，retain_count大于0，此对象依然没有被销毁，内存泄露。">6.3 NSAutoreleasePool自身在销毁的时候，会遍历一遍这个数组，release数组中的每个成员。如果此时数组中成员的retain count为1，那么release之后，retain count为0，对象正式被销毁。如果此时数组中成员的retain count大于1，那么release之后，retain count大于0，此对象依然没有被销毁，内存泄露。</h6><h6 id="6-4_默认只有一个autorelease_pool，通常类似于下面这个例子。">6.4 默认只有一个autorelease pool，通常类似于下面这个例子。</h6></blockquote>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> main (<span class="keyword">int</span> argc, <span class="keyword">const</span> <span class="keyword">char</span> *argv[])</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">NSAutoreleasePool</span> *pool;</span><br><span class="line">    pool = [[<span class="built_in">NSAutoreleasePool</span> alloc] init];</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// do something</span></span><br><span class="line"> </span><br><span class="line">    [pool release];</span><br><span class="line">    <span class="keyword">return</span> (<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>所有标记为autorelease的对象都只有在这个pool销毁时才被销毁。如果你有大量的对象标记为autorelease，这显然不能很好的利用内存，在iphone这种内存受限的程序中是很容易造成内存不足的。例如：</p>
+</blockquote>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> main (<span class="keyword">int</span> argc, <span class="keyword">const</span> <span class="keyword">char</span> *argv[])</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">NSAutoreleasePool</span> *pool = [[<span class="built_in">NSAutoreleasePool</span> alloc] init];</span><br><span class="line">    <span class="keyword">int</span> i, j;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++ )</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; <span class="number">100000</span>; j++ )</span><br><span class="line">        [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"123"</span>];<span class="comment">//产生的对象是autorelease的。</span></span><br><span class="line">    &#125;</span><br><span class="line">    [pool release];</span><br><span class="line">    <span class="keyword">return</span> (<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>运行时通过监控工具可以发现使用的内存在急剧增加，直到pool销毁时才被释放）你需要考虑下一条。</p>
+</blockquote>
+<h6 id="7、Objective-C程序中可以嵌套创建多个autorelease_pool。在需要大量创建局部变量的时候，可以创建内嵌的autorelease_pool来及时释放内存。（某些情况下，系统会自动创建autorelease_pool,_请参见第四章）">7、Objective-C程序中可以嵌套创建多个autorelease pool。在需要大量创建局部变量的时候，可以创建内嵌的autorelease pool来及时释放内存。（某些情况下，系统会自动创建autorelease pool, 请参见第四章）</h6><figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> main (<span class="keyword">int</span> argc, <span class="keyword">const</span> <span class="keyword">char</span> *argv[])</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">NSAutoreleasePool</span> *pool = [[<span class="built_in">NSAutoreleasePool</span> alloc] init];</span><br><span class="line">    <span class="keyword">int</span> i, j;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++ )</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">NSAutoreleasePool</span> *loopPool = [[<span class="built_in">NSAutoreleasePool</span> alloc] init];</span><br><span class="line">        <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; <span class="number">100000</span>; j++ )</span><br><span class="line">        [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"1234567890"</span>];<span class="comment">//产生的对象是autorelease的。</span></span><br><span class="line">        [loopPool release];</span><br><span class="line">    &#125;</span><br><span class="line">    [pool release];</span><br><span class="line">    <span class="keyword">return</span> (<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="第二章：口诀与范式">第二章：口诀与范式</h2><h5 id="1、口诀。">1、口诀。</h5><h6 id="1-1_谁创建，谁释放（类似于“谁污染，谁治理”）。">1.1 谁创建，谁释放（类似于“谁污染，谁治理”）。</h6><blockquote>
+<p>如果你通过alloc、new或copy来创建一个对象，那么你必须调用release或autorelease。换句话说，不是你创建的，就不用你去释放。</p>
+<p>例如，你在一个函数中alloc生成了一个对象，且这个对象只在这个函数中被使用，那么你必须在这个函数中调用release或autorelease。如果你在一个class的某个方法中alloc一个成员对象，且没有调用autorelease，那么你需要在这个类的dealloc方法中调用release；如果调用了autorelease，那么在dealloc方法中什么都不需要做。</p>
+</blockquote>
+<h6 id="1-2_除了alloc、new或copy之外的方法创建的对象都被声明了autorelease。">1.2 除了alloc、new或copy之外的方法创建的对象都被声明了autorelease。</h6><h6 id="1-3_谁retain，谁release。只要你调用了retain，无论这个对象是如何生成的，你都要调用release。有时候你的代码中明明没有retain，可是系统会在默认实现中加入retain。不知道为什么苹果公司的文档没有强调这个非常重要的一点，请参考范式2-7和第三章。">1.3 谁retain，谁release。只要你调用了retain，无论这个对象是如何生成的，你都要调用release。有时候你的代码中明明没有retain，可是系统会在默认实现中加入retain。不知道为什么苹果公司的文档没有强调这个非常重要的一点，请参考范式2.7和第三章。</h6><h5 id="2、范式。">2、范式。</h5><blockquote>
+<p>范式就是模板，就是依葫芦画瓢。由于不同人有不同的理解和习惯，我总结的范式不一定适合所有人，但我能保证照着这样做不会出问题。</p>
+</blockquote>
+<h6 id="2-1_创建一个对象。">2.1 创建一个对象。</h6><figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ClassA *obj1 = <span class="comment">[<span class="comment">[ClassA alloc]</span> init]</span>;</span><br></pre></td></tr></table></figure>
+<h6 id="2-2_创建一个autorelease的对象。">2.2 创建一个autorelease的对象。</h6><figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ClassA *obj1 = <span class="comment">[<span class="comment">[<span class="comment">[ClassA alloc]</span> init]</span> autorelease]</span>;</span><br></pre></td></tr></table></figure>
+<h6 id="2-3_Release一个对象后，立即把指针清空。（顺便说一句，release一个空指针是合法的，但不会发生任何事情）">2.3 Release一个对象后，立即把指针清空。（顺便说一句，release一个空指针是合法的，但不会发生任何事情）</h6><figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">[obj1 release]</span><span class="comment">;</span></span><br><span class="line"><span class="setting">obj1 = <span class="value">nil;</span></span></span><br></pre></td></tr></table></figure>
+<h6 id="2-4_指针赋值给另一个指针。">2.4 指针赋值给另一个指针。</h6><figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ClassA *obj2 = obj1<span class="comment">;</span></span><br><span class="line">[obj2 retain]<span class="comment">;</span></span><br><span class="line">//do something</span><br><span class="line">[obj2 release]<span class="comment">;</span></span><br><span class="line">obj2 = nil<span class="comment">;</span></span><br></pre></td></tr></table></figure>
+<h6 id="2-5_在一个函数中创建并返回对象，需要把这个对象设置为autorelease">2.5 在一个函数中创建并返回对象，需要把这个对象设置为autorelease</h6><figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ClassA *Func1()</span><br><span class="line">&#123;</span><br><span class="line">    ClassA *obj = <span class="comment">[<span class="comment">[<span class="comment">[ClassA alloc]</span>init]</span>autorelease]</span>;</span><br><span class="line">    return obj;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h6 id="2-6_在子类的dealloc方法中调用基类的dealloc方法">2.6 在子类的dealloc方法中调用基类的dealloc方法</h6><figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">-</span>(void) <span class="tag">dealloc</span></span><br><span class="line">&#123;</span><br><span class="line">    …</span><br><span class="line">    <span class="attr_selector">[super dealloc]</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h6 id="2-7_在一个class中创建和使用property。">2.7 在一个class中创建和使用property。</h6><p>2.7.1 声明一个成员变量。</p>
+<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ClassB *objB<span class="comment">;</span></span><br></pre></td></tr></table></figure>
+<p>2.7.2 声明property，加上retain参数。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="at_rule">@<span class="keyword">property</span> (retain) ClassB* objB</span>;</span><br></pre></td></tr></table></figure>
+<p>2.7.3 定义property。（property的默认实现请看第三章）</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="at_rule">@<span class="keyword">synthesize</span> objB</span>;</span><br></pre></td></tr></table></figure>
+<p>2.7.4 除了dealloc方法以外，始终用.操作符的方式来调用property。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">self</span><span class="class">.objB</span> 或者<span class="tag">objA</span><span class="class">.objB</span></span><br></pre></td></tr></table></figure>
+<p>2.7.5 在dealloc方法中release这个成员变量。</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">[objB release]</span><span class="comment">;</span></span><br></pre></td></tr></table></figure>
+<p>示例代码如下：</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">ClassA</span> : <span class="title">NSObject</span></span></span><br><span class="line">&#123;</span><br><span class="line">    ClassB* objB;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">@property</span> (retain) ClassB* objB;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"> </span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ClassA</span></span></span><br><span class="line"><span class="keyword">@synthesize</span> objB;</span><br><span class="line">-(<span class="keyword">void</span>) dealloc</span><br><span class="line">&#123;</span><br><span class="line">    [objB release];</span><br><span class="line">    [<span class="keyword">super</span> dealloc];</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>2.7.6 给这个property赋值时，有手动release和autorelease两种方式。</p>
+<figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">void funcNoAutorelease()</span><br><span class="line">&#123;</span><br><span class="line">    ClassB *objB1 = <span class="comment">[<span class="comment">[ClassB alloc]</span>init]</span>;</span><br><span class="line">    ClassA *objA = <span class="comment">[<span class="comment">[ClassA alloc]</span>init]</span>;</span><br><span class="line">    objA.objB = objB1;</span><br><span class="line">    <span class="comment">[objB1 release]</span>;</span><br><span class="line">    <span class="comment">[objA release]</span>;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">void funcAutorelease()</span><br><span class="line">&#123;</span><br><span class="line">    ClassB *objB1 = <span class="comment">[<span class="comment">[<span class="comment">[ClassB alloc]</span>init]</span> autorelease]</span>;</span><br><span class="line">    ClassA *objA = <span class="comment">[<span class="comment">[<span class="comment">[ClassA alloc]</span>init]</span> autorelease]</span>;</span><br><span class="line">    objA.objB = objB1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="第三章：@property_(retain)和@synthesize的默认实现">第三章：@property (retain)和@synthesize的默认实现</h2><p>在这里解释一下@property (retain) ClassB* objB;和@synthesize objB;<br>背后到底发生了什么(retain property的默认实现)。</p>
+<blockquote>
+<p>property实际上是getter和setter，针对有retain参数的property，背后的实现如下</p>
+</blockquote>
+<figure class="highlight ceylon"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="annotation">@interface</span> ClassA : NSObject</span><br><span class="line">&#123;</span><br><span class="line">    ClassB *objB;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">-(ClassB *) getObjB;</span><br><span class="line">-(<span class="keyword">void</span>) setObjB:(ClassB *) <span class="keyword">value</span>;</span><br><span class="line"><span class="annotation">@end</span></span><br><span class="line"> </span><br><span class="line"><span class="annotation">@implementation</span> ClassA</span><br><span class="line">-(ClassB*) getObjB</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">return</span> objB;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">-(<span class="keyword">void</span>) setObjB:(ClassB*) <span class="keyword">value</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (objB != <span class="keyword">value</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        [objB release];</span><br><span class="line">        objB = [<span class="keyword">value</span> retain];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>在setObjB中，如果新设定的值和原值不同的话，必须要把原值对象release一次，这样才能保证retain count是正确的。</p>
+<p>由于我们在class内部retain了一次（虽然是默认实现的），所以我们要在dealloc方法中release这个成员变量。</p>
+</blockquote>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">-</span>(void) <span class="tag">dealloc</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr_selector">[objB release]</span>;</span><br><span class="line">    <span class="attr_selector">[super dealloc]</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="第四章：系统自动创建新的autorelease_pool">第四章：系统自动创建新的autorelease pool</h2><p>在生成新的Run Loop的时候，系统会自动创建新的autorelease pool（非常感谢网友hhyytt和neogui的提醒）。</p>
+<blockquote>
+<p>注意，此处不同于xcode在新建项目时自动生成的代码中加入的autorelease pool，xcode生成的代码可以被删除，但系统自动创建的新的autorelease pool是无法删除的（对于无Garbage Collection的环境来说）。</p>
+</blockquote>
+<p>Objective-C没有给出实现代码，官方文档也没有说明，但我们可以通过小程序来证明。<br>在这个小程序中，我们先生成了一个autorelease pool，然后生成一个autorelease的ClassA的实例，再在一个新的run loop中生成一个autorelease的ClassB的对象（注意，我们并没有手动在新run loop中生成autorelease pool）。精简的示例代码如下</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> main(<span class="keyword">int</span> argc, <span class="keyword">char</span>**argv) </span><br><span class="line">&#123;</span><br><span class="line">         <span class="built_in">NSLog</span>(<span class="string">@"create an autorelasePool\n"</span>);</span><br><span class="line">         <span class="built_in">NSAutoreleasePool</span> *pool = [[<span class="built_in">NSAutoreleasePool</span> alloc] init];   </span><br><span class="line"> </span><br><span class="line">         <span class="built_in">NSLog</span>(<span class="string">@"create an instance of ClassA and autorelease\n"</span>);</span><br><span class="line">         ClassA *obj1 = [[[ClassA alloc] init] autorelease];</span><br><span class="line">         <span class="built_in">NSDate</span> *now = [[<span class="built_in">NSDate</span> alloc] init];</span><br><span class="line">         <span class="built_in">NSTimer</span> *timer = [[<span class="built_in">NSTimer</span> alloc] initWithFireDate:now</span><br><span class="line">                   interval:<span class="number">0.0</span></span><br><span class="line">                   target:obj1</span><br><span class="line">                   selector:<span class="keyword">@selector</span>(createClassB)</span><br><span class="line">                   userInfo:<span class="literal">nil</span></span><br><span class="line">                   repeats:<span class="literal">NO</span>];</span><br><span class="line">         <span class="built_in">NSRunLoop</span> *runLoop = [<span class="built_in">NSRunLoop</span> currentRunLoop];</span><br><span class="line">         [runLoop addTimer:timer forMode:<span class="built_in">NSDefaultRunLoopMode</span>];</span><br><span class="line">         [timer release];</span><br><span class="line">         [now release];</span><br><span class="line">         [runLoop run]; <span class="comment">//在新loop中调用一函数，生成ClassB的autorelease实例</span></span><br><span class="line"> </span><br><span class="line">         <span class="built_in">NSLog</span>(<span class="string">@"releasing autorelasePool\n"</span>);</span><br><span class="line">         [pool release];</span><br><span class="line">         <span class="built_in">NSLog</span>(<span class="string">@"autorelasePool is released\n"</span>);</span><br><span class="line">         <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出如下：</p>
+<figure class="highlight smali"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">create an autorelasePool</span><br><span class="line">create an<span class="instruction"> instance </span>of ClassA<span class="instruction"> and </span>autorelease</span><br><span class="line">create an<span class="instruction"> instance </span>of ClassB<span class="instruction"> and </span>autorelease</span><br><span class="line">ClassB destroyed</span><br><span class="line">releasing autorelasePool</span><br><span class="line">ClassA destroyed</span><br><span class="line">autorelasePool is released</span><br></pre></td></tr></table></figure>
+<p>注意在我们销毁autorelease pool之前，ClassB的autorelease实例就已经被销毁了。<br>有人可能会说，这并不能说明新的run loop自动生成了一个新的autorelease pool，说不定还只是用了老的autorelease pool，只不过后来drain了一次而已。我们可以在main函数中不生成autorelease pool。精简的示例代码如下，详细代码请见附件中的memman-run-loop-without-pool.m。</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> main(<span class="keyword">int</span> argc, <span class="keyword">char</span>**argv) </span><br><span class="line">&#123;</span><br><span class="line">         <span class="built_in">NSLog</span>(<span class="string">@"No autorelasePool created\n"</span>);</span><br><span class="line"> </span><br><span class="line">         <span class="built_in">NSLog</span>(<span class="string">@"create an instance of ClassA\n"</span>);</span><br><span class="line">         ClassA *obj1 = [[ClassA alloc] init];</span><br><span class="line">         <span class="built_in">NSDate</span> *now = [[<span class="built_in">NSDate</span> alloc] init];</span><br><span class="line">         <span class="built_in">NSTimer</span> *timer = [[<span class="built_in">NSTimer</span> alloc] initWithFireDate:now</span><br><span class="line">                   interval:<span class="number">0.0</span></span><br><span class="line">                   target:obj1</span><br><span class="line">                   selector:<span class="keyword">@selector</span>(createClassB)</span><br><span class="line">                   userInfo:<span class="literal">nil</span></span><br><span class="line">                   repeats:<span class="literal">NO</span>];</span><br><span class="line">         <span class="built_in">NSRunLoop</span> *runLoop = [<span class="built_in">NSRunLoop</span> currentRunLoop];</span><br><span class="line">         [runLoop addTimer:timer forMode:<span class="built_in">NSDefaultRunLoopMode</span>];</span><br><span class="line">         [timer release];</span><br><span class="line">         [now release];</span><br><span class="line">         [runLoop run]; <span class="comment">//在新loop中调用一函数，生成ClassB的autorelease实例</span></span><br><span class="line">         <span class="built_in">NSLog</span>(<span class="string">@"Manually release the instance of ClassA\n"</span>);</span><br><span class="line">         [obj1 release];</span><br><span class="line"> </span><br><span class="line">         <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出如下：</p>
+<figure class="highlight smali"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">No autorelasePool created</span><br><span class="line">create an<span class="instruction"> instance </span>of ClassA</span><br><span class="line">create an<span class="instruction"> instance </span>of ClassB<span class="instruction"> and </span>autorelease</span><br><span class="line">ClassB destroyed</span><br><span class="line">Manually release the<span class="instruction"> instance </span>of ClassA</span><br><span class="line">ClassA destroyed</span><br></pre></td></tr></table></figure>
+<p>我们可以看出来，我们并没有创建任何autorelease pool，可是ClassB的实例依然被自动销毁了，这说明新的run loop自动创建了一个autorelease pool，这个pool在新的run loop结束的时候会销毁自己（并自动release所包含的对象）。</p>
+<p>补充说明<br>在研究retain count的时候，我不建议用NSString。因为在下面的语句中，</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">NSString *str1 = @”<span class="type">constant</span> <span class="type">string</span>”;</span><br></pre></td></tr></table></figure>
+<p>str1的retain count是个很大的数字。Objective-C对常量字符串做了特殊处理。<br>当然，如果你这样创建NSString，得到的retain count依然为1</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">NSString <span class="keyword">*</span>str2 = [NSString stringWithFormat:<span class="comment">@”123”];</span></span><br></pre></td></tr></table></figure>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/MRC/" rel="tag">#MRC</a>
+          
+            <a href="/tags/Memor/" rel="tag">#Memor</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/07/15/内存管理剖析-ARC/" rel="prev">内存管理剖析(ARC)</a>
+            
+          </div>
+
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+            </div>
+
+            
+
+            
+              <div class="comments" id="comments">
+                
+                  <div id="disqus_thread">
+                    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+                  </div>
+                
+              </div>
+            
+        </div>
+
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目錄
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            本站概覽
+          </li>
+        </ul>
+      
+
+      <section class="site-overview">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="/avatar.png" alt="YL" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">YL</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description">IOS技术总结</p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">7</span>
+              <span class="site-state-item-name">文章</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">0</span>
+              <span class="site-state-item-name">分類</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">9</span>
+              <span class="site-state-item-name">標籤</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://aliang9585.github.io" target="_blank">GitHub</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/ytlvy" target="_blank">Twitter</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://nshipster.com" target="_blank">NSHipster</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.mikeash.com/pyblog" target="_blank">NSBlog</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.objc.io" target="_blank">objcio</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.raywenderlich.com" target="_blank">raywenderlich</a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+          <div class="cc-license motion-element" itemprop="license">
+            <a href="http://creativecommons.org/licenses/by-nc-sa/4.0" class="cc-opacity" target="_blank">
+              <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons" />
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator"></div>
+          <div class="post-toc">
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#第一章：基本原理"><span class="nav-number">1.</span> <span class="nav-text">第一章：基本原理</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1、Objective-C的对象生成于堆之上，生成之后，需要一个指针来指向它。"><span class="nav-number">1.0.0.1.</span> <span class="nav-text">1、Objective-C的对象生成于堆之上，生成之后，需要一个指针来指向它。</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2、Objective-C的对象在使用完成之后不会自动销毁，需要执行dealloc来释放空间（销毁），否则内存泄露。"><span class="nav-number">1.0.0.2.</span> <span class="nav-text">2、Objective-C的对象在使用完成之后不会自动销毁，需要执行dealloc来释放空间（销毁），否则内存泄露。</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3、Objective-C采用了引用计数(ref_count或者retain_count)。对象的内部保存一个数字，表示被引用的次数。例如，某个对象被两个指针所指向（引用）那么它的retain_count为2。需要销毁对象的时候，不直接调用dealloc，而是调用release。release会让retain_count减1，只有retain_count等于0，系统才会调用dealloc真正销毁这个对象。"><span class="nav-number">1.0.0.3.</span> <span class="nav-text">3、Objective-C采用了引用计数(ref count或者retain count)。对象的内部保存一个数字，表示被引用的次数。例如，某个对象被两个指针所指向（引用）那么它的retain count为2。需要销毁对象的时候，不直接调用dealloc，而是调用release。release会让retain count减1，只有retain count等于0，系统才会调用dealloc真正销毁这个对象。</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4、Objective-C指针赋值时，retain_count不会自动增加，需要手动retain。"><span class="nav-number">1.0.0.4.</span> <span class="nav-text">4、Objective-C指针赋值时，retain count不会自动增加，需要手动retain。</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#5、autorelease_pool（自动释放对象池），在遵守一些规则的情况下，可以自动释放对象。"><span class="nav-number">1.0.0.5.</span> <span class="nav-text">5、autorelease pool（自动释放对象池），在遵守一些规则的情况下，可以自动释放对象。</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#6、autorelease_pool原理剖析。"><span class="nav-number">1.0.0.6.</span> <span class="nav-text">6、autorelease pool原理剖析。</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#6-1_autorelease_pool不是天生的，需要手动创立。只不过在新建一个iphone项目时，xcode会自动帮你写好。autorelease_pool的真名是NSAutoreleasePool。"><span class="nav-number">1.0.0.6.1.</span> <span class="nav-text">6.1 autorelease pool不是天生的，需要手动创立。只不过在新建一个iphone项目时，xcode会自动帮你写好。autorelease pool的真名是NSAutoreleasePool。</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#6-2_NSAutoreleasePool内部包含一个数组（NSMutableArray），用来保存声明为autorelease的所有对象。如果一个对象声明为autorelease，系统所做的工作就是把这个对象加入到这个数组中去。"><span class="nav-number">1.0.0.6.2.</span> <span class="nav-text">6.2 NSAutoreleasePool内部包含一个数组（NSMutableArray），用来保存声明为autorelease的所有对象。如果一个对象声明为autorelease，系统所做的工作就是把这个对象加入到这个数组中去。</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#6-3_NSAutoreleasePool自身在销毁的时候，会遍历一遍这个数组，release数组中的每个成员。如果此时数组中成员的retain_count为1，那么release之后，retain_count为0，对象正式被销毁。如果此时数组中成员的retain_count大于1，那么release之后，retain_count大于0，此对象依然没有被销毁，内存泄露。"><span class="nav-number">1.0.0.6.3.</span> <span class="nav-text">6.3 NSAutoreleasePool自身在销毁的时候，会遍历一遍这个数组，release数组中的每个成员。如果此时数组中成员的retain count为1，那么release之后，retain count为0，对象正式被销毁。如果此时数组中成员的retain count大于1，那么release之后，retain count大于0，此对象依然没有被销毁，内存泄露。</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#6-4_默认只有一个autorelease_pool，通常类似于下面这个例子。"><span class="nav-number">1.0.0.6.4.</span> <span class="nav-text">6.4 默认只有一个autorelease pool，通常类似于下面这个例子。</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#7、Objective-C程序中可以嵌套创建多个autorelease_pool。在需要大量创建局部变量的时候，可以创建内嵌的autorelease_pool来及时释放内存。（某些情况下，系统会自动创建autorelease_pool,_请参见第四章）"><span class="nav-number">1.0.0.6.5.</span> <span class="nav-text">7、Objective-C程序中可以嵌套创建多个autorelease pool。在需要大量创建局部变量的时候，可以创建内嵌的autorelease pool来及时释放内存。（某些情况下，系统会自动创建autorelease pool, 请参见第四章）</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第二章：口诀与范式"><span class="nav-number">2.</span> <span class="nav-text">第二章：口诀与范式</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1、口诀。"><span class="nav-number">2.0.0.1.</span> <span class="nav-text">1、口诀。</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#1-1_谁创建，谁释放（类似于“谁污染，谁治理”）。"><span class="nav-number">2.0.0.1.1.</span> <span class="nav-text">1.1 谁创建，谁释放（类似于“谁污染，谁治理”）。</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#1-2_除了alloc、new或copy之外的方法创建的对象都被声明了autorelease。"><span class="nav-number">2.0.0.1.2.</span> <span class="nav-text">1.2 除了alloc、new或copy之外的方法创建的对象都被声明了autorelease。</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#1-3_谁retain，谁release。只要你调用了retain，无论这个对象是如何生成的，你都要调用release。有时候你的代码中明明没有retain，可是系统会在默认实现中加入retain。不知道为什么苹果公司的文档没有强调这个非常重要的一点，请参考范式2-7和第三章。"><span class="nav-number">2.0.0.1.3.</span> <span class="nav-text">1.3 谁retain，谁release。只要你调用了retain，无论这个对象是如何生成的，你都要调用release。有时候你的代码中明明没有retain，可是系统会在默认实现中加入retain。不知道为什么苹果公司的文档没有强调这个非常重要的一点，请参考范式2.7和第三章。</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2、范式。"><span class="nav-number">2.0.0.2.</span> <span class="nav-text">2、范式。</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#2-1_创建一个对象。"><span class="nav-number">2.0.0.2.1.</span> <span class="nav-text">2.1 创建一个对象。</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-2_创建一个autorelease的对象。"><span class="nav-number">2.0.0.2.2.</span> <span class="nav-text">2.2 创建一个autorelease的对象。</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-3_Release一个对象后，立即把指针清空。（顺便说一句，release一个空指针是合法的，但不会发生任何事情）"><span class="nav-number">2.0.0.2.3.</span> <span class="nav-text">2.3 Release一个对象后，立即把指针清空。（顺便说一句，release一个空指针是合法的，但不会发生任何事情）</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-4_指针赋值给另一个指针。"><span class="nav-number">2.0.0.2.4.</span> <span class="nav-text">2.4 指针赋值给另一个指针。</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-5_在一个函数中创建并返回对象，需要把这个对象设置为autorelease"><span class="nav-number">2.0.0.2.5.</span> <span class="nav-text">2.5 在一个函数中创建并返回对象，需要把这个对象设置为autorelease</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-6_在子类的dealloc方法中调用基类的dealloc方法"><span class="nav-number">2.0.0.2.6.</span> <span class="nav-text">2.6 在子类的dealloc方法中调用基类的dealloc方法</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-7_在一个class中创建和使用property。"><span class="nav-number">2.0.0.2.7.</span> <span class="nav-text">2.7 在一个class中创建和使用property。</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第三章：@property_(retain)和@synthesize的默认实现"><span class="nav-number">3.</span> <span class="nav-text">第三章：@property (retain)和@synthesize的默认实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第四章：系统自动创建新的autorelease_pool"><span class="nav-number">4.</span> <span class="nav-text">第四章：系统自动创建新的autorelease pool</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator"></div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+    </main>
+
+    <footer id="footer" class="footer">
+        <div class="footer-inner">
+            <div class="copyright" >
+  
+  &copy; &nbsp; 
+  <span itemprop="copyrightYear">2015</span>
+  <span class="with-love">
+    <i class="icon-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">YL</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 強力驅動
+</div>
+
+<div class="theme-info">
+  主題 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+        </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+</div>
+
+<script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+  
+    
+    
+
+  
+
+    <script type="text/javascript">
+      var disqus_shortname = 'aliang9585githubio';
+      var disqus_identifier = '2015/07/15/内存管理剖析(MRC)/';
+      var disqus_title = '内存管理剖析(MRC)';
+      var disqus_url = 'http://aliang9585.github.io/2015/07/15/内存管理剖析(MRC)/';
+
+      function run_disqus_script(disqus_script){
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+
+      run_disqus_script('count.js');
+      
+        run_disqus_script('embed.js');
+      
+    </script>
+  
+
+
+  
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.4"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.4"></script>
+  
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/js/motion_global.js?v=0.4.4" id="motion.global"></script>
+
+
+
+  <script type="text/javascript" src="/js/search-toggle.js"></script>
+
+
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.4" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+          var self = this;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      $(indicator).velocity('stop').velocity({
+        opacity: action === 'show' ? 0.4 : 0
+      }, { duration: 100 });
+    }
+
+  });
+</script>
+
+
+  <script type="text/javascript" id="sidebar.nav">
+    $(document).ready(function () {
+      var html = $('html');
+
+      $('.sidebar-nav li').on('click', function () {
+        var item = $(this);
+        var activeTabClassName = 'sidebar-nav-active';
+        var activePanelClassName = 'sidebar-panel-active';
+        if (item.hasClass(activeTabClassName)) {
+          return;
+        }
+
+        var currentTarget = $('.' + activePanelClassName);
+        var target = $('.' + item.data('target'));
+
+        currentTarget.velocity('transition.slideUpOut', 200, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', 200)
+            .addClass(activePanelClassName);
+        });
+
+        item.siblings().removeClass(activeTabClassName);
+        item.addClass(activeTabClassName);
+      });
+
+      $('.post-toc a').on('click', function (e) {
+        e.preventDefault();
+        var offset = $(escapeSelector(this.getAttribute('href'))).offset().top;
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        });
+      });
+
+      // Expand sidebar on post detail page by default, when post has a toc.
+      var $tocContent = $('.post-toc-content');
+      if (isDesktop() && CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    });
+  </script>
+
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        if (CONFIG.sidebar === 'always') {
+            displaySidebar();
+        }
+    });
+</script>
+
+
+
+
+
+
+
+
+<!-- lazyload -->
+<script type="text/javascript" src="/js/lazyload.js"></script>
+<script type="text/javascript">
+    jQuery(function () {
+        jQuery("#posts img").lazyload({
+            placeholder: "/images/loading.gif",
+            effect: "fadeIn"
+        });
+    });
+</script>
+</body>
+</html>
