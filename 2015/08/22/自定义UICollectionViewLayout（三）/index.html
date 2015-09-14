@@ -30,7 +30,7 @@
 
 
 
-  <meta name="keywords" content="Hexo,next" />
+  <meta name="keywords" content="UICollectionViewLayout,翻译," />
 
 
 
@@ -39,15 +39,26 @@
   <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.4" />
 
 
-<meta name="description" content="IOS技术总结">
-<meta property="og:type" content="website">
-<meta property="og:title" content="LYL's Blog">
-<meta property="og:url" content="http://aliang9585.github.io/index.html">
+<meta name="description" content="官方文档:Custom Layouts: A Worked Example
+
+创建自定义布局有着直接的要求，但实现细节的过程可能会有所不同。你的布局对象需要为collection view包含的所有视图创建布局属性对象，这些属性对象的创建顺序视具体的应用程序而定。对于包含上千个item的collection view，事先计算和缓存布局属性是一个很耗时的过程，所以更有意义的做法是只有特定item被">
+<meta property="og:type" content="article">
+<meta property="og:title" content="自定义UICollectionViewLayout（三）Custom Layouts - A Worked Example翻译">
+<meta property="og:url" content="http://aliang9585.github.io/2015/08/22/自定义UICollectionViewLayout（三）/index.html">
 <meta property="og:site_name" content="LYL's Blog">
-<meta property="og:description" content="IOS技术总结">
+<meta property="og:description" content="官方文档:Custom Layouts: A Worked Example
+
+创建自定义布局有着直接的要求，但实现细节的过程可能会有所不同。你的布局对象需要为collection view包含的所有视图创建布局属性对象，这些属性对象的创建顺序视具体的应用程序而定。对于包含上千个item的collection view，事先计算和缓存布局属性是一个很耗时的过程，所以更有意义的做法是只有特定item被">
+<meta property="og:image" content="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/Art/example_final_screen_2x.png">
+<meta property="og:image" content="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/Art/layout_process_2x.png">
+<meta property="og:image" content="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/Art/worked_example_2x.png">
+<meta property="og:image" content="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/Art/example_mid_screen_2x.png">
+<meta property="og:updated_time" content="2015-09-14T15:05:18.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="LYL's Blog">
-<meta name="twitter:description" content="IOS技术总结">
+<meta name="twitter:title" content="自定义UICollectionViewLayout（三）Custom Layouts - A Worked Example翻译">
+<meta name="twitter:description" content="官方文档:Custom Layouts: A Worked Example
+
+创建自定义布局有着直接的要求，但实现细节的过程可能会有所不同。你的布局对象需要为collection view包含的所有视图创建布局属性对象，这些属性对象的创建顺序视具体的应用程序而定。对于包含上千个item的collection view，事先计算和缓存布局属性是一个很耗时的过程，所以更有意义的做法是只有特定item被">
 
 
 <script type="text/javascript" id="hexo.configuration">
@@ -57,7 +68,7 @@
   };
 </script>
 
-    <title> LYL's Blog </title>
+    <title> 自定义UICollectionViewLayout（三）Custom Layouts - A Worked Example翻译 // LYL's Blog </title>
 </head>
 <body itemscope itemtype="http://schema.org/WebPage" lang="">
 <!--[if lte IE 8]>
@@ -83,9 +94,7 @@
 
 
 
-<div class="container one-column 
-   page-home 
-">
+<div class="container one-column page-post-detail">
     <div class="headband"></div>
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
         <div class="header-inner"><h1 class="site-meta">
@@ -167,9 +176,9 @@
         <div class="main-inner">
             <div id="content" class="content">
                 
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <header class="post-header">
@@ -180,9 +189,7 @@
           
           
             
-              <a class="post-title-link" href="/2015/08/22/自定义UICollectionViewLayout（三）/" itemprop="url">
-                自定义UICollectionViewLayout（三）Custom Layouts - A Worked Example翻译
-              </a>
+              自定义UICollectionViewLayout（三）Custom Layouts - A Worked Example翻译
             
           
         </h1>
@@ -228,8 +235,7 @@
       
 
       
-        
-          <span itemprop="articleBody"><blockquote>
+        <span itemprop="articleBody"><blockquote>
 <p><a href="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/AWorkedExample/AWorkedExample.html#//apple_ref/doc/uid/TP40012334-CH8-SW6" target="_blank" rel="external">官方文档:Custom Layouts: A Worked Example</a></p>
 </blockquote>
 <p>创建自定义布局有着直接的要求，但实现细节的过程可能会有所不同。你的布局对象需要为collection view包含的所有视图创建布局属性对象，这些属性对象的创建顺序视具体的应用程序而定。对于包含上千个item的collection view，事先计算和缓存布局属性是一个很耗时的过程，所以更有意义的做法是只有特定item被请求时才创建布局属性。然而对于仅包含若干个item的collection view，事先计算好所有的布局信息并放入缓存，而不是只有特定item被请求时才创建布局属性，会节省许多不必要的重复计算。本章的例子属于第二类。</p>
@@ -322,620 +328,59 @@
 <h2 id="Recap">Recap</h2><p>通过包含supplementary views，您现在拥有了一个布局对象，可以充分地再现类层次结构图。在最终的实施中，您可能希望调整您的自定义布局以节省空间。该示例展示了如何实现一个真实的自定义布局。Collection views是如此的强大，提供了如此多的能力，远超此处看到的内容。当做移动、插入或者删除操作时，突出显cell示或者改变cell选中状态（甚至动画）都是很容易实现的功能，并且可以方便的集成到你的应用程序当中。要把你的自定义布局带入更高的级别，请查看<a href="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/CreatingCustomLayouts/CreatingCustomLayouts.html#//apple_ref/doc/uid/TP40012334-CH5-SW1" target="_blank" rel="external">Creating Custom Layouts</a>的最后几节。</p>
 <h2 id="补充">补充</h2><p>官方提供的这份文档，代码并没有给全，随后我将根据这份文档实现一个完整的布局，并会上传值Github，敬请期待。</p>
 </span>
-        
       
     </div>
 
     <footer class="post-footer">
       
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      
-      
-        <h1 class="post-title" itemprop="name headline">
+        <div class="post-tags">
           
+            <a href="/tags/UICollectionViewLayout/" rel="tag">#UICollectionViewLayout</a>
           
+            <a href="/tags/翻译/" rel="tag">#翻译</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-prev post-nav-item">
             
-              <a class="post-title-link" href="/2015/08/15/自定义UICollectionViewLayout（二）/" itemprop="url">
-                自定义UICollectionViewLayout（二）Creating Custom Layouts翻译
-              </a>
-            
-          
-        </h1>
-      
-
-      <div class="post-meta">
-        <span class="post-time">
-          發表於
-          <time itemprop="dateCreated" datetime="2015-08-15T07:22:17+08:00" content="2015-08-15">
-            2015-08-15
-          </time>
-        </span>
-
-        
-
-        
-          
-            <span class="post-comments-count">
-            &nbsp; | &nbsp;
-            <a href="/2015/08/15/自定义UICollectionViewLayout（二）/#comments" itemprop="discussionUrl">
-              <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2015/08/15/自定义UICollectionViewLayout（二）/" itemprop="commentsCount"></span>
-            </a>
-          </span>
-          
-        
-      </div>
-    </header>
-
-    <div class="post-body">
-
-      
-      
-
-      
-        
-          <blockquote>
-<p><a href="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/CreatingCustomLayouts/CreatingCustomLayouts.html#//apple_ref/doc/uid/TP40012334-CH5-SW1">官方文档:Creating Custom Layouts</a></p>
-</blockquote>
-<p>在自定义布局之前，请先考虑你是否真的需要这样做。<a href="https://developer.apple.com/library/ios/documentation/UIKit/Reference/UICollectionViewFlowLayout_class/index.html#//apple_ref/occ/cl/UICollectionViewFlowLayout"> UICollectionViewFlowLayout</a>已经为你提供了大量、效率优化过的行为，您可以通过不同的方式来实现多类典型布局。只有如下情况，你才需要自定义布局：</p>
-<ul>
-<li>非网格或者线性布局——基础的断裂性布局 based breaking layout（各item排列成一行，直到这一行排满，会另起一行，如此重复直到所有item全部排列完毕）或者必须在不同方向上的滚动的布局。</li>
-<li>你需要频繁的改变所有cells的位置，且修改已有布局类的工作量大于自定义布局的工作量。</li>
-</ul>
-<p>好消息是，基于API的观点，实现自定义布局并不困难。最难的部分在于计算布局中items的位置。一旦你直到了这些items的位置，那么为collection view提供布局信息将会轻而易举。</p>
-          <div class="post-more-link text-center">
-            <a class="btn" href="/2015/08/15/自定义UICollectionViewLayout（二）/#more" rel="contents">
-              閱讀全文 &raquo;
-            </a>
           </div>
-        
-      
-    </div>
 
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      
-      
-        <h1 class="post-title" itemprop="name headline">
-          
-          
+          <div class="post-nav-next post-nav-item">
             
-              <a class="post-title-link" href="/2015/08/10/自定义UICollectionViewLayout（一）/" itemprop="url">
-                自定义UICollectionViewLayout（一）UICollectionViewLayout Class Reference翻译
-              </a>
+              <a href="/2015/08/15/自定义UICollectionViewLayout（二）/" rel="next">自定义UICollectionViewLayout（二）Creating Custom Layouts翻译</a>
             
-          
-        </h1>
-      
-
-      <div class="post-meta">
-        <span class="post-time">
-          發表於
-          <time itemprop="dateCreated" datetime="2015-08-10T22:19:36+08:00" content="2015-08-10">
-            2015-08-10
-          </time>
-        </span>
-
-        
-
-        
-          
-            <span class="post-comments-count">
-            &nbsp; | &nbsp;
-            <a href="/2015/08/10/自定义UICollectionViewLayout（一）/#comments" itemprop="discussionUrl">
-              <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2015/08/10/自定义UICollectionViewLayout（一）/" itemprop="commentsCount"></span>
-            </a>
-          </span>
-          
-        
-      </div>
-    </header>
-
-    <div class="post-body">
-
-      
-      
-
-      
-        
-          <blockquote>
-<p><a href="https://developer.apple.com/library/ios/documentation/UIKit/Reference/UICollectionViewLayout_class/index.html">官方文档: UICollectionViewLayout Class Reference</a></p>
-</blockquote>
-<p>继承关系：</p>
-<ul>
-<li>NSObject<ul>
-<li>UICollectionViewLayout<ul>
-<li>UICollectionViewFlowLayout</li>
-<li>UICollectionViewTransitionLayout</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<p>遵从协议：</p>
-<ul>
-<li>NSCoding</li>
-<li>NSObject</li>
-</ul>
-<p>UICollectionViewLayout是一个抽象的基础的layout object，你可以使用UICollectionViewLayout的子类来生成布局信息，以供collection view使用。layout object决定如何放置cells、supplementary views、 decoration views，并在collection view请求这些信息时能够及时提供。当collection view获取到这些信息之后，会通知相应的视图来呈现。</p>
-<p>当你需要使用布局对象时，必须要使用UICollectionViewLayout的子类。当你考虑自定义UICollectionViewLayout的子类时，请先查看一下 <a href="https://developer.apple.com/library/ios/documentation/UIKit/Reference/UICollectionViewFlowLayout_class/index.html#//apple_ref/occ/cl/UICollectionViewFlowLayout">UICollectionViewFlowLayout</a>是否已经可以满足你的要求。</p>
-          <div class="post-more-link text-center">
-            <a class="btn" href="/2015/08/10/自定义UICollectionViewLayout（一）/#more" rel="contents">
-              閱讀全文 &raquo;
-            </a>
           </div>
-        
-      
-    </div>
-
-    <footer class="post-footer">
+        </div>
       
 
       
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </article>
 
 
-    
-      
 
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      
-      
-        <h1 class="post-title" itemprop="name headline">
-          
-          
-            
-              <a class="post-title-link" href="/2015/08/06/RunTime学习总结/" itemprop="url">
-                RunTime学习总结
-              </a>
-            
-          
-        </h1>
-      
-
-      <div class="post-meta">
-        <span class="post-time">
-          發表於
-          <time itemprop="dateCreated" datetime="2015-08-06T00:00:00+08:00" content="2015-08-06">
-            2015-08-06
-          </time>
-        </span>
-
-        
-
-        
-          
-            <span class="post-comments-count">
-            &nbsp; | &nbsp;
-            <a href="/2015/08/06/RunTime学习总结/#comments" itemprop="discussionUrl">
-              <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2015/08/06/RunTime学习总结/" itemprop="commentsCount"></span>
-            </a>
-          </span>
-          
-        
-      </div>
-    </header>
-
-    <div class="post-body">
-
-      
-      
-
-      
-        
-          <blockquote>
-<p>摘录自：</p>
-<p><a href="http://www.cocoachina.com/ios/20141018/9960.html">http://www.cocoachina.com/ios/20141018/9960.html</a></p>
-<p><a href="http://blog.zuics.com/runloop-runtime/">http://blog.zuics.com/runloop-runtime/</a></p>
-<p><a href="http://www.cocoachina.com/ios/20141008/9844.html">http://www.cocoachina.com/ios/20141008/9844.html</a></p>
-<p><a href="http://southpeak.github.io/blog/2014/10/25/objective-c-runtime-yun-xing-shi-zhi-lei-yu-dui-xiang/">http://southpeak.github.io/blog/2014/10/25/objective-c-runtime-yun-xing-shi-zhi-lei-yu-dui-xiang/</a></p>
-<p><a href="http://www.cnblogs.com/yswdarren/p/3619303.html">http://www.cnblogs.com/yswdarren/p/3619303.html</a></p>
-<p><a href="http://blog.sina.com.cn/s/blog_a343f32b0101en4o.html">http://blog.sina.com.cn/s/blog_a343f32b0101en4o.html</a></p>
-</blockquote>
-<p>RunTime简称运行时。就是系统在运行的时候的一些机制，其中最主要的是消息机制。<br>OC的函数调用称为消息发送，属于动态调用过程。在编译的时候并不能决定真正调用哪个函数，只有在真正运行的时候才会根据函数的名称找到对应的函数来调用。事实上，在编译阶段，OC可以调用任何函数，即使这个函数并未实现，只要申明过就不会报错。</p>
-<h2 id="第一部分：初识RunTime">第一部分：初识RunTime</h2>
-          <div class="post-more-link text-center">
-            <a class="btn" href="/2015/08/06/RunTime学习总结/#more" rel="contents">
-              閱讀全文 &raquo;
-            </a>
-          </div>
-        
+    <div class="post-spread">
       
     </div>
+  </div>
 
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      
-      
-        <h1 class="post-title" itemprop="name headline">
-          
-          
-            
-              <a class="post-title-link" href="/2015/07/25/2015-07-Git使用/" itemprop="url">
-                Git使用入门
-              </a>
-            
-          
-        </h1>
-      
-
-      <div class="post-meta">
-        <span class="post-time">
-          發表於
-          <time itemprop="dateCreated" datetime="2015-07-25T00:00:00+08:00" content="2015-07-25">
-            2015-07-25
-          </time>
-        </span>
-
-        
-
-        
-          
-            <span class="post-comments-count">
-            &nbsp; | &nbsp;
-            <a href="/2015/07/25/2015-07-Git使用/#comments" itemprop="discussionUrl">
-              <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2015/07/25/2015-07-Git使用/" itemprop="commentsCount"></span>
-            </a>
-          </span>
-          
-        
-      </div>
-    </header>
-
-    <div class="post-body">
-
-      
-      
-
-      
-        
-          <h4 id="1、安装Homebrew">1、安装Homebrew</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ruby <span class="operator">-e</span> <span class="string">"<span class="variable">$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)</span>"</span></span><br></pre></td></tr></table></figure>
-<h4 id="2、查看帮助">2、查看帮助</h4><figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="keyword">brew </span>help</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>安装完成后，Homebrew 的主程序安装在 /usr/local/bin/brew 中，在目录 /usr/local/Library/Formula/ 下保存了Homebrew 支持的所有软件的安装指引文件。</p>
-</blockquote>
-<h4 id="3、安装git">3、安装git</h4><figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="keyword">brew </span>install git</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>32M左右,这个过程去抽包烟吧<br>使用 Homebrew 方式安装，Git 被安装在 /usr/local/Cellar/git/<version>/ 中，可执行程序自动在 /usr/local/bin 目录下创建符号连接，可以直接在终端程序中访问。</p>
-</blockquote>
-          <div class="post-more-link text-center">
-            <a class="btn" href="/2015/07/25/2015-07-Git使用/#more" rel="contents">
-              閱讀全文 &raquo;
-            </a>
-          </div>
-        
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      
-      
-        <h1 class="post-title" itemprop="name headline">
-          
-          
-            
-              <a class="post-title-link" href="/2015/07/20/2015-07-2015-07-20-UIView的layoutSubviews和drawRect方法何时调用/" itemprop="url">
-                UIView的layoutSubviews和drawRect方法何时调用
-              </a>
-            
-          
-        </h1>
-      
-
-      <div class="post-meta">
-        <span class="post-time">
-          發表於
-          <time itemprop="dateCreated" datetime="2015-07-20T00:00:00+08:00" content="2015-07-20">
-            2015-07-20
-          </time>
-        </span>
-
-        
-
-        
-          
-            <span class="post-comments-count">
-            &nbsp; | &nbsp;
-            <a href="/2015/07/20/2015-07-2015-07-20-UIView的layoutSubviews和drawRect方法何时调用/#comments" itemprop="discussionUrl">
-              <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2015/07/20/2015-07-2015-07-20-UIView的layoutSubviews和drawRect方法何时调用/" itemprop="commentsCount"></span>
-            </a>
-          </span>
-          
-        
-      </div>
-    </header>
-
-    <div class="post-body">
-
-      
-      
-
-      
-        
-          <span itemprop="articleBody"><p>首先两个方法都是异步执行。layoutSubviews方便数据计算，drawRect方便视图重绘。</p>
-<h4 id="layoutSubviews在以下情况下会被调用：">layoutSubviews在以下情况下会被调用：</h4><ul>
-<li>1、init初始化不会触发layoutSubviews。</li>
-<li>2、addSubview会触发layoutSubviews。</li>
-<li>3、设置view的Frame会触发layoutSubviews，当然前提是frame的值设置前后发生了变化。</li>
-<li>4、滚动一个UIScrollView会触发layoutSubviews。</li>
-<li>5、旋转Screen会触发父UIView上的layoutSubviews事件。</li>
-<li>6、改变一个UIView大小的时候也会触发父UIView上的layoutSubviews事件。</li>
-<li>7、直接调用setLayoutSubviews。</li>
-</ul>
-<h4 id="drawRect在以下情况下会被调用：">drawRect在以下情况下会被调用：</h4><ul>
-<li>1、如果在UIView初始化时没有设置rect大小，将直接导致drawRect不被自动调用。drawRect 掉用是在Controller-&gt;loadView, Controller-&gt;viewDidLoad 两方法之后掉用的.所以不用担心在 控制器中,这些View的drawRect就开始画了.这样可以在控制器中设置一些值给View(如果这些View draw的时候需要用到某些变量 值).</li>
-<li>2、该方法在调用sizeToFit后被调用，所以可以先调用sizeToFit计算出size。然后系统自动调用drawRect:方法。</li>
-<li>3、通过设置contentMode属性值为UIViewContentModeRedraw。那么将在每次设置或更改frame的时候自动调用drawRect:。</li>
-<li>4、直接调用setNeedsDisplay，或者setNeedsDisplayInRect:触发drawRect:，但是有个前提条件是rect不能为0。</li>
-<li>以上1,2推荐；而3,4不提倡</li>
-</ul>
-<h4 id="drawRect方法使用注意点：">drawRect方法使用注意点：</h4><ul>
-<li>1、 若使用UIView绘图，只能在drawRect：方法中获取相应的contextRef并绘图。如果在其他方法中获取将获取到一个invalidate 的ref并且不能用于画图。drawRect：方法不能手动显示调用，必须通过调用setNeedsDisplay 或 者 setNeedsDisplayInRect，让系统自动调该方法。</li>
-<li>2、若使用calayer绘图，只能在drawInContext: 中（类似于drawRect）绘制，或者在delegate中的相应方法绘制。同样也是调用setNeedDisplay等间接调用以上方法</li>
-<li>3、若要实时画图，不能使用gestureRecognizer，只能使用touchbegan等方法来调用setNeedsDisplay实时刷新屏幕</li>
-</ul>
-</span>
-        
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      
-      
-        <h1 class="post-title" itemprop="name headline">
-          
-          
-            
-              <a class="post-title-link" href="/2015/07/15/内存管理剖析-ARC/" itemprop="url">
-                内存管理剖析(ARC)
-              </a>
-            
-          
-        </h1>
-      
-
-      <div class="post-meta">
-        <span class="post-time">
-          發表於
-          <time itemprop="dateCreated" datetime="2015-07-15T14:14:58+08:00" content="2015-07-15">
-            2015-07-15
-          </time>
-        </span>
-
-        
-
-        
-          
-            <span class="post-comments-count">
-            &nbsp; | &nbsp;
-            <a href="/2015/07/15/内存管理剖析-ARC/#comments" itemprop="discussionUrl">
-              <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2015/07/15/内存管理剖析-ARC/" itemprop="commentsCount"></span>
-            </a>
-          </span>
-          
-        
-      </div>
-    </header>
-
-    <div class="post-body">
-
-      
-      
-
-      
-        
-          <blockquote>
-<p>参考<br><a href="http://www.cnblogs.com/flyFreeZn/p/4264220.html">iOS开发ARC内存管理技术要点——不忘初”辛”</a></p>
-</blockquote>
-<h2 id="一、ARC的开启与关闭">一、ARC的开启与关闭</h2><p>不同于XCode4可以在创建工程时选择关闭ARC，XCode5在创建的工程是默认开启ARC，没有可以关闭ARC的选项。</p>
-<p>如果需要对特定文件开启或关闭ARC，可以在工程选项中选择Targets -&gt; Compile Phases -&gt; Compile Sources，在里面找到对应文件，添加flag:</p>
-<p>打开ARC：-fobjc-arc<br>关闭ARC：-fno-objc-arc<br>
-          <div class="post-more-link text-center">
-            <a class="btn" href="/2015/07/15/内存管理剖析-ARC/#more" rel="contents">
-              閱讀全文 &raquo;
-            </a>
-          </div>
-        
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      
-      
-        <h1 class="post-title" itemprop="name headline">
-          
-          
-            
-              <a class="post-title-link" href="/2015/07/15/内存管理剖析(MRC)/" itemprop="url">
-                内存管理剖析(MRC)
-              </a>
-            
-          
-        </h1>
-      
-
-      <div class="post-meta">
-        <span class="post-time">
-          發表於
-          <time itemprop="dateCreated" datetime="2015-07-15T00:00:00+08:00" content="2015-07-15">
-            2015-07-15
-          </time>
-        </span>
-
-        
-
-        
-          
-            <span class="post-comments-count">
-            &nbsp; | &nbsp;
-            <a href="/2015/07/15/内存管理剖析(MRC)/#comments" itemprop="discussionUrl">
-              <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2015/07/15/内存管理剖析(MRC)/" itemprop="commentsCount"></span>
-            </a>
-          </span>
-          
-        
-      </div>
-    </header>
-
-    <div class="post-body">
-
-      
-      
-
-      
-        
-          <p>参考文章：</p>
-<blockquote>
-<p><a href="http://www.cnblogs.com/VinceYuan/archive/2010/03/08/1680488.html">iPhone/Mac Objective-C内存管理教程和原理剖析-VinceYuan</a></p>
-</blockquote>
-<h2 id="第一章：基本原理">第一章：基本原理</h2><h5 id="1、Objective-C的对象生成于堆之上，生成之后，需要一个指针来指向它。">1、Objective-C的对象生成于堆之上，生成之后，需要一个指针来指向它。</h5><figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ClassA *obj1 = <span class="comment">[<span class="comment">[ClassA alloc]</span> init]</span>;</span><br></pre></td></tr></table></figure>
-<h5 id="2、Objective-C的对象在使用完成之后不会自动销毁，需要执行dealloc来释放空间（销毁），否则内存泄露。">2、Objective-C的对象在使用完成之后不会自动销毁，需要执行dealloc来释放空间（销毁），否则内存泄露。</h5><figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">[obj1 dealloc]</span><span class="comment">;</span></span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>这带来了一个问题。下面代码中obj2是否需要调用dealloc？</p>
-</blockquote>
-<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ClassA *obj1 = [[ClassA alloc] init]<span class="comment">;</span></span><br><span class="line">ClassA *obj2 = obj1<span class="comment">;</span></span><br><span class="line">[obj1 hello]<span class="comment">; //输出hello</span></span><br><span class="line">[obj1 dealloc]<span class="comment">;</span></span><br><span class="line">[obj2 hello]<span class="comment">; //能够执行这一行和下一行吗？</span></span><br><span class="line">[obj2 dealloc]<span class="comment">;</span></span><br></pre></td></tr></table></figure>
-          <div class="post-more-link text-center">
-            <a class="btn" href="/2015/07/15/内存管理剖析(MRC)/#more" rel="contents">
-              閱讀全文 &raquo;
-            </a>
-          </div>
-        
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-  </section>
-
-  
 
             </div>
 
             
 
+            
+              <div class="comments" id="comments">
+                
+                  <div id="disqus_thread">
+                    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+                  </div>
+                
+              </div>
             
         </div>
 
@@ -952,6 +397,15 @@
   <aside id="sidebar" class="sidebar">
     <div class="sidebar-inner">
 
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目錄
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            本站概覽
+          </li>
+        </ul>
       
 
       <section class="site-overview">
@@ -1032,6 +486,17 @@
       </section>
 
       
+        <section class="post-toc-wrap sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator"></div>
+          <div class="post-toc">
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#The_Concept_（概念）"><span class="nav-number">1.</span> <span class="nav-text">The Concept （概念）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Initialization"><span class="nav-number">2.</span> <span class="nav-text">Initialization</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Preparing_the_Layout"><span class="nav-number">3.</span> <span class="nav-text">Preparing the Layout</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Creating_the_Layout_Attributes"><span class="nav-number">3.1.</span> <span class="nav-text">Creating the Layout Attributes</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Storing_the_Layout_Attributes"><span class="nav-number">3.2.</span> <span class="nav-text">Storing the Layout Attributes</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Providing_the_Content_Size"><span class="nav-number">4.</span> <span class="nav-text">Providing the Content Size</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Providing_Layout_Attributes"><span class="nav-number">5.</span> <span class="nav-text">Providing Layout Attributes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Providing_Individual_Attributes_When_Requested"><span class="nav-number">6.</span> <span class="nav-text">Providing Individual Attributes When Requested</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Incorporating_Supplementary_Views"><span class="nav-number">7.</span> <span class="nav-text">Incorporating Supplementary Views</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Recap"><span class="nav-number">8.</span> <span class="nav-text">Recap</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#补充"><span class="nav-number">9.</span> <span class="nav-text">补充</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator"></div>
+        </section>
+      
 
     </div>
   </aside>
@@ -1075,16 +540,16 @@
   
   
   
-  
-  
+    
+    
 
   
 
     <script type="text/javascript">
       var disqus_shortname = 'aliang9585githubio';
-      var disqus_identifier = 'index.html';
-      var disqus_title = '';
-      var disqus_url = '';
+      var disqus_identifier = '2015/08/22/自定义UICollectionViewLayout（三）/';
+      var disqus_title = '自定义UICollectionViewLayout（三）Custom Layouts - A Worked Example翻译';
+      var disqus_url = 'http://aliang9585.github.io/2015/08/22/自定义UICollectionViewLayout（三）/';
 
       function run_disqus_script(disqus_script){
         var dsq = document.createElement('script');
@@ -1096,11 +561,13 @@
 
       run_disqus_script('count.js');
       
+        run_disqus_script('embed.js');
+      
     </script>
   
 
 
-
+  
   
   <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
   <script type="text/javascript" src="/js/fancy-box.js?v=0.4.4"></script>
@@ -1119,6 +586,144 @@
   <script type="text/javascript" src="/js/search-toggle.js"></script>
 
 
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.4" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+          var self = this;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      $(indicator).velocity('stop').velocity({
+        opacity: action === 'show' ? 0.4 : 0
+      }, { duration: 100 });
+    }
+
+  });
+</script>
+
+
+  <script type="text/javascript" id="sidebar.nav">
+    $(document).ready(function () {
+      var html = $('html');
+
+      $('.sidebar-nav li').on('click', function () {
+        var item = $(this);
+        var activeTabClassName = 'sidebar-nav-active';
+        var activePanelClassName = 'sidebar-panel-active';
+        if (item.hasClass(activeTabClassName)) {
+          return;
+        }
+
+        var currentTarget = $('.' + activePanelClassName);
+        var target = $('.' + item.data('target'));
+
+        currentTarget.velocity('transition.slideUpOut', 200, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', 200)
+            .addClass(activePanelClassName);
+        });
+
+        item.siblings().removeClass(activeTabClassName);
+        item.addClass(activeTabClassName);
+      });
+
+      $('.post-toc a').on('click', function (e) {
+        e.preventDefault();
+        var offset = $(escapeSelector(this.getAttribute('href'))).offset().top;
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        });
+      });
+
+      // Expand sidebar on post detail page by default, when post has a toc.
+      var $tocContent = $('.post-toc-content');
+      if (isDesktop() && CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    });
+  </script>
+
+
+
 
 <script type="text/javascript">
     $(document).ready(function () {
@@ -1128,32 +733,6 @@
     });
 </script>
 
-
-
-
-  
-  
-
-  
-
-    <script type="text/javascript">
-      var disqus_shortname = 'aliang9585githubio';
-      var disqus_identifier = 'index.html';
-      var disqus_title = '';
-      var disqus_url = '';
-
-      function run_disqus_script(disqus_script){
-        var dsq = document.createElement('script');
-        dsq.type = 'text/javascript';
-        dsq.async = true;
-        dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-      }
-
-      run_disqus_script('count.js');
-      
-    </script>
-  
 
 
 
