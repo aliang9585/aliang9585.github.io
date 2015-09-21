@@ -53,7 +53,7 @@
 <meta property="og:image" content="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/Art/layout_process_2x.png">
 <meta property="og:image" content="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/Art/worked_example_2x.png">
 <meta property="og:image" content="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/Art/example_mid_screen_2x.png">
-<meta property="og:updated_time" content="2015-09-14T15:05:18.000Z">
+<meta property="og:updated_time" content="2015-09-17T02:04:31.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="自定义UICollectionViewLayout（三）Custom Layouts - A Worked Example翻译">
 <meta name="twitter:description" content="官方文档:Custom Layouts: A Worked Example
@@ -239,6 +239,7 @@
 <p><a href="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/AWorkedExample/AWorkedExample.html#//apple_ref/doc/uid/TP40012334-CH8-SW6" target="_blank" rel="external">官方文档:Custom Layouts: A Worked Example</a></p>
 </blockquote>
 <p>创建自定义布局有着直接的要求，但实现细节的过程可能会有所不同。你的布局对象需要为collection view包含的所有视图创建布局属性对象，这些属性对象的创建顺序视具体的应用程序而定。对于包含上千个item的collection view，事先计算和缓存布局属性是一个很耗时的过程，所以更有意义的做法是只有特定item被请求时才创建布局属性。然而对于仅包含若干个item的collection view，事先计算好所有的布局信息并放入缓存，而不是只有特定item被请求时才创建布局属性，会节省许多不必要的重复计算。本章的例子属于第二类。</p>
+<a id="more"></a>
 <p>请记住，所提供的示例代码不是创建自定义布局的唯一方法。在你开始创建自定义布局之前，花点时间来设计一个实现结构，这样可使应用程序能够获得最佳性能。创建自定义布局的概念性概述，请参考<a href="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/CreatingCustomLayouts/CreatingCustomLayouts.html#//apple_ref/doc/uid/TP40012334-CH5-SW1" target="_blank" rel="external">see Creating Custom Layouts</a>。</p>
 <p>因为本章例子用了一个特定的顺序来实现自定义布局，因此自上而下阅读代码时请记住这个顺序是有着目的性的。这个例子的目标是实现自定义布局，而不是实现一个app。因此，实现最终的视图或者控制器的代码并未提供。在该布局中，使用了custom collection view cells 作为它的 cells ，并且使用自定义视图来创建连接线来连接这些cells。为collection views创建自定义单元格和视图，以及如何使用collection views，在前几章中已有说明。请参考<a href="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/CollectionViewBasics/CollectionViewBasics.html#//apple_ref/doc/uid/TP40012334-CH2-SW1" target="_blank" rel="external">Collection View Basics</a> 和 <a href="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/CreatingCellsandViews/CreatingCellsandViews.html#//apple_ref/doc/uid/TP40012334-CH7-SW1" target="_blank" rel="external">Designing Your Data Source and Delegate</a>。</p>
 <h2 id="The_Concept_（概念）">The Concept （概念）</h2><p>本例子的目的是为了实现一个如图6-1所示的继承树。示例提供的代码片段伴有注释。这个collection view中每个section，代表着整个tree的深度：Section 0 只包含了标签为 NSObject的cell，Section 1 包含了标签为 NSObject的所有子cell，Section 2 包含了Section 1中某个cell的所有子项，依次类推。每个cell都是自定义的，包含了指示类名的label，还有连接cell的supplementary views。由于connector view class需要知道去绘制多少条线段，因此它需要获取data source中的信息。因此，实现这些连线作为补充视图，而不是装饰视图是有意义的。</p>
@@ -346,6 +347,8 @@
         <div class="post-nav">
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2015/09/17/Runloop学习笔记/" rel="prev">Runloop学习笔记</a>
+            
           </div>
 
           <div class="post-nav-next post-nav-item">
@@ -417,21 +420,21 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">8</span>
+              <span class="site-state-item-count">9</span>
               <span class="site-state-item-name">文章</span>
             </a>
           </div>
 
           <div class="site-state-item site-state-categories">
             <a href="/categories">
-              <span class="site-state-item-count">1</span>
+              <span class="site-state-item-count">2</span>
               <span class="site-state-item-name">分類</span>
               </a>
           </div>
 
           <div class="site-state-item site-state-tags">
             <a href="/tags">
-              <span class="site-state-item-count">9</span>
+              <span class="site-state-item-count">11</span>
               <span class="site-state-item-name">標籤</span>
               </a>
           </div>

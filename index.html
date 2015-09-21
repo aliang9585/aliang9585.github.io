@@ -180,6 +180,97 @@
           
           
             
+              <a class="post-title-link" href="/2015/09/17/Runloop学习笔记/" itemprop="url">
+                Runloop学习笔记
+              </a>
+            
+          
+        </h1>
+      
+
+      <div class="post-meta">
+        <span class="post-time">
+          發表於
+          <time itemprop="dateCreated" datetime="2015-09-17T10:02:52+08:00" content="2015-09-17">
+            2015-09-17
+          </time>
+        </span>
+
+        
+          <span class="post-category" >
+            &nbsp; | &nbsp; 分類於
+            
+              <span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a href="/categories/Runloop/" itemprop="url" rel="index"><span itemprop="name">Runloop</span></a></span>
+
+              
+              
+
+            
+          </span>
+        
+
+        
+          
+            <span class="post-comments-count">
+            &nbsp; | &nbsp;
+            <a href="/2015/09/17/Runloop学习笔记/#comments" itemprop="discussionUrl">
+              <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2015/09/17/Runloop学习笔记/" itemprop="commentsCount"></span>
+            </a>
+          </span>
+          
+        
+      </div>
+    </header>
+
+    <div class="post-body">
+
+      
+      
+
+      
+        
+          <p>先看看关于Runloop的面试题：</p>
+<ol>
+<li>Runloop和线程有什么关系?</li>
+<li>Runloop的mode作用是什么?</li>
+<li>以+ scheduledTimerWithTimeInterval…的方式触发的timer，在滑动页面上的列表时，timer会暂定回调，为什么？如何解决？</li>
+<li>猜想Runloop内部是如何实现的</li>
+</ol>
+<p>带着这些问题，我们系统的学习下Runloop。</p>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2015/09/17/Runloop学习笔记/#more" rel="contents">
+              閱讀全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      
+      
+        <h1 class="post-title" itemprop="name headline">
+          
+          
+            
               <a class="post-title-link" href="/2015/08/22/自定义UICollectionViewLayout（三）/" itemprop="url">
                 自定义UICollectionViewLayout（三）Custom Layouts - A Worked Example翻译
               </a>
@@ -229,99 +320,15 @@
 
       
         
-          <span itemprop="articleBody"><blockquote>
-<p><a href="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/AWorkedExample/AWorkedExample.html#//apple_ref/doc/uid/TP40012334-CH8-SW6" target="_blank" rel="external">官方文档:Custom Layouts: A Worked Example</a></p>
+          <blockquote>
+<p><a href="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/AWorkedExample/AWorkedExample.html#//apple_ref/doc/uid/TP40012334-CH8-SW6">官方文档:Custom Layouts: A Worked Example</a></p>
 </blockquote>
 <p>创建自定义布局有着直接的要求，但实现细节的过程可能会有所不同。你的布局对象需要为collection view包含的所有视图创建布局属性对象，这些属性对象的创建顺序视具体的应用程序而定。对于包含上千个item的collection view，事先计算和缓存布局属性是一个很耗时的过程，所以更有意义的做法是只有特定item被请求时才创建布局属性。然而对于仅包含若干个item的collection view，事先计算好所有的布局信息并放入缓存，而不是只有特定item被请求时才创建布局属性，会节省许多不必要的重复计算。本章的例子属于第二类。</p>
-<p>请记住，所提供的示例代码不是创建自定义布局的唯一方法。在你开始创建自定义布局之前，花点时间来设计一个实现结构，这样可使应用程序能够获得最佳性能。创建自定义布局的概念性概述，请参考<a href="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/CreatingCustomLayouts/CreatingCustomLayouts.html#//apple_ref/doc/uid/TP40012334-CH5-SW1" target="_blank" rel="external">see Creating Custom Layouts</a>。</p>
-<p>因为本章例子用了一个特定的顺序来实现自定义布局，因此自上而下阅读代码时请记住这个顺序是有着目的性的。这个例子的目标是实现自定义布局，而不是实现一个app。因此，实现最终的视图或者控制器的代码并未提供。在该布局中，使用了custom collection view cells 作为它的 cells ，并且使用自定义视图来创建连接线来连接这些cells。为collection views创建自定义单元格和视图，以及如何使用collection views，在前几章中已有说明。请参考<a href="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/CollectionViewBasics/CollectionViewBasics.html#//apple_ref/doc/uid/TP40012334-CH2-SW1" target="_blank" rel="external">Collection View Basics</a> 和 <a href="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/CreatingCellsandViews/CreatingCellsandViews.html#//apple_ref/doc/uid/TP40012334-CH7-SW1" target="_blank" rel="external">Designing Your Data Source and Delegate</a>。</p>
-<h2 id="The_Concept_（概念）">The Concept （概念）</h2><p>本例子的目的是为了实现一个如图6-1所示的继承树。示例提供的代码片段伴有注释。这个collection view中每个section，代表着整个tree的深度：Section 0 只包含了标签为 NSObject的cell，Section 1 包含了标签为 NSObject的所有子cell，Section 2 包含了Section 1中某个cell的所有子项，依次类推。每个cell都是自定义的，包含了指示类名的label，还有连接cell的supplementary views。由于connector view class需要知道去绘制多少条线段，因此它需要获取data source中的信息。因此，实现这些连线作为补充视图，而不是装饰视图是有意义的。</p>
-<p><img src="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/Art/example_final_screen_2x.png" alt="Figure 6-1  Class hierarchy"></p>
-<h2 id="Initialization">Initialization</h2><p>创建自定义布局的第一步，是创建UICollectionViewLayout的子类，这是创建自定义布局的必要基础。</p>
-<p>对于这个例子来说，创建自定义protocol是很有必要的，它可以标明特定item之间的间距。如果特定的某个item需要从data source中获取额外信息，那么最好的做法是实现一个protocol，而不是直接连接data source。这样一来你的布局将会更加健壮，更加具有可重用性；它将不再与data source耦合，而是会对任何实现protoco的对象做出响应。</p>
-<p>Listing 6-1展示了 custom layout 头文件的必要代码。现在，任何实现了 <em>MyCustomProtocol</em> 协议的类都可以使用custom layout，而custom layout也可以请求实现 <em>MyCustomProtocol</em> 协议的类的相关信息。</p>
-<p>Listing 6-1  Connecting to the custom protocol</p>
-<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">@interface</span> <span class="attribute">MyCustomLayout </span>: UICollectionViewLayout</span><br><span class="line"><span class="variable">@property</span> (nonatomic, weak) id&lt;MyCustomProtocol&gt; customDataSource;</span><br><span class="line"><span class="variable">@end</span></span><br></pre></td></tr></table></figure>
-<p>接下来，由于我们的collection view需要处理的items数量相对较少，因此自定义布局使用缓存系统来存储布局属性，布局属性会在准备布局时生成，当collection view请求这些属性时可以检索到存储的这些值。Listing 6-2展示了3个私有属性和一个<code>init</code>方法，<code>layoutInformation</code>字典存储了collection view所有类型的视图的布局属性，<code>maxNumRows</code>用来跟踪我们的tree中最高那一列有多少行，<code>insets</code>对象用来控制cells的间距，以及设置视图的frames和内容大小。前两个属性的值是在准备布局时设置，而<code>insets</code>对象的值是在<code>init</code>方法中设置。在本例中，<code>INSET_TOP</code>, <code>INSET_LEFT</code>, <code>INSET_BOTTOM</code>, <code>INSET_RIGHT</code>是你为<code>UIEdgeInsetsMake</code>每个参数定义的常量。</p>
-<p>Listing 6-2  Initializing variables</p>
-<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">MyCustomLayout</span>()</span></span><br><span class="line"> </span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>) <span class="built_in">NSDictionary</span> *layoutInformation;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>) <span class="built_in">NSInteger</span> maxNumRows;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>) <span class="built_in">UIEdgeInsets</span> insets;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"> </span><br><span class="line">-(<span class="keyword">id</span>)init &#123;</span><br><span class="line">    <span class="keyword">if</span>(<span class="keyword">self</span> = [<span class="keyword">super</span> init]) &#123;</span><br><span class="line">        <span class="keyword">self</span><span class="variable">.insets</span> = <span class="built_in">UIEdgeInsetsMake</span>(I<span class="built_in">NSET_TOP</span>, I<span class="built_in">NSET_LEFT</span>, I<span class="built_in">NSET_BOTTOM</span>, I<span class="built_in">NSET_RIGHT</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>自定义布局的最后一步是创建自定义布局属性。尽管这一步不总是必须得，但在本例中，对于已经放置好的cells，代码需要访问他们子cells的index paths，以便于调整子cells的frames来与父cell相匹配。因此我们创建一个<code>UICollectionViewLayoutAttributes</code>的子类，用数组来存储某个cell的所有子cells相关信息。在你的<code>UICollectionViewLayoutAttributes</code>子类的头文件中，添加如下代码：</p>
-<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>) <span class="built_in">NSArray</span> *children;</span><br></pre></td></tr></table></figure>
-<p>就如<code>UICollectionViewLayoutAttributes</code>语言参考中所解释的那样，iOS 7以及之后的版本，实现layout attributes子类需要重写<code>isEqual:</code>方法。想了解更多信息为何这么做，请参考<a href="https://developer.apple.com/library/ios/documentation/UIKit/Reference/UICollectionViewLayoutAttributes_class/index.html#//apple_ref/doc/uid/TP40012183" target="_blank" rel="external">UICollectionViewLayoutAttributes Class Reference</a>。</p>
-<p>在本例中实现<code>isEqual:</code>方法十分简单，因为只有一个字段需要比较，即children数组的内容。如果两个layout attributes相匹配，那么他们必然相等，因为children只能被一个class拥有。 Listing 6-3展示了<code>isEqual:</code>方法的实现。</p>
-<p>Listing 6-3  Fulfilling requirements for subclassing layout attributes</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">-(<span class="type">BOOL</span>)isEqual:(id)<span class="class"><span class="keyword">object</span> &#123;</span></span><br><span class="line">    <span class="type">MyCustomAttributes</span> *otherAttributes = (<span class="type">MyCustomAttributes</span> *)<span class="class"><span class="keyword">object</span>;</span></span><br><span class="line">    <span class="keyword">if</span> ([self.children isEqualToArray:otherAttributes.children]) &#123;</span><br><span class="line">        <span class="keyword">return</span> [<span class="keyword">super</span> isEqual:<span class="class"><span class="keyword">object</span>];</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="type">NO</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>记住在自定义布局类中include自定义布局属性的头文件。</p>
-<p>至此，你已经准备好了自定义布局的基础信息，接下来可以实现布局主体功能了。</p>
-<h2 id="Preparing_the_Layout">Preparing the Layout</h2><p>现在，所有必要的组件有已经初始化，您可以准备开始布局了。在布局过程的第一步，collection view会调用<code>prepareLayout</code>方法。在本例中，<code>prepareLayout</code>方法用来生成所有视图的layout attributes对象的实例，并储存在<code>layoutInformation</code>字典中以供稍后使用。想了解更多<code>prepareLayou</code>的内容，请参考<a href="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/CreatingCustomLayouts/CreatingCustomLayouts.html#//apple_ref/doc/uid/TP40012334-CH5-SW19" target="_blank" rel="external">Preparing the Layout</a>。</p>
-<h3 id="Creating_the_Layout_Attributes">Creating the Layout Attributes</h3><p>示例中实现<code>prepareLayou</code>方法可分为两部分。图6-2展示了方法前半部分的目的，代码中遍历了所有cells，如果这个cell含有children，那么把所有子cells与该父cell相关联。就如您看到的插图那样，这个过程会处理所有cells，包那些括子cell却是另一部分cells的父cell。</p>
-<p>Figure 6-2  Connecting parent and child index paths<br><img src="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/Art/layout_process_2x.png" alt="Figure 6-2  Connecting parent and child index paths"></p>
-<p>Listing 6-4 展示了<code>prepareLayout</code>方法的前半部分。代码开始部分的两个可变数组构成了缓存机制的基础部分：第一个<code>layoutInformation</code>等同于局部的<code>layoutInformation</code>属性。创建一个局部可变副本，可使实例变量改为不可变。这么做是有意义的，因为布局属性在<code>prepareLayout</code>方法执行完毕之前是不允许修改的。然后，代码遍历每个section，在每个section中又遍历该section的每个item，并为每个item创建属性。自定义方法<code>attributesWithChildrenForIndexPath:</code>返回一个自定义布局属性对象的实例，该实例中<code>children</code>属性填充了当前item的所有子项，每个子项都指定了相应的index paths。</p>
-<blockquote>
-<p>原文：returns an instance of the custom layout attributes, with the children property populated with the index paths of the children for the item at the current index path</p>
-</blockquote>
-<p>这新属性随后被存储在<code>cellInformation</code>这个局部字典变量里面，并把index path作为字典的key。这个初始部分，略过了所有item在设置他们的frame之前，需要设置他们children的部分。</p>
-<blockquote>
-<p>原文：The attributes object is then stored within the local cellInformation dictionary with its index path as the key. This initial pass over all of the items allows the code to set the children for each item before setting the item’s frame</p>
-</blockquote>
-<p>Listing 6-4  Creating layout attributes</p>
-<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)prepareLayout &#123;</span><br><span class="line">    <span class="built_in">NSMutableDictionary</span> *layoutInformation = [<span class="built_in">NSMutableDictionary</span> dictionary];</span><br><span class="line">    <span class="built_in">NSMutableDictionary</span> *cellInformation = [<span class="built_in">NSMutableDictionary</span> dictionary];</span><br><span class="line">    <span class="built_in">NSIndexPath</span> *indexPath;</span><br><span class="line">    <span class="built_in">NSInteger</span> numSections = [<span class="keyword">self</span><span class="variable">.collectionView</span> numberOfSections;]</span><br><span class="line">    <span class="keyword">for</span>(<span class="built_in">NSInteger</span> section = <span class="number">0</span>; section &lt; numSections; section++)&#123;</span><br><span class="line">        <span class="built_in">NSInteger</span> numItems = [<span class="keyword">self</span><span class="variable">.collectionView</span> numberOfItemsInSection:section];</span><br><span class="line">        <span class="keyword">for</span>(<span class="built_in">NSInteger</span> item = <span class="number">0</span>; item &lt; numItems; item++)&#123;</span><br><span class="line">            indexPath = [<span class="built_in">NSIndexPath</span> indexPathForItem:item inSection:section];</span><br><span class="line">            MyCustomAttributes *attributes =</span><br><span class="line">            [<span class="keyword">self</span> attributesWithChildrenAtIndexPath:indexPath];</span><br><span class="line">            [cellInformation setObject:attributes forKey:indexPath];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//end of first section</span></span><br></pre></td></tr></table></figure>
-<h3 id="Storing_the_Layout_Attributes">Storing the Layout Attributes</h3><p>图6-3描绘了<code>prepareLayout</code>方法后半部分的内容：从最后一行向顶端依次创建tree的层次结构。</p>
-<blockquote>
-<p>译者注：此处描述我认为有误，原文是Figure 6-3 depicts the process that occurs in the second half of the prepareLayout method in which the tree hierarchy is built from the last row to the first，但稍后代码可以看到并不是这样，我认为原文中from the last row 应该是from the last column，即：从最后一列向前依次创建tree的层次结构）</p>
-</blockquote>
-<p>这种方法可能乍一看上去有些古怪，但它事实上是一种巧妙的方法，能够降低调整cell frame的复杂度。之所以巧妙，是因为子cell的frame需要匹配它们的父cell，同时也是因为各行cell的间隔距离是基于每个cell包含多少个子cell而定的（包括子cell包含多少孙cell等等）。因此，你需要先设置子cell的frame，然后再设置父cell的frame。这样一来，子cell以及包含的孙cell的frame，便可匹配它们的父cell。</p>
-<blockquote>
-<p>这长难句，难过考研英语了:Because the frames of children cells need to match up with those of their parent, and because the amount of space between cells on a row-to-row basis is dependent upon how many children a cell has (including how many children each child cell has and so on), you want to set the child’s frame before setting the parent’s. In this way, the child cell and all of its children cells can be adjusted to match their overall parent’s cell.</p>
-</blockquote>
-<p>第一步：最后一列的cells顺序摆放。第二步，由布局对象决定第二列的frame。在第二列,前几个cells由于没有子cell，所以可以顺序摆放。然而，第三列中的绿色cell的frame必须与第二列中它的父cell相匹配，所以她下一一格。第三步，摆放第一列的cell。由于第二列中前3个cell，是第一列第一行cell的子项，因此第一列中第二行及以后的所有cell都要下移。其实没有必要非得这么做，因为第一列的第2、3行cell并没有它们自己的子cell，但布局对象可没那么聪明。相反，布局对象总是调整拥有子cell的那一行下面的所有cell的frame。同样的，第2、3列绿色cell也要下移来对应各自的父cell。</p>
-<blockquote>
-<p>这段太难翻译了，体验一下吧：In step 1, the cells of the last column have been placed in sequential order. In step 2, the layout is determining the frames for the second column. In this column, the cells can be laid out sequentially since no cell has more than one child. However, the green cell’s frame must be adjusted to match that of its parent cell, so it is shifted down one space. In the final step, the cells for the first column are being placed. The first three cells of the second column are the children of the first cell in the first column, so the cell’s following the first cell in the first column are shifted down. In this case, it is not actually necessary to do so since the two cell’s following the first have no children of their own, but the layout object is not smart enough to know this. Rather, it always adjusts the space in case any cell following one with children has children of its own. As well, the green cells have now both shifted down to match that of their parent.</p>
-</blockquote>
-<p>Figure 6-3  The framing process</p>
-<p><img src="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/Art/worked_example_2x.png" alt="Figure 6-3  The framing process"></p>
-<p>Listing 6-5展示了<code>prepareLayout</code>方法的后半部分：为每个item设置frame。标有数字的注释，稍后会看到解释。</p>
-<p>Listing 6-5  Storing layout attributes</p>
-<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//continuation of prepareLayout implementation</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="built_in">NSInteger</span> section = numSections - <span class="number">1</span>; section &gt;= <span class="number">0</span>; section—-)&#123;</span><br><span class="line">        <span class="built_in">NSInteger</span> numItems = [<span class="keyword">self</span><span class="variable">.collectionView</span> numberOfItemsInSection:section];</span><br><span class="line">        <span class="built_in">NSInteger</span> totalHeight = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="built_in">NSInteger</span> item = <span class="number">0</span>; item &lt; numItems; item++)&#123;</span><br><span class="line">            indexPath = [<span class="built_in">NSIndexPath</span> indexPathForItem:item inSection:section];</span><br><span class="line">            MyCustomAttributes *attributes = [cellInfo objectForKey:indexPath]; <span class="comment">// 1</span></span><br><span class="line">            attributes<span class="variable">.frame</span> = [<span class="keyword">self</span> frameForCellAtIndexPath:indexPath</span><br><span class="line">                                withHeight:totalHeight];</span><br><span class="line">            [<span class="keyword">self</span> adjustFramesOfChildrenAndConnectorsForClassAtIndexPath:indexPath]; <span class="comment">// 2</span></span><br><span class="line">            cellInfo[indexPath] = attributes;</span><br><span class="line">            totalHeight += [<span class="keyword">self</span><span class="variable">.customDataSource</span></span><br><span class="line">                            numRowsForClassAndChildrenAtIndexPath:indexPath]; <span class="comment">// 3</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(section == <span class="number">0</span>)&#123;</span><br><span class="line">            <span class="keyword">self</span><span class="variable">.maxNumRows</span> = totalHeight; <span class="comment">// 4</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    [layoutInformation setObject:cellInformation forKey:<span class="string">@"MyCellKind"</span>]; <span class="comment">// 5</span></span><br><span class="line">    <span class="keyword">self</span><span class="variable">.layoutInformation</span> = layoutInformation</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>在6-5中，代码降序遍历所有sections，由后至前创建tree。<code>totalHeight</code>变量表示当前item之下需要多少行。这个实现无法聪明的计算出空间，只是简单的在包含子项的cell下面留下空白区域，这样一来子项永远不会重叠。代码实现遵从如下顺序：</p>
-<ol>
-<li>在设置cell的frame之前，可以从局部字典变量中获取布局属性数据，这一部分内容应该在<code>prepareLayout</code>方法的前半部分创建完毕。</li>
-<li>自定义<code>adjustFramesOfChildrenAndConnectorsForClassAtIndexPath</code>方法，用递归调整所有cell的子项、孙子项等等的frame，使它们和父项能够对应。</li>
-<li>把调整后的属性放回字典之后，调整<code>totalHeight</code>变量，使该变量可以反映出下一项的frame从哪里开始。此处正是自定义protocol的用武之地，任何实现自定义protocol的对象必须实现<code>numRowsForClassAndChildrenAtIndexPath:</code>方法，该方法返回这个类所代表的cell需要占多少行，即它包含多少个子项。</li>
-<li><code>maxNumRows</code>属性（稍后用它设置内容区域大小）被设置为section 0的总高度。最高那一列总是section 0，它的高度会调整为可容纳所有子cell，不要忘记这个实现并不能聪明的实现间距调整。</li>
-<li>方法结束时，在局部字典变量<code>layoutInformation</code>中，插入一个包含所有cell属性的字典，并用一个唯一的字符串标识符作为key。</li>
-</ol>
-<p>最后一步的字符串表标识符，接下来将会用于获取cell的相应属性。在接下来的示例中，随着加入supplementary views，这个表标识符将会愈加重要。</p>
-<h2 id="Providing_the_Content_Size">Providing the Content Size</h2><p>在preparing the layout章节中，<code>maxNumRows</code>属性被设置为包含最多项的section的行数。此信息可以被用来设置内容区域大小，这正是布局过程中下一步需要做的。 Listing 6-6 展示了如何实现<code>collectionViewContentSize</code>。其中用到的<code>ITEM_WIDTH</code> 和 <code>ITEM_HEIGHT</code> 常量，应在项目全局区域中进行预定义（比如，它们可用于自定义cell，可以依照这两个常量来计算出label的正确尺寸）。</p>
-<p>Listing 6-6  Sizing the content area</p>
-<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">CGSize</span>)collectionViewContentSize &#123;</span><br><span class="line">    <span class="built_in">CGFloat</span> width = <span class="keyword">self</span><span class="variable">.collectionView</span><span class="variable">.numberOfSections</span> * (ITEM_WIDTH + <span class="keyword">self</span><span class="variable">.insets</span><span class="variable">.left</span> + <span class="keyword">self</span><span class="variable">.insets</span><span class="variable">.right</span>);</span><br><span class="line">    <span class="built_in">CGFloat</span> height = <span class="keyword">self</span><span class="variable">.maxNumRows</span> * (ITEM_HEIGHT + _insets<span class="variable">.top</span> + _insets<span class="variable">.bottom</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">CGSizeMake</span>(width, height);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="Providing_Layout_Attributes">Providing Layout Attributes</h2><p>当所有的布局属性对象的初始化和缓存之后，代码已为<code>layoutAttributesForElementsInRect:</code>方法准备好了所有的布局信息。该方法是布局过程中的第二步，就像<code>prepareLayout</code>方法一样，是必须实现的方法。该方法提供了一个矩形区域，期望可以返回一个矩形区域内各类视图的所有布局属性组成的数组。在某些情况下，那些包含上千项的collection views可能一直等待到该方法被调用，才会初始化矩形区域内元素的布局属性对象，但本例还是采用了事先缓存布局属性对象的方式。因此，<code>layoutAttributesForElementsInRect</code>方法中仅仅是简单的遍历所有已存储得属性，并把它们汇聚在一个数组中返回给调用方。</p>
-<p>Listing 6-7 展示了<code>layoutAttributesForElementsInRect</code>方法的实现代码。代码首先遍历主字典<code>_layoutInformation</code>中的所有子字典（subdictionaries），每个子字典都和相应种类的视图一一对应。之后遍历这些字字典中的所有布局属性对象，当检测到这些布局属性的frame实在给定矩形区域之内，则把这个布局属性对象添加到一个数组中（该数组用来存储矩形区域内所有布局属性对象），当所有布局属性对象全部检测完毕，返回这个数组。</p>
-<p>Listing 6-7  Collecting and processing stored attributes</p>
-<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">NSArray</span>*)layoutAttributesForElementsInRect:(<span class="built_in">CGRect</span>)rect &#123;</span><br><span class="line">    <span class="built_in">NSMutableArray</span> *myAttributes [<span class="built_in">NSMutableArray</span> arrayWithCapacity:<span class="keyword">self</span><span class="variable">.layoutInformation</span><span class="variable">.count</span>];</span><br><span class="line">    <span class="keyword">for</span>(<span class="built_in">NSString</span> *key <span class="keyword">in</span> <span class="keyword">self</span><span class="variable">.layoutInformation</span>)&#123;</span><br><span class="line">        <span class="built_in">NSDictionary</span> *attributesDict = [<span class="keyword">self</span><span class="variable">.layoutInformation</span> objectForKey:key];</span><br><span class="line">        <span class="keyword">for</span>(<span class="built_in">NSIndexPath</span> *key <span class="keyword">in</span> attributesDict)&#123;</span><br><span class="line">            <span class="built_in">UICollectionViewLayoutAttributes</span> *attributes =</span><br><span class="line">            [attributesDict objectForKey:key];</span><br><span class="line">            <span class="keyword">if</span>(<span class="built_in">CGRectIntersectsRect</span>(rect, attributes<span class="variable">.frame</span>))&#123;</span><br><span class="line">                [attributes addObject:attributes];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> myAttributes;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>注：实现<code>layoutAttributesForElementsInRect:</code>方法时无需考虑特定属性对应的视图是否可见。请记住，该方法所提供的矩形并不一定是可见的矩形，因此不管你如何实现，都不应该假设返回的仅仅是可见视图的属性。想了解<code>layoutAttributesForElementsInRect:</code>方法的更多信息，请参考 <a href="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/CreatingCustomLayouts/CreatingCustomLayouts.html#//apple_ref/doc/uid/TP40012334-CH5-SW6" target="_blank" rel="external">Providing Layout Attributes for Items in a Given Rectangle</a>。</p>
-</blockquote>
-<h2 id="Providing_Individual_Attributes_When_Requested">Providing Individual Attributes When Requested</h2><p><a href="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/CreatingCustomLayouts/CreatingCustomLayouts.html#//apple_ref/doc/uid/TP40012334-CH5-SW2" target="_blank" rel="external">Providing Layout Attributes On Demand</a>章节已经讨论过，布局过程完成后，布局对象应该时刻准备着提供collection view 中任何类型视图的任何一个布局属性对象。一共有3个方法，可以针对3中不同类型的视图：cells, supplementary views and decoration views。但在当前示例中，我们只会用到cells对应的方法，所以此刻我们只需实现<code>layoutAttributesForItemAtIndexPath:</code>方法即可。</p>
-<p>Listing 6-8展示了如何实现该方法：他进入存储cell的字典（译者注：通过Listing 6-5的注释5提到的字符串标识符来获取子字典），返回在子字典中找到key为indexPath的那个布局属性对象。</p>
-<p>Listing 6-8  Providing attributes for specific items</p>
-<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="built_in">UICollectionViewLayoutAttributes</span> *)layoutAttributesForItemAtIndexPath:(<span class="built_in">NSIndexPath</span> *)indexPath &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">self</span><span class="variable">.layoutInfo</span>[<span class="string">@"MyCellKind"</span>][indexPath];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>图 6-4 展示了现在的当前布局的呈现效果，所有的cell都已呈现，并和父cell对应，但并未绘制它们之间的连线。</p>
-<p>Figure 6-4  The layout so far</p>
-<p><img src="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/Art/example_mid_screen_2x.png" alt="image description"></p>
-<h2 id="Incorporating_Supplementary_Views">Incorporating Supplementary Views</h2><p>截止目前，所有cell都能够分层展示，但由于没有绘制父子连线，这个类图是很难理解的。要实现绘制连线部分，应用程序需要创建一个自定义视图，并将其纳入到布局中作为supplementary view。要了解更多信息，请参考 <a href="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/CreatingCustomLayouts/CreatingCustomLayouts.html#//apple_ref/doc/uid/TP40012334-CH5-SW22" target="_blank" rel="external">Elevating Content Through Supplementary Views</a>。</p>
-<p>Listing 6-9列出的几行代码，可以放入<code>prepareLayout</code>方法中，用以包含 supplementary views。与创建cell的布局属性对象稍有不同，创建supplementary view的布局属性对象时，需要一个字符串标识符，来指示要创建哪种supplementary view的布局属性对象。这是因为自定义布局可以包含多种类型的supplementary view，但只能包含一种cell。</p>
-<p>Listing 6-9  Creating attributes objects for supplementary views</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// create another dictionary to specifically house the attributes for the supplementary view</span></span><br><span class="line">NSMutableDictionary *supplementaryInfo = [NSMutableDictionary dictionary];</span><br><span class="line">…</span><br><span class="line"><span class="comment">// within the initial pass over the data, create a set of attributes for the supplementary views as well</span></span><br><span class="line">UICollectionViewLayoutAttributes *supplementaryAttributes = [UICollectionViewLayoutAttributes <span class="string">layoutAttributesForSupplementaryViewOfKind:</span>@<span class="string">"ConnectionViewKind"</span> <span class="string">withIndexPath:</span>indexPath];</span><br><span class="line">[supplementaryInfo <span class="string">setObject:</span> supplementaryAttributes <span class="string">forKey:</span>indexPath];</span><br><span class="line">…</span><br><span class="line"><span class="comment">// in the second pass over the data, set the frame for the supplementary views just as you did for the cells</span></span><br><span class="line">UICollectionViewLayoutAttributes *supplementaryAttributes = [supplementaryInfo <span class="string">objectForKey:</span>indexPath];</span><br><span class="line">supplementaryAttributes.frame = [self <span class="string">frameForSupplementaryViewOfKind:</span>@<span class="string">"ConnectionViewKind"</span> <span class="string">AtIndexPath:</span>indexPath];</span><br><span class="line">[supplementaryInfo <span class="string">setObject:</span>supplementaryAttributes <span class="string">ForKey:</span>indexPath];</span><br><span class="line">...</span><br><span class="line"><span class="comment">// before setting the instance version of _layoutInformation, insert the local supplementaryInfo dictionary into the local layoutInformation dictionary</span></span><br><span class="line">[layoutInformation <span class="string">setObject:</span>supplementaryInfo <span class="string">forKey:</span>@<span class="string">"ConnectionViewKind"</span>];</span><br></pre></td></tr></table></figure>
-<p>由于创建supplementary view布局属性的代码和创建cell布局属性对象的代码十分相似，此处仅简单描述了实现<code>prepareLayout</code>方法相应的代码。代码采用的缓存机制和cell相同，用了另外一个字典来存储标识符为ConnectionViewKind的supplementary view的布局属性对象。如果您需要创建更多的supplementary view，可以创建更多的字典，使用相同的代码(不同的标识符)来创建。但是在本例中，仅仅需要一种supplementary view。正如代码所示那样，初始化布局属性对象采用了自定义方法<code>frameForSupplementaryViewOfKind:AtIndexPath:</code>，用来决定supplementary view的frame。请记住出现在<code>prepareLayout</code>方法方法中的<code>frameForSupplementaryViewOfKind:AtIndexPath:</code>，需要合并所有supplementary views。</p>
-<p>当前示例无需更改<code>layoutAttributesForElementsInRect:</code>已有的实现代码，因为<code>layoutAttributesForElementsInRect:</code>方法已经被设计为在遍历主字典中存储的所有属性。supplementary view的布局属性也被添加到了这个主字典中，因此该方法仍然可以正常工作。</p>
-<p>最后，就像cell那样，collection view可能随时请求supplementary view的布局属性对象。因此，必须实现<code>layoutAttributesForSupplementaryElementOfKind:atIndexPath:</code>方法。</p>
-<p>Listing 6-10 展示了如何实现该方法，和<code>layoutAttributesForItemAtIndexPath:</code>的实现方法基本相同。只有一个例外，就是使用提供的kind字符串来替代硬编码，这样你的布局就可以提供任何类型的supplementary view布局属性对象。</p>
-<p>Listing 6-10  Providing supplementary view attributes on demand</p>
-<figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- (UICollectionViewLayoutAttributes *) layoutAttributesForSupplementaryViewOfKind:(NSString *)<span class="keyword">kind</span> atIndexPath:(NSIndexPath *)indexPath &#123;</span><br><span class="line">    return self.layoutInfo<span class="comment">[kind]</span><span class="comment">[indexPath]</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="Recap">Recap</h2><p>通过包含supplementary views，您现在拥有了一个布局对象，可以充分地再现类层次结构图。在最终的实施中，您可能希望调整您的自定义布局以节省空间。该示例展示了如何实现一个真实的自定义布局。Collection views是如此的强大，提供了如此多的能力，远超此处看到的内容。当做移动、插入或者删除操作时，突出显cell示或者改变cell选中状态（甚至动画）都是很容易实现的功能，并且可以方便的集成到你的应用程序当中。要把你的自定义布局带入更高的级别，请查看<a href="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/CreatingCustomLayouts/CreatingCustomLayouts.html#//apple_ref/doc/uid/TP40012334-CH5-SW1" target="_blank" rel="external">Creating Custom Layouts</a>的最后几节。</p>
-<h2 id="补充">补充</h2><p>官方提供的这份文档，代码并没有给全，随后我将根据这份文档实现一个完整的布局，并会上传值Github，敬请期待。</p>
-</span>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2015/08/22/自定义UICollectionViewLayout（三）/#more" rel="contents">
+              閱讀全文 &raquo;
+            </a>
+          </div>
         
       
     </div>
@@ -963,21 +970,21 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">8</span>
+              <span class="site-state-item-count">9</span>
               <span class="site-state-item-name">文章</span>
             </a>
           </div>
 
           <div class="site-state-item site-state-categories">
             <a href="/categories">
-              <span class="site-state-item-count">1</span>
+              <span class="site-state-item-count">2</span>
               <span class="site-state-item-name">分類</span>
               </a>
           </div>
 
           <div class="site-state-item site-state-tags">
             <a href="/tags">
-              <span class="site-state-item-count">9</span>
+              <span class="site-state-item-count">11</span>
               <span class="site-state-item-name">標籤</span>
               </a>
           </div>
