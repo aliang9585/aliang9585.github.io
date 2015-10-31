@@ -1,0 +1,1000 @@
+<!doctype html>
+<html class="theme-next use-motion theme-next-mist">
+<head>
+    
+
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5"/>
+
+
+
+  <link href='//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+
+
+<link rel="stylesheet" type="text/css" href="/css/main.css?v=0.4.4"/>
+
+
+    <meta name="description" content="IOS技术总结" />
+
+
+
+  <meta name="keywords" content="本地存储," />
+
+
+
+
+
+  <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.4" />
+
+
+<meta name="description" content="本文目录结构如下：
+
+一、iOS中的沙盒机制
+二、文件系统 
+三、属性列表 （Property List）
+四、偏好设置 （NSUserDefaults）
+五、对象归档
+六、SQLite3
+七、Core Data
+
+为了避免篇幅太长，本文重点介绍前6部分内容，Core Data会在后续博文中详细讲解。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS中数据持久化学习笔记">
+<meta property="og:url" content="http://aliang9585.github.io/2015/09/21/iOS中数据持久化学习笔记/index.html">
+<meta property="og:site_name" content="LYL's Blog">
+<meta property="og:description" content="本文目录结构如下：
+
+一、iOS中的沙盒机制
+二、文件系统 
+三、属性列表 （Property List）
+四、偏好设置 （NSUserDefaults）
+五、对象归档
+六、SQLite3
+七、Core Data
+
+为了避免篇幅太长，本文重点介绍前6部分内容，Core Data会在后续博文中详细讲解。">
+<meta property="og:image" content="http://7xkfcm.com1.z0.glb.clouddn.com/bundle1@2x.png">
+<meta property="og:image" content="http://7xkfcm.com1.z0.glb.clouddn.com/bundle2@2x.png">
+<meta property="og:image" content="http://7xkfcm.com1.z0.glb.clouddn.com/bundle3@2x.png">
+<meta property="og:updated_time" content="2015-10-31T14:47:41.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS中数据持久化学习笔记">
+<meta name="twitter:description" content="本文目录结构如下：
+
+一、iOS中的沙盒机制
+二、文件系统 
+三、属性列表 （Property List）
+四、偏好设置 （NSUserDefaults）
+五、对象归档
+六、SQLite3
+七、Core Data
+
+为了避免篇幅太长，本文重点介绍前6部分内容，Core Data会在后续博文中详细讲解。">
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: 'post'
+  };
+</script>
+
+    <title> iOS中数据持久化学习笔记 // LYL's Blog </title>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage" lang="">
+<!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?a7a4364608485ad7bc5d2abeacd05591";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+<div class="container one-column page-post-detail">
+    <div class="headband"></div>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+        <div class="header-inner"><h1 class="site-meta">
+  <span class="logo-line-before"><i></i></span>
+  <a href="/" class="brand" rel="start">
+      <span class="logo">
+        <i class="icon-logo"></i>
+      </span>
+      <span class="site-title">LYL's Blog</span>
+  </a>
+  <span class="logo-line-after"><i></i></span>
+</h1>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon icon-home"></i> <br />
+            首頁
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            <i class="menu-item-icon icon-categories"></i> <br />
+            分類
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            <i class="menu-item-icon icon-about"></i> <br />
+            關於
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            <i class="menu-item-icon icon-archives"></i> <br />
+            歸檔
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            <i class="menu-item-icon icon-tags"></i> <br />
+            標籤
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+        </div>
+    </header>
+
+    <main id="main" class="main">
+        <div class="main-inner">
+            <div id="content" class="content">
+                
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      
+      
+        <h1 class="post-title" itemprop="name headline">
+          
+          
+            
+              iOS中数据持久化学习笔记
+            
+          
+        </h1>
+      
+
+      <div class="post-meta">
+        <span class="post-time">
+          發表於
+          <time itemprop="dateCreated" datetime="2015-09-21T13:43:05+08:00" content="2015-09-21">
+            2015-09-21
+          </time>
+        </span>
+
+        
+          <span class="post-category" >
+            &nbsp; | &nbsp; 分類於
+            
+              <span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a href="/categories/本地存储/" itemprop="url" rel="index"><span itemprop="name">本地存储</span></a></span>
+
+              
+              
+
+            
+          </span>
+        
+
+        
+          
+            <span class="post-comments-count">
+            &nbsp; | &nbsp;
+            <a href="/2015/09/21/iOS中数据持久化学习笔记/#comments" itemprop="discussionUrl">
+              <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2015/09/21/iOS中数据持久化学习笔记/" itemprop="commentsCount"></span>
+            </a>
+          </span>
+          
+        
+      </div>
+    </header>
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><p>本文目录结构如下：</p>
+<ul>
+<li>一、iOS中的沙盒机制</li>
+<li>二、文件系统 </li>
+<li>三、属性列表 （Property List）</li>
+<li>四、偏好设置 （NSUserDefaults）</li>
+<li>五、对象归档</li>
+<li>六、SQLite3</li>
+<li>七、Core Data</li>
+</ul>
+<p>为了避免篇幅太长，本文重点介绍前6部分内容，Core Data会在后续博文中详细讲解。<br><a id="more"></a></p>
+<h2 id="一、iOS中的沙盒机制">一、iOS中的沙盒机制</h2><h3 id="什么是沙盒">什么是沙盒</h3><p>不管是Mac OS X 还是iOS的文件系统都是建立在UNIX文件系统基础之上的。iOS应用程序只能对自己创建的文件系统读取文件，这个独立、封闭、安全的空间，叫做沙盒。它一般存放着程序包文件（可执行文件）、图片、音频、视频、plist文件、sqlite数据库以及其他文件。每个应用程序都有自己的独立的存储空间（沙盒）。一般来说应用程序之间是不可以互相访问。（提示：在IOS8中已经开放访问）。</p>
+<h3 id="沙盒模型到底有哪些好处呢?">沙盒模型到底有哪些好处呢?</h3><ul>
+<li>安全：别的App无法修改你的程序或数据</li>
+<li>保护隐私：别的App无法读取你的程序和数据</li>
+<li>方便删除：因为一个App所有产生的内容都在自己的沙盒中，所以删除App只需要将沙盒删除就可以彻底删除程序了</li>
+</ul>
+<h3 id="iOS_App沙盒中的目录">iOS App沙盒中的目录</h3><ul>
+<li>App Bundle ：如xxx.app，其实是一个目录，里面有app本身的二进制数据以及资源文件。由于应用程序必须经过签名，<br>所以您在运行时不能对这个目录中的内容进行修改，否则可能会使应用程序无法启动</li>
+<li>Documents ：最常用的目录，一般需要持久的数据都放在此目录中，可以在当中添加子文件夹，iTunes备份和恢复的时候，会包括此目录。</li>
+<li>Library ：设置程序的默认设置和其他状态信息。下面默认包含下面两个目录 Caches和Preferences。<ul>
+<li>Caches 目录用于存放应用程序专用的支持文件，保存应用程序再次启动过程中需要的信息。 iTunes不会同步此文件夹，适合存储体积大，不需要备份的非重要数据。</li>
+<li>Preferences 目录包含应用程序的偏好设置文件。您不应该直接创建偏好设置文件，而是应该使用NSUserDefaults类来取得和设置应用程序的偏好。 iTunes同步该应用时会同步此文件夹中的内容。</li>
+</ul>
+</li>
+<li>tmp ：iTunes不会同步此文件夹，系统可能在应用没运行时就删除该目录下的文件，所以此目录适合保存应用中的一些临时文件，用完就删除。</li>
+</ul>
+<h3 id="模拟器沙盒的位置：">模拟器沙盒的位置：</h3><figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//位置会有所不同，你可以打印：NSHomeDirectory()来获取</span></span><br><span class="line"><span class="function">NSLog</span>(<span class="at_rule">@<span class="string">"%@"</span>,<span class="function">NSHomeDirectory</span>());</span></span><br></pre></td></tr></table></figure>
+<h2 id="二、文件系统">二、文件系统</h2><h3 id="1、获取沙盒目录">1、获取沙盒目录</h3><figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor">#import <span class="title">"ViewController.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">ViewController</span> ()</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ViewController</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)viewDidLoad &#123;</span><br><span class="line">    [<span class="keyword">super</span> viewDidLoad];</span><br><span class="line">    </span><br><span class="line">    [<span class="keyword">self</span> fileOperation_Directory];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span><br><span class="line"> * 获取沙盒目录</span><br><span class="line"> */</span></span><br><span class="line">- (<span class="keyword">void</span>)fileOperation_Directory &#123;</span><br><span class="line">    <span class="comment">//获取程序的根目录（home）目录</span></span><br><span class="line">    <span class="built_in">NSString</span> *homePath = <span class="built_in">NSHomeDirectory</span>();</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"---根目录 : %@"</span>,homePath);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//获取Document目录</span></span><br><span class="line">    <span class="built_in">NSArray</span>  *docPaths = <span class="built_in">NSSearchPathForDirectoriesInDomains</span>(<span class="built_in">NSDocumentDirectory</span>, <span class="built_in">NSUserDomainMask</span>, <span class="literal">YES</span>);</span><br><span class="line">    <span class="built_in">NSString</span> *docPath = [docPaths lastObject];</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"---Document目录 : %@"</span>,docPath);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//获取Library目录</span></span><br><span class="line">    <span class="built_in">NSArray</span> *libPaths = <span class="built_in">NSSearchPathForDirectoriesInDomains</span>(<span class="built_in">NSLibraryDirectory</span>, <span class="built_in">NSUserDomainMask</span>, <span class="literal">YES</span>);</span><br><span class="line">    <span class="built_in">NSString</span> *libPath = [libPaths lastObject];</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"---Library目录 : %@"</span>,libPath);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//获取Library中的Cache目录</span></span><br><span class="line">    <span class="built_in">NSArray</span> *cachePaths = <span class="built_in">NSSearchPathForDirectoriesInDomains</span>(<span class="built_in">NSCachesDirectory</span>, <span class="built_in">NSUserDomainMask</span>, <span class="literal">YES</span>);</span><br><span class="line">    <span class="built_in">NSString</span> *cachePath = [cachePaths lastObject];</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"---Cache目录 : %@"</span>,cachePath);</span><br><span class="line">    </span><br><span class="line"><span class="comment">//    //获取Library中的PreferencePanes目录</span></span><br><span class="line"><span class="comment">//    NSArray *preferencePaths = NSSearchPathForDirectoriesInDomains(NSPreferencePanesDirectory, NSUserDomainMask, YES);</span></span><br><span class="line"><span class="comment">//    NSString *preferencePath = [preferencePaths lastObject];</span></span><br><span class="line"><span class="comment">//    NSLog(@"---Preference目录目录 : %@",preferencePath);</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">//获取temp目录</span></span><br><span class="line">    <span class="built_in">NSString</span> *tempPath = <span class="built_in">NSTemporaryDirectory</span>();</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"---temp目录 : %@"</span>,tempPath);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这些代码本身没什么好说的，但大家可能和我一样，都会有个疑问：为什么获取Document、Library目录时，需要用<code>NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);</code>方法？</p>
+<p>我们每次重新运行应用程序，会发现打印的根目录会有所不同。例如：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">根目录 : <span class="regexp">/Users/</span>richfitbi<span class="regexp">/Library/</span>Developer<span class="regexp">/CoreSimulator/</span>Devices<span class="regexp">/B04AE26C-5A22-4FB1-A593-69678F42BF96/</span>data<span class="regexp">/Containers/</span>Data<span class="regexp">/Application/</span><span class="number">015</span>BCA36-A207-<span class="number">400</span>C-B511-<span class="number">3</span>E5405A54BFC</span><br><span class="line"></span><br><span class="line">根目录 : <span class="regexp">/Users/</span>richfitbi<span class="regexp">/Library/</span>Developer<span class="regexp">/CoreSimulator/</span>Devices<span class="regexp">/B04AE26C-5A22-4FB1-A593-69678F42BF96/</span>data<span class="regexp">/Containers/</span>Data<span class="regexp">/Application/</span><span class="number">9074</span>D659-<span class="number">52</span>F1-<span class="number">4450</span>-B36B-<span class="number">4711</span>C0650140</span><br></pre></td></tr></table></figure>
+<p>这是因为iPhone会为每一个应用程序生成一个私有目录，<br>并随即生成一个数字字母串作为目录名，在每一次应用程序启动时，这个字母数字串都是不同于上一次。</p>
+<p>为了能够方便得到Document等目录的绝对路径，便可使用NSSearchPathForDirectoriesInDomains方法。</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSArray</span> *<span class="built_in">NSSearchPathForDirectoriesInDomains</span>(<span class="built_in">NSSearchPathDirectory</span> directory, <span class="built_in">NSSearchPathDomainMask</span> domainMask, <span class="built_in">BOOL</span> expandTilde);</span><br></pre></td></tr></table></figure>
+<p>参数说明：</p>
+<ul>
+<li>directory 目录类型 比如Documents目录 就是NSDocumentDirectory </li>
+<li>domainMask 在iOS的程序中这个取NSUserDomainMask </li>
+<li>expandTilde YES，表示将~展开成完整路径</li>
+</ul>
+<p>该方法可描述为：<br>    NSSearchPathForDirectoriesInDomains（“想要查找的目录”，“想要从哪个路径区域保护区查找”,，“是否将~展开成完整路径”）</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//查找的区域：</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="built_in">NS_OPTIONS</span>(<span class="built_in">NSUInteger</span>, <span class="built_in">NSSearchPathDomainMask</span>) &#123;</span><br><span class="line">    <span class="built_in">NSUserDomainMask</span> = <span class="number">1</span>,       <span class="comment">// 用户的主目录</span></span><br><span class="line">    <span class="built_in">NSLocalDomainMask</span> = <span class="number">2</span>,      <span class="comment">// 当前机器的本地目录</span></span><br><span class="line">    <span class="built_in">NSNetworkDomainMask</span> = <span class="number">4</span>,    <span class="comment">// 在网络中公开可用的位置</span></span><br><span class="line">    <span class="built_in">NSSystemDomainMask</span> = <span class="number">8</span>,     <span class="comment">// 被苹果系统提供的，不可更改的位置 (/System)</span></span><br><span class="line">    <span class="built_in">NSAllDomainsMask</span> = <span class="number">0x0ffff</span>  <span class="comment">// 上述所有及未来的位置</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">//想要查找的目录：</span></span><br><span class="line"><span class="built_in">NSApplicationDirectory</span> = <span class="number">1</span>,             <span class="comment">// 到applications (Applications)目录下</span></span><br><span class="line">    <span class="built_in">NSDemoApplicationDirectory</span>,             <span class="comment">// 到Applications/Demos目录下</span></span><br><span class="line">    <span class="built_in">NSDeveloperApplicationDirectory</span>,        <span class="comment">// 到Developer/Applications目录下.</span></span><br><span class="line">    <span class="built_in">NSAdminApplicationDirectory</span>,            <span class="comment">// 到Applications/Utilities目录下</span></span><br><span class="line">    <span class="built_in">NSLibraryDirectory</span>,                     <span class="comment">// 到Library目录下</span></span><br><span class="line">    <span class="built_in">NSDeveloperDirectory</span>,                   <span class="comment">// 到Developer目录下.</span></span><br><span class="line">    <span class="built_in">NSUserDirectory</span>,                        <span class="comment">// 到用户的主目录下</span></span><br><span class="line">    <span class="built_in">NSDocumentationDirectory</span>,               <span class="comment">// 到documentation (Documentation)的目录下</span></span><br><span class="line">    <span class="built_in">NSDocumentDirectory</span>,                    <span class="comment">// 到documents (Documents)目录下</span></span><br><span class="line">    <span class="built_in">NSCoreServiceDirectory</span>,                 <span class="comment">// CoreServices目录的位置 (System/Library/CoreServices)</span></span><br><span class="line">    <span class="built_in">NSAutosavedInformationDirectory</span> <span class="built_in">NS_ENUM_AVAILABLE</span>(<span class="number">10</span>_6, <span class="number">4</span>_0) = <span class="number">11</span>,   <span class="comment">// 自动保存的文档位置 (Documents/Autosaved)</span></span><br><span class="line">    <span class="built_in">NSDesktopDirectory</span> = <span class="number">12</span>,                <span class="comment">// 本地用户的桌面</span></span><br><span class="line">    <span class="built_in">NSCachesDirectory</span> = <span class="number">13</span>,                 <span class="comment">// 本地缓冲区目录(Library/Caches)</span></span><br><span class="line">    <span class="built_in">NSApplicationSupportDirectory</span> = <span class="number">14</span>,     <span class="comment">// 本地应用支持文件目录 (plug-ins, etc) (Library/Application Support)</span></span><br><span class="line">    <span class="built_in">NSDownloadsDirectory</span> <span class="built_in">NS_ENUM_AVAILABLE</span>(<span class="number">10</span>_5, <span class="number">2</span>_0) = <span class="number">15</span>,              <span class="comment">// 本地下载downloads目录</span></span><br><span class="line">    <span class="built_in">NSInputMethodsDirectory</span> <span class="built_in">NS_ENUM_AVAILABLE</span>(<span class="number">10</span>_6, <span class="number">4</span>_0) = <span class="number">16</span>,           <span class="comment">// 输入方法目录 (Library/Input Methods)</span></span><br><span class="line">    <span class="built_in">NSMoviesDirectory</span> <span class="built_in">NS_ENUM_AVAILABLE</span>(<span class="number">10</span>_6, <span class="number">4</span>_0) = <span class="number">17</span>,                 <span class="comment">// 电影目录 (~/Movies)</span></span><br><span class="line">    <span class="built_in">NSMusicDirectory</span> <span class="built_in">NS_ENUM_AVAILABLE</span>(<span class="number">10</span>_6, <span class="number">4</span>_0) = <span class="number">18</span>,                  <span class="comment">// 音乐目录 (~/Music)</span></span><br><span class="line">    <span class="built_in">NSPicturesDirectory</span> <span class="built_in">NS_ENUM_AVAILABLE</span>(<span class="number">10</span>_6, <span class="number">4</span>_0) = <span class="number">19</span>,               <span class="comment">// 图片目录 (~/Pictures)</span></span><br><span class="line">    <span class="built_in">NSPrinterDescriptionDirectory</span> <span class="built_in">NS_ENUM_AVAILABLE</span>(<span class="number">10</span>_6, <span class="number">4</span>_0) = <span class="number">20</span>,     <span class="comment">// PPDs目录 (Library/Printers/PPDs)</span></span><br><span class="line">    <span class="built_in">NSSharedPublicDirectory</span> <span class="built_in">NS_ENUM_AVAILABLE</span>(<span class="number">10</span>_6, <span class="number">4</span>_0) = <span class="number">21</span>,           <span class="comment">// 本地用户分享目录 (~/Public)</span></span><br><span class="line">    <span class="built_in">NSPreferencePanesDirectory</span> <span class="built_in">NS_ENUM_AVAILABLE</span>(<span class="number">10</span>_6, <span class="number">4</span>_0) = <span class="number">22</span>,        <span class="comment">// PreferencePanes目录的位置使用系统的偏好设置 (Library/PreferencePanes)</span></span><br><span class="line">    <span class="built_in">NSApplicationScriptsDirectory</span> <span class="built_in">NS_ENUM_AVAILABLE</span>(<span class="number">10</span>_8, NA) = <span class="number">23</span>,      <span class="comment">// 本地用户 scripts 文件夹，对于所需的应用(~/Library/Application Scripts/code-signing-id)</span></span><br><span class="line">    <span class="built_in">NSItemReplacementDirectory</span> <span class="built_in">NS_ENUM_AVAILABLE</span>(<span class="number">10</span>_6, <span class="number">4</span>_0) = <span class="number">99</span>,        <span class="comment">// For use with NSFileManager's URLForDirectory:inDomain:appropriateForURL:create:error:</span></span><br><span class="line">    <span class="built_in">NSAllApplicationsDirectory</span> = <span class="number">100</span>,       <span class="comment">// 应用能够发生的所有路径</span></span><br><span class="line">    <span class="built_in">NSAllLibrariesDirectory</span> = <span class="number">101</span>,          <span class="comment">//资源可以发生的所有目录</span></span><br><span class="line">    <span class="built_in">NSTrashDirectory</span> <span class="built_in">NS_ENUM_AVAILABLE</span>(<span class="number">10</span>_8, NA) = <span class="number">102</span>                   <span class="comment">// 垃圾存放目录</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="built_in">NSHomeDirectory</span>（）只能到达用户的主目录</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>这里不知道为何，NSSearchPathDomainMask中没有preference目录对应的枚举，而是有一个NSPreferencePanesDirectory，希望哪位高人可以解释以下。</p>
+</blockquote>
+<h3 id="2、NSString关于路径的处理方法">2、NSString关于路径的处理方法</h3><figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">/<span class="keyword">*</span></span><br><span class="line"> <span class="keyword">*</span> NSString类中，路径的处理方法</span><br><span class="line"> <span class="keyword">*</span> - (NSArray <span class="keyword">*</span>)pathComponents; //获得组成此路径的各个组成部分，结果（<span class="string">"/"</span>,<span class="string">"Users"</span>,<span class="string">"apple"</span>,<span class="string">"testfile.txt"</span>）</span><br><span class="line"> <span class="keyword">*</span> - (NSString <span class="keyword">*</span>)lastPathComponent; 提取路径的最后一个组成部分，结果：testfile.txt</span><br><span class="line"> <span class="keyword">*</span> - (NSString <span class="keyword">*</span>)stringByDeletingLastPathComponent; 删除路径的最后一个组成部分，结果：/Users/apple</span><br><span class="line"> <span class="keyword">*</span> - (NSString <span class="keyword">*</span>)stringByAppendingPathComponent:(NSString <span class="keyword">*</span>)str; 在原路径的末尾添加新元素，结果：/Users/apple/testfile.txt/app.txt</span><br><span class="line"> <span class="keyword">*</span> - (NSString <span class="keyword">*</span>)pathExtension; 获取路径最后部分的扩展名，结果：text</span><br><span class="line"> <span class="keyword">*</span> - (NSString <span class="keyword">*</span>)stringByDeletingPathExtension; 删除路径最后部分的扩展名，结果：/Users/apple/testfile</span><br><span class="line"> <span class="keyword">*</span> - (NSString <span class="keyword">*</span>)stringByAppendingPathExtension:(NSString <span class="keyword">*</span>)str; 路径最后部分追加扩展名，结果：/User/apple/testfile.txt.jpg</span><br><span class="line"> <span class="keyword">*</span>/</span><br><span class="line">- (void)filePath_NSStringPathExtensions &#123;</span><br><span class="line">    NSString <span class="keyword">*</span>path = <span class="comment">@"/Uesrs/apple/testfile.txt";</span></span><br><span class="line">    NSLog(<span class="comment">@"路径 : %@\n",[path pathComponents]);</span></span><br><span class="line">    </span><br><span class="line">    NSLog(<span class="comment">@"路径的各个组成部分 : %@",[path pathComponents]);</span></span><br><span class="line">    NSLog(<span class="comment">@"路径的最后一个组成部分 : %@",[path lastPathComponent]);</span></span><br><span class="line">    NSLog(<span class="comment">@"删除路径的最后一个组成部分 : %@",[path stringByDeletingLastPathComponent]);</span></span><br><span class="line">    NSLog(<span class="comment">@"在原路径的末尾添加新元素 : %@",[path stringByAppendingPathComponent:@"app.txt"]);</span></span><br><span class="line">    NSLog(<span class="comment">@"获取路径最后部分的扩展名 : %@",[path pathExtension]);</span></span><br><span class="line">    NSLog(<span class="comment">@"删除路径最后部分的扩展名 : %@",[path stringByDeletingPathExtension]);</span></span><br><span class="line">    NSLog(<span class="comment">@"路径最后部分追加扩展名 : %@",[path stringByAppendingPathExtension:@"jpg"]);</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="3、NSBundle">3、NSBundle</h3><p>bundle是一个目录，其中包含了程序会使用到的资源。 这些资源包含了如图像、声音、编译好的代码、nib文件(用户也会把bundle称为plug-in)。对应bundle，cocoa提供了类NSBundle。</p>
+<p>我们的程序是一个bundle。在Finder中,一个应用程序看上去和其他文件没有什么区别。但是实际上它是一个包含了nib文件,编译代码,以及其他资源的目录. 我们把这个目录叫做程序的main bundle。</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span><br><span class="line"> * NSBundle用法</span><br><span class="line"> */</span></span><br><span class="line">- (<span class="keyword">void</span>)use_<span class="built_in">NSBundle</span> &#123;</span><br><span class="line">    <span class="comment">//1、bundle路径</span></span><br><span class="line">    <span class="built_in">NSBundle</span> *myBundle = [<span class="built_in">NSBundle</span> mainBundle];</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@".app路径---%@"</span>,myBundle);</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@".app应用包(文件)的详细信息---%@"</span>,[myBundle infoDictionary]);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//2、bundle下的目录结构不同于project文档结构</span></span><br><span class="line">    <span class="built_in">NSString</span> *imgPathInGroup = [[<span class="built_in">NSBundle</span> mainBundle] pathForResource:<span class="string">@"star_32x32"</span> ofType:<span class="string">@"png"</span>];</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"imgPathInGroup：%@"</span>,imgPathInGroup);</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">NSString</span> *imgPathInFolder = [[<span class="built_in">NSBundle</span> mainBundle] pathForResource:<span class="string">@"map-marker-bubble-pink-small@3x"</span> ofType:<span class="string">@"png"</span>];</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"imgPathInFolder：%@"</span>,imgPathInFolder);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//3、Assets.xcassets中的素材</span></span><br><span class="line"><span class="comment">//    （1）只支持png格式的图片</span></span><br><span class="line"><span class="comment">//    （2） 图片只支持[UIImage imageNamed]的方式实例化，但是不能从Bundle中加载</span></span><br><span class="line"><span class="comment">//    （3）  在编译时，Images.xcassets中的所有文件会被打包为Assets.car的文件</span></span><br><span class="line">    </span><br><span class="line"><span class="comment">//    NSString *assetsImgPathInFolder = [[NSBundle mainBundle] pathForResource:@"wangdianchaxun@3x" ofType:@"png"];</span></span><br><span class="line"><span class="comment">//    NSLog(@"assetsImgPathInFolder：%@",assetsImgPathInFolder);</span></span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    <span class="comment">//4、获取其他bundle下的内容</span></span><br><span class="line">    <span class="built_in">NSString</span> *amapBundlePath = [[<span class="built_in">NSBundle</span> mainBundle] pathForResource:<span class="string">@"AMap"</span> ofType:<span class="string">@"bundle"</span>];</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"amapBundlePath: %@"</span>, amapBundlePath);</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">NSString</span> *redPinImgPath = [[<span class="built_in">NSBundle</span> bundleWithPath:amapBundlePath] pathForResource:<span class="string">@"redPin@3x"</span> ofType:<span class="string">@"png"</span> inDirectory:<span class="string">@"images"</span>];</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"path: %@"</span>, redPinImgPath);</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">NSString</span> *amap3DBundlePath = [[<span class="built_in">NSBundle</span> mainBundle] pathForResource:<span class="string">@"AMap3D"</span> ofType:<span class="string">@"bundle"</span> inDirectory:<span class="string">@"AMap.bundle"</span>];</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"amap3DBundlePath: %@"</span>, amap3DBundlePath);</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">NSString</span> *tglDataPath = [[<span class="built_in">NSBundle</span> bundleWithPath:amap3DBundlePath] pathForResource:<span class="string">@"tgl"</span> ofType:<span class="string">@"data"</span>];</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"tglDataPath: %@"</span>, tglDataPath);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>需要说明的是：</p>
+<p>1、bundle路径每次运行都会改变，原因上文介绍<code>NSSearchPathForDirectoriesInDomains</code>方法时已经阐述。</p>
+<p>2、bundle下的目录结构不同于project文档结构。不管把图片放在根目录，或者放在未做文件关联的Group下（实际还是根目录），还是放在文件夹下，编译完之后，都会直接放在.app包根目录下，不会在.app包内生成文件夹。.app包位置可通过上面代码打印结果查看。</p>
+<p>图1：工程文件Xcode中结构<br><img src="http://7xkfcm.com1.z0.glb.clouddn.com/bundle1@2x.png" alt="工程文件Xcode中结构"></p>
+<p>图2：工程文件Finder中结构<br><img src="http://7xkfcm.com1.z0.glb.clouddn.com/bundle2@2x.png" alt="工程文件Finder中结构"></p>
+<p>图3：工程名.app包内结构<br><img src="http://7xkfcm.com1.z0.glb.clouddn.com/bundle3@2x.png" alt="工程名.app包内结构"></p>
+<p>3、如上图所示的avatar.png图片，同名文件，编译后，会只保留一个，会保留你最晚添加的那个文件。</p>
+<p>4、对于Assets.xcassets中的素材：</p>
+<pre><code>-<span class="ruby"> 只支持png格式的图片
+</span>-<span class="ruby"> 图片只支持[<span class="constant">UIImage</span> imageNamed]的方式实例化，但是不能从<span class="constant">Bundle</span>中加载
+</span>-<span class="ruby"> 在编译时，<span class="constant">Images</span>.xcassets中的所有文件会被打包为<span class="constant">Assets</span>.car的文件</span>
+</code></pre><p>5、[[NSBundle mainBundle] infoDictionary] 返回内容如下：</p>
+<figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="variable">BuildMachineOSBuild =</span> <span class="number">14</span>F27;</span><br><span class="line">    <span class="variable">CFBundleDevelopmentRegion =</span> en;</span><br><span class="line">    <span class="variable">CFBundleExecutable =</span> FileReadWrite;</span><br><span class="line">    <span class="variable">CFBundleIdentifier =</span> <span class="string">"lyl.FileReadWrite"</span>;</span><br><span class="line">    <span class="variable">CFBundleInfoDictionaryVersion =</span> <span class="string">"6.0"</span>;</span><br><span class="line">    <span class="variable">CFBundleInfoPlistURL =</span> <span class="string">"Info.plist -- file:///Users/richfitbi/Library/Developer/CoreSimulator/Devices/B04AE26C-5A22-4FB1-A593-69678F42BF96/data/Containers/Bundle/Application/3F1A9136-B0D4-4373-AEC4-A208CFDF8039/FileReadWrite.app/"</span>;</span><br><span class="line">    <span class="variable">CFBundleName =</span> FileReadWrite;</span><br><span class="line">    <span class="variable">CFBundleNumericVersion =</span> <span class="number">16809984</span>;</span><br><span class="line">    <span class="variable">CFBundlePackageType =</span> APPL;</span><br><span class="line">    <span class="variable">CFBundleShortVersionString =</span> <span class="string">"1.0"</span>;</span><br><span class="line">    <span class="variable">CFBundleSignature =</span> <span class="string">"????"</span>;</span><br><span class="line">    <span class="variable">CFBundleSupportedPlatforms =</span>     (</span><br><span class="line">        iPhoneSimulator</span><br><span class="line">    );</span><br><span class="line">    <span class="variable">CFBundleVersion =</span> <span class="number">1</span>;</span><br><span class="line">    <span class="variable">DTCompiler =</span> <span class="string">"com.apple.compilers.llvm.clang.1_0"</span>;</span><br><span class="line">    <span class="variable">DTPlatformBuild =</span> <span class="string">""</span>;</span><br><span class="line">    <span class="variable">DTPlatformName =</span> iphonesimulator;</span><br><span class="line">    <span class="variable">DTPlatformVersion =</span> <span class="string">"9.0"</span>;</span><br><span class="line">    <span class="variable">DTSDKBuild =</span> <span class="number">13</span>A340;</span><br><span class="line">    <span class="variable">DTSDKName =</span> <span class="string">"iphonesimulator9.0"</span>;</span><br><span class="line">    <span class="variable">DTXcode =</span> <span class="number">0700</span>;</span><br><span class="line">    <span class="variable">DTXcodeBuild =</span> <span class="number">7</span>A220;</span><br><span class="line">    <span class="variable">LSRequiresIPhoneOS =</span> <span class="number">1</span>;</span><br><span class="line">    <span class="variable">MinimumOSVersion =</span> <span class="string">"9.0"</span>;</span><br><span class="line">    <span class="variable">UIDeviceFamily =</span>     (</span><br><span class="line">        <span class="number">1</span></span><br><span class="line">    );</span><br><span class="line">    <span class="variable">UILaunchStoryboardName =</span> LaunchScreen;</span><br><span class="line">    <span class="variable">UIMainStoryboardFile =</span> Main;</span><br><span class="line">    <span class="variable">UIRequiredDeviceCapabilities =</span>     (</span><br><span class="line">        armv7</span><br><span class="line">    );</span><br><span class="line">    <span class="variable">UISupportedInterfaceOrientations =</span>     (</span><br><span class="line">        UIInterfaceOrientationPortrait,</span><br><span class="line">        UIInterfaceOrientationLandscapeLeft,</span><br><span class="line">        UIInterfaceOrientationLandscapeRight</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们可以根据这个Dictionary获取大量信息，例如<br><code>[[[NSBundle mainBundle] infoDictionary] objectForKey:@&quot;CFBundleShortVersionString&quot;]]</code><br>可任意获取版本信息。</p>
+<h3 id="4、NSData">4、NSData</h3><p>NSData是用来包装数据的。NSData存储的是二进制数据，屏蔽了数据之间的差异，文本、音频、图像等数据都可用NSData来存储。</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span><br><span class="line"> * NSData转换</span><br><span class="line"> */</span></span><br><span class="line">- (<span class="keyword">void</span>)transform_<span class="built_in">NSData</span> &#123;</span><br><span class="line">    <span class="comment">//1、NSString－&gt;NSData</span></span><br><span class="line">    <span class="built_in">NSString</span> *aString = <span class="string">@"1234abcd"</span>;</span><br><span class="line">    <span class="built_in">NSData</span> *aData = [aString dataUsingEncoding: <span class="built_in">NSUTF8StringEncoding</span>];</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//2、NSData－&gt; NSString</span></span><br><span class="line">    <span class="built_in">NSString</span> *aString2 = [[<span class="built_in">NSString</span> alloc] initWithData:aData encoding:<span class="built_in">NSUTF8StringEncoding</span>];</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"%@"</span>,aString2);</span><br><span class="line">  </span><br><span class="line">    <span class="comment">//3、NSData－&gt;UIImage</span></span><br><span class="line">    <span class="built_in">NSString</span> *path = [[<span class="built_in">NSBundle</span> mainBundle] bundlePath];</span><br><span class="line">    <span class="built_in">NSString</span> *name = [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"avatar.png"</span>];</span><br><span class="line">    <span class="built_in">NSString</span> *finalPath = [path stringByAppendingPathComponent:name];</span><br><span class="line">    <span class="built_in">NSData</span> *imageData = [<span class="built_in">NSData</span> dataWithContentsOfFile: finalPath];</span><br><span class="line">    <span class="built_in">UIImage</span> *aimage = [<span class="built_in">UIImage</span> imageWithData: imageData];</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//4、NSData与NSArray  NSDictionary</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">//注意下面两种方式获取的路径是不同的</span></span><br><span class="line">    <span class="comment">//app包中的plist路径，文件只读</span></span><br><span class="line">    <span class="built_in">NSString</span> *plistPath1 = [[<span class="built_in">NSBundle</span> mainBundle] pathForResource:<span class="string">@"Info"</span> ofType:<span class="string">@"plist"</span>];</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//沙盒中的plist路径，文件可读写(注意我们演示用的Info.plist不在Documents中，只存在于bundle中)</span></span><br><span class="line">    <span class="built_in">NSString</span> *plistPath2 = [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"%@/%@/%@"</span>, <span class="built_in">NSHomeDirectory</span>(),<span class="string">@"Documents"</span>,<span class="string">@"Info.plist"</span>];</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"\n\n%@\n\n%@"</span>,plistPath1,plistPath2);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//NSData *plistData = [NSData dataWithContentsOfFile: plistPath1];</span></span><br><span class="line">    <span class="built_in">NSDictionary</span> *dic1 = [<span class="built_in">NSDictionary</span> dictionaryWithContentsOfFile:plistPath1];</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"%@"</span>,dic1);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="5、NSFileManager">5、NSFileManager</h3><p>用于执行一般的文件系统操作。<br>主要功能包括：从一个文件中读取数据；向一个文件中写入数据；删除文件；复制文件；移动文件；比较两个文件的内容；测试文件的存在性；读取/更改文件的属性等等。 </p>
+<p>没什么好说的，直接上代码，注意一下”文件移动”就行了。代码很凌乱，有兴趣的同学可以整理下，形成自己的工具库。</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span><br><span class="line"> * NSFileManager用法</span><br><span class="line"> */</span></span><br><span class="line">- (<span class="keyword">void</span>)use_<span class="built_in">NSFileManager</span> &#123;</span><br><span class="line">    <span class="built_in">NSFileManager</span> *fileManager = [<span class="built_in">NSFileManager</span> defaultManager];</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">NSArray</span>  *docPaths = <span class="built_in">NSSearchPathForDirectoriesInDomains</span>(<span class="built_in">NSDocumentDirectory</span>, <span class="built_in">NSUserDomainMask</span>, <span class="literal">YES</span>);</span><br><span class="line">    <span class="built_in">NSString</span> *docPath = [docPaths lastObject];</span><br><span class="line">    </span><br><span class="line"><span class="comment">//-----------------------创建文件夹(文件夹已经存在，也是提示创建成功)</span></span><br><span class="line">    <span class="comment">//NSString *folderPath1 = [NSString stringWithFormat:@"%@/%@/%@", NSHomeDirectory(),@"Documents",@"MyFolder1"];</span></span><br><span class="line">    <span class="built_in">NSString</span> *folderPath1 = [docPath stringByAppendingPathComponent:<span class="string">@"MyFolder1"</span>];</span><br><span class="line">    <span class="comment">//判断文件夹是否存在</span></span><br><span class="line">    <span class="built_in">BOOL</span> isDir = <span class="literal">YES</span>;</span><br><span class="line">    <span class="keyword">if</span> ([fileManager fileExistsAtPath:folderPath1 isDirectory:&amp;isDir]) &#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"MyFolder1文件夹已存在"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">BOOL</span> folder1CreateSuccess = [fileManager createDirectoryAtPath:folderPath1 withIntermediateDirectories:<span class="literal">YES</span> attributes:<span class="literal">nil</span> error:<span class="literal">nil</span>];</span><br><span class="line">    <span class="keyword">if</span> (folder1CreateSuccess) &#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"文件夹创建成功"</span>);</span><br><span class="line">    &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"文件夹创建失败"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line"><span class="comment">//-----------------------创建文件(文件已经存在，也是提示创建成功。若文件已存在，会覆盖原有数据)</span></span><br><span class="line">    <span class="built_in">NSString</span> *file1Path = [folderPath1 stringByAppendingPathComponent:<span class="string">@"test1.txt"</span>];</span><br><span class="line">    <span class="comment">//判断文件是否存在</span></span><br><span class="line">    <span class="keyword">if</span> ([fileManager fileExistsAtPath:file1Path]) &#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"test1.txt文件已存在"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">NSString</span> *file1Text = <span class="string">@"abcdefg"</span>;</span><br><span class="line">    <span class="built_in">NSData</span> *file1Data = [file1Text dataUsingEncoding: <span class="built_in">NSUTF8StringEncoding</span>];</span><br><span class="line">    <span class="built_in">BOOL</span> file1CreateSuccess = [fileManager createFileAtPath:file1Path contents:file1Data attributes:<span class="literal">nil</span>];</span><br><span class="line">    <span class="keyword">if</span> (file1CreateSuccess) &#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"文件创建成功: %@"</span> ,file1Path);</span><br><span class="line">    &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"文件创建失败"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"><span class="comment">//-----------------------再创建一个文件夹、文件</span></span><br><span class="line">    <span class="built_in">NSString</span> *folderPath2 = [docPath stringByAppendingPathComponent:<span class="string">@"MyFolder2"</span>];</span><br><span class="line">    folderPath2 = [folderPath2 stringByAppendingPathComponent:<span class="string">@"MyFolder2Sub"</span>];</span><br><span class="line">    <span class="comment">//第二个参数：YES时表示会创建路径内的父层文件夹，NO时如果父层文件夹不存在会创建失败</span></span><br><span class="line">    [fileManager createDirectoryAtPath:folderPath2 withIntermediateDirectories:<span class="literal">YES</span> attributes:<span class="literal">nil</span> error:<span class="literal">nil</span>];</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">NSString</span> *file2Path = [folderPath2 stringByAppendingPathComponent:<span class="string">@"test2.txt"</span>];</span><br><span class="line">    <span class="built_in">NSString</span> *file2Text = <span class="string">@"hijklmn"</span>;</span><br><span class="line">    <span class="built_in">NSData</span> *file2Data = [file2Text dataUsingEncoding: <span class="built_in">NSUTF8StringEncoding</span>];</span><br><span class="line">    [fileManager createFileAtPath:file2Path contents:file2Data attributes:<span class="literal">nil</span>];</span><br><span class="line"><span class="comment">//-----------------------写入内容</span></span><br><span class="line">    <span class="built_in">NSString</span> *content = <span class="string">@"测试写入内容！"</span>;</span><br><span class="line">    <span class="comment">//会覆盖原有内容</span></span><br><span class="line">    <span class="built_in">BOOL</span> res = [content writeToFile:file1Path atomically:<span class="literal">YES</span> encoding:<span class="built_in">NSUTF8StringEncoding</span> error:<span class="literal">nil</span>];</span><br><span class="line">    <span class="keyword">if</span> (res) &#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"文件写入成功"</span>);</span><br><span class="line">    &#125;<span class="keyword">else</span></span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"文件写入失败"</span>);</span><br><span class="line"><span class="comment">//-----------------------读取内容</span></span><br><span class="line">    <span class="comment">//NSFileManager-读取内容</span></span><br><span class="line">    <span class="built_in">NSData</span> *fileManagerGetData = [fileManager contentsAtPath:file1Path];</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"NSFileManager-读取内容 : %@"</span>,[[<span class="built_in">NSString</span> alloc] initWithData:fileManagerGetData encoding:<span class="built_in">NSUTF8StringEncoding</span>]);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//NSData-读取内容</span></span><br><span class="line">    <span class="built_in">NSData</span> *nsDataGetData = [<span class="built_in">NSData</span> dataWithContentsOfFile:file1Path];</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"NSData-读取内容 : %@"</span>,[[<span class="built_in">NSString</span> alloc] initWithData:nsDataGetData encoding:<span class="built_in">NSUTF8StringEncoding</span>]);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//NSString-读取内容</span></span><br><span class="line">    <span class="built_in">NSString</span> *nsStringcontent = [<span class="built_in">NSString</span> stringWithContentsOfFile:file1Path encoding:<span class="built_in">NSUTF8StringEncoding</span> error:<span class="literal">nil</span>];</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"NSString-读取内容 : %@"</span>,nsStringcontent);</span><br><span class="line"><span class="comment">//    + (id)stringWithContentsOfFile:(NSString *)path usedEncoding:(NSStringEncoding *)enc error:(NSError **)error;</span></span><br><span class="line"><span class="comment">//    是自动判断encode，如果打开成功，把encode放在enc 里，返回给调用者。</span></span><br><span class="line"><span class="comment">//    声明一个NSStringEncoding 类型（其实就是NSUInteger）然后送指针给方法就是了。例如</span></span><br><span class="line"><span class="comment">//    NSStringEncoding enc;</span></span><br><span class="line"><span class="comment">//    NSString *string = [NSString stringWithContentsOfFile:path usedEncoding:&amp;enc error:nil];</span></span><br><span class="line"><span class="comment">//    成功之后你可以检查 enc 以确定 string 的编码。</span></span><br><span class="line">    </span><br><span class="line"><span class="comment">//-----------------------获取文件大小</span></span><br><span class="line">    <span class="built_in">NSDictionary</span> *attrDic = [fileManager attributesOfItemAtPath:file1Path error:<span class="literal">nil</span>];</span><br><span class="line">    <span class="built_in">NSNumber</span> *fileSize = [attrDic objectForKey:<span class="built_in">NSFileSize</span>];</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"fileSize : %llu"</span>,[fileSize unsignedLongLongValue]);</span><br><span class="line"><span class="comment">//-----------------------获取目录文件信息</span></span><br><span class="line">    <span class="built_in">NSDirectoryEnumerator</span> *dirEnum = [fileManager enumeratorAtPath:docPath];</span><br><span class="line">    <span class="built_in">NSString</span> *path = <span class="literal">nil</span>;</span><br><span class="line">    <span class="keyword">while</span> ((path = [dirEnum nextObject]) != <span class="literal">nil</span>)&#123;                                                                                                                  <span class="built_in">NSLog</span>(<span class="string">@"%@"</span>,path);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line"><span class="comment">//==================================================================//</span></span><br><span class="line"><span class="comment">///////下面代码设计文件移动、删除等功能，因此最好打断点查看////////////////</span></span><br><span class="line"><span class="comment">//==================================================================//</span></span><br><span class="line">    </span><br><span class="line"><span class="comment">//-----------------------移动文件（重命名）</span></span><br><span class="line">    <span class="built_in">NSString</span> *toPath = [docPath stringByAppendingPathComponent:<span class="string">@"MyFolder3"</span>];</span><br><span class="line">    [fileManager createDirectoryAtPath:toPath withIntermediateDirectories:<span class="literal">YES</span> attributes:<span class="literal">nil</span> error:<span class="literal">nil</span>];</span><br><span class="line">    <span class="comment">//在此时，文件结构：</span></span><br><span class="line">    <span class="comment">//Documents</span></span><br><span class="line">    <span class="comment">//-----MyFolder1</span></span><br><span class="line">    <span class="comment">//     -----test1.txt</span></span><br><span class="line">    <span class="comment">//-----MyFolder2</span></span><br><span class="line">    <span class="comment">//     -----MyFolder2Sub</span></span><br><span class="line">    <span class="comment">//          -----test2.txt</span></span><br><span class="line">    <span class="comment">//-----MyFolder3</span></span><br><span class="line">    <span class="comment">//现在，想把test2.txt文件，移动到MyFolder3下，srcPath为test2.txt路径没有问题，但对于dstPath，正常思维，应该是MyFolder3的路径即可。但你要真这么想，肯定会移动失败。因为方法dstPath参数描述中明确说明：This path must include the name of the file or directory in its new location。也就是说，该方法另一层含义是移动文件并且重命名，如果你保持原有的文件名，那么就好像只是移动了文件。</span></span><br><span class="line">    <span class="built_in">NSError</span> *error;</span><br><span class="line">    toPath = [toPath stringByAppendingPathComponent:<span class="string">@"test2.txt"</span>];</span><br><span class="line">    <span class="built_in">BOOL</span> isMoveSuccess = [fileManager moveItemAtPath:file2Path toPath:toPath error:&amp;error];</span><br><span class="line">    <span class="keyword">if</span> (isMoveSuccess) &#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"文件移动成功"</span>);</span><br><span class="line">    &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"%@"</span>,error<span class="variable">.localizedDescription</span>);</span><br><span class="line">    &#125;</span><br><span class="line"><span class="comment">//-----------------------不移动文件，只重命名</span></span><br><span class="line">    <span class="built_in">NSString</span> *toPath2 = [docPath stringByAppendingPathComponent:<span class="string">@"MyFolder3"</span>];</span><br><span class="line">    [fileManager moveItemAtPath:[toPath2 stringByAppendingPathComponent:<span class="string">@"test2.txt"</span>] toPath:[toPath2 stringByAppendingPathComponent:<span class="string">@"test3.txt"</span>] error:&amp;error];</span><br><span class="line"><span class="comment">//-----------------------复制文件（重命名）,和移动文件原理相同</span></span><br><span class="line">    <span class="built_in">NSString</span> *srcPath3 = [docPath stringByAppendingPathComponent:<span class="string">@"MyFolder3"</span>];</span><br><span class="line">    srcPath3 = [srcPath3 stringByAppendingPathComponent:<span class="string">@"test3.txt"</span>];</span><br><span class="line">    <span class="built_in">NSString</span> *dstPath3 = [docPath stringByAppendingPathComponent:<span class="string">@"MyFolder2"</span>];</span><br><span class="line">    dstPath3 = [dstPath3 stringByAppendingPathComponent:<span class="string">@"test2.txt"</span>];</span><br><span class="line">    </span><br><span class="line">   [fileManager copyItemAtPath:srcPath3 toPath:dstPath3 error:&amp;error];</span><br><span class="line">    </span><br><span class="line"><span class="comment">//-----------------------删除文件</span></span><br><span class="line">    [fileManager removeItemAtPath:[docPath stringByAppendingPathComponent:<span class="string">@"MyFolder2"</span>] error:&amp;error];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="6、NSFileHandle">6、NSFileHandle</h3><ul>
+<li>NSFileHandle类主要对文件内容进行读取和写入操作</li>
+<li>NSFileManager类主要对文件的操作（删除、修改、移动、复制等等）</li>
+</ul>
+<p>NSFileHandle类可以实现如下功能：</p>
+<ol>
+<li>打开一个文件，执行读、写或更新（读写）操作；</li>
+<li>在文件中查找指定位置；</li>
+<li>从文件中读取特定数目的字节，或将特定数目的字节写入文件中</li>
+<li>另外，NSFileHandle类提供的方法也可以用于各种设备或套接字。</li>
+</ol>
+<p>一般而言，我们处理文件时都要经历以下三个步骤：</p>
+<ol>
+<li>打开文件，获取一个NSFileHandle对象（以便在后面的I/O操作中引用该文件）。</li>
+<li>对打开文件执行I/O操作。</li>
+<li>关闭文件。</li>
+</ol>
+<figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">NSFileHandle *fileHandle = <span class="comment">[<span class="comment">[NSFileHandle alloc]</span>init]</span>;</span><br><span class="line">fileHandle = <span class="comment">[NSFileHandle fileHandleForReadingAtPath:path]</span>; //打开一个文件准备读取</span><br><span class="line">fileHandle = <span class="comment">[NSFileHandle fileHandleForWritingAtPath:path]</span>;</span><br><span class="line">fileHandle = <span class="comment">[NSFileHandle fileHandleForUpdatingAtPath:path]</span>;</span><br><span class="line">fileData = <span class="comment">[fileHandle availableData]</span>;    // 从设备或者通道返回可用的数据</span><br><span class="line">fileData = <span class="comment">[fileHandle readDataToEndOfFile]</span>;</span><br><span class="line"><span class="comment">[fileHandle writeData:fileData]</span>;    //将NSData数据写入文件</span><br><span class="line"><span class="comment">[fileHandle closeFile]</span>;   //关闭文件</span><br></pre></td></tr></table></figure>
+<p>常用方法:</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">+ (<span class="keyword">id</span>)fileHandleForReadingAtPath:(<span class="built_in">NSString</span> *)path  打开一个文件准备读取     </span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">id</span>)fileHandleForWritingAtPath:(<span class="built_in">NSString</span> *)path  打开一个文件准备写入   </span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">id</span>)fileHandleForUpdatingAtPath:(<span class="built_in">NSString</span> *)path  打开一个文件准备更新  </span><br><span class="line"></span><br><span class="line">-  (<span class="built_in">NSData</span> *)availableData; 从设备或通道返回可用的数据            </span><br><span class="line"></span><br><span class="line">-  (<span class="built_in">NSData</span> *)readDataToEndOfFile; 从当前的节点读取到文件的末尾               </span><br><span class="line"></span><br><span class="line">-  (<span class="built_in">NSData</span> *)readDataOfLength:(<span class="built_in">NSUInteger</span>)length; 从当前节点开始读取指定的长度数据                           </span><br><span class="line"></span><br><span class="line">-  (<span class="keyword">void</span>)writeData:(<span class="built_in">NSData</span> *)data; 写入数据         </span><br><span class="line"></span><br><span class="line">-  (<span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span>)offsetInFile;  获取当前文件的偏移量            </span><br><span class="line"></span><br><span class="line">-  (<span class="keyword">void</span>)seekToFileOffset:(<span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span>)offset; 跳到指定文件的偏移量     </span><br><span class="line"></span><br><span class="line">-  (<span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span>)seekToEndOfFile; 跳到文件末尾        </span><br><span class="line"></span><br><span class="line">-  (<span class="keyword">void</span>)truncateFileAtOffset:(<span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span>)offset; 将文件的长度设为offset字节</span><br><span class="line"></span><br><span class="line">-  (<span class="keyword">void</span>)closeFile;  关闭文件</span><br></pre></td></tr></table></figure>
+<h2 id="三、属性列表（Property_List）">三、属性列表（Property List）</h2><p>属性列表提供了一个方便的方式来存储简单的结构化数据。它是以XML格式存储的。您不能使用属性列表保存所有类型的数据。在属性列表中的项目的数据类型，包括:数组(Array)、字典(Dictionary)、字符串(String)等等。</p>
+<p>属性列表常被IOS用于保存应用程序设置属性，但这并不意味着你不使用它到其他用途。但它是被设计用于存储少量的数据。</p>
+<p>所谓用属性列表进行数据持久化， 就是针对数组、字典集合类调用<code>writeToFile：atomically</code>方法和<code>initWithContentsOfFile</code>方法来写入数据。数组、字典只能将BOOL、NSNumber、NSString、NSData、NSDate、NSArray、NSDictionary写入属性列表plist文件</p>
+<h3 id="1、属性列表的结构">1、属性列表的结构</h3><p>当我们新建一个Contacts.plist文件之后，Open as Source Code，查看它的结构如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="pi">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="doctype">&lt;!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="title">plist</span> <span class="attribute">version</span>=<span class="value">"1.0"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="title">dict</span>&gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="tag">&lt;/<span class="title">dict</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">plist</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>我们可以在Open as Property List的查看模式下，选中root，可以看到type列可以更改root为Dictionary或是Array。更改成Array之后，Open as Source Code，查看它的结构如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="pi">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="doctype">&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="title">plist</span> <span class="attribute">version</span>=<span class="value">"1.0"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="title">array</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">plist</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>plist文件root下添加其它节点时，可以看到type列可以选择：Dictionary、Array、Boolean、Data、Date、Number、String类型。</p>
+<h3 id="2、用属性列表保存数据">2、用属性列表保存数据</h3><p>工程下的plist文件，我们不能在项目运行时修改，因此需要将项目资源的Contacts.plist文件中数据复制到沙箱Documents目录下再进行增删改查操作。</p>
+<p>当我们用String、NSData类型直接写入文件时，会破坏plist文件结构：<br>比如：</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)writeStringDataToPList &#123;</span><br><span class="line">    <span class="built_in">NSString</span> *content = <span class="string">@"abcd"</span>;</span><br><span class="line">    [content writeToFile:<span class="keyword">self</span><span class="variable">.operateFilePath</span> atomically:<span class="literal">YES</span> encoding:<span class="built_in">NSUTF8StringEncoding</span> error:<span class="literal">nil</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行之后，你会发现plist文件原本的XML结构没有了，成了纯文本文件。因此，我们应该用属性列表保存的数据，应该是NSDictionary、NSArray。</p>
+<p>示例代码如下：</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor">#import <span class="title">"ViewController.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">ViewController</span> ()</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span>(<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>) <span class="built_in">NSString</span> *operateFilePath;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ViewController</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)viewDidLoad &#123;</span><br><span class="line">    [<span class="keyword">super</span> viewDidLoad];</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">self</span><span class="variable">.operateFilePath</span> = [<span class="keyword">self</span> applicationDocumentsDirectoryFile];</span><br><span class="line">    [<span class="keyword">self</span> createEditableCopyOfDatabaseIfNeeded];</span><br><span class="line">    [<span class="keyword">self</span> writeArrayDataToPList];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//获取放置在沙箱Documents目录下的文件的完整路径</span></span><br><span class="line">- (<span class="built_in">NSString</span> *)applicationDocumentsDirectoryFile</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">NSString</span> *documentDirectory = [<span class="built_in">NSSearchPathForDirectoriesInDomains</span>(<span class="built_in">NSDocumentDirectory</span>, <span class="built_in">NSUserDomainMask</span>, <span class="literal">YES</span>) lastObject];</span><br><span class="line">    <span class="built_in">NSString</span> *path = [documentDirectory stringByAppendingPathComponent:<span class="string">@"Contacts.plist"</span>];</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"Document path ：%@"</span>,path);</span><br><span class="line">    <span class="keyword">return</span> path;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//对文件进行预处理，判断在Documents目录下是否存在plist文件，如果不存在则从资源目录下复制一个。</span></span><br><span class="line">-(<span class="keyword">void</span>)createEditableCopyOfDatabaseIfNeeded</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">NSFileManager</span> *fileManager = [<span class="built_in">NSFileManager</span> defaultManager];</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">BOOL</span> dbexits = [fileManager fileExistsAtPath:<span class="keyword">self</span><span class="variable">.operateFilePath</span>];</span><br><span class="line">    <span class="keyword">if</span> (!dbexits) &#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"resourcePath ：%@"</span>,[[<span class="built_in">NSBundle</span> mainBundle] resourcePath]);</span><br><span class="line">        <span class="built_in">NSString</span> *defaultDBPath = [[[<span class="built_in">NSBundle</span> mainBundle] resourcePath] stringByAppendingPathComponent:<span class="string">@"Contacts.plist"</span>];</span><br><span class="line">        </span><br><span class="line">        <span class="built_in">NSError</span> *error;</span><br><span class="line">        <span class="built_in">BOOL</span> success=[fileManager copyItemAtPath:defaultDBPath toPath:<span class="keyword">self</span><span class="variable">.operateFilePath</span> error:&amp;error];</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> (!success) &#123;</span><br><span class="line">            <span class="built_in">NSAssert1</span>(<span class="number">0</span>,<span class="string">@"错误写入文件：‘%@’"</span>,[error localizedDescription]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)writeStringDataToPList &#123;</span><br><span class="line">    <span class="built_in">NSString</span> *content = <span class="string">@"abcd"</span>;</span><br><span class="line">    [content writeToFile:<span class="keyword">self</span><span class="variable">.operateFilePath</span> atomically:<span class="literal">YES</span> encoding:<span class="built_in">NSUTF8StringEncoding</span> error:<span class="literal">nil</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)writeArrayDataToPList &#123;</span><br><span class="line">    <span class="built_in">NSArray</span> *array = @[@(<span class="number">123</span>), <span class="string">@"中国"</span>, @(<span class="number">3</span>), @(<span class="number">3</span>LL), @(-<span class="number">3</span>), @(<span class="number">3.0</span>), @(<span class="number">3.1</span>), @(<span class="number">3.1</span>f)];</span><br><span class="line">    [array writeToFile:<span class="keyword">self</span><span class="variable">.operateFilePath</span> atomically:<span class="literal">YES</span>];</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//打印文件内容</span></span><br><span class="line">    <span class="built_in">NSString</span> *stringcontent = [<span class="built_in">NSString</span> stringWithContentsOfFile:<span class="keyword">self</span><span class="variable">.operateFilePath</span> encoding:<span class="built_in">NSUTF8StringEncoding</span> error:<span class="literal">nil</span>];</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"NSString-读取内容 : %@"</span>,stringcontent);</span><br><span class="line">    <span class="comment">//文件内容转换回Array</span></span><br><span class="line">    <span class="built_in">NSArray</span> *arrayContent = [<span class="built_in">NSArray</span> arrayWithContentsOfFile:<span class="keyword">self</span><span class="variable">.operateFilePath</span>];</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"arrayContent : %@"</span>,arrayContent);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)writeDictionaryDataToPList &#123;</span><br><span class="line">    <span class="built_in">NSDictionary</span> *dic = @&#123;<span class="string">@"first"</span>   : <span class="string">@"中国"</span>,</span><br><span class="line">                          <span class="string">@"second"</span>  : @(<span class="number">3</span>),</span><br><span class="line">                          <span class="string">@"third"</span>   : @(<span class="number">3</span>LL),</span><br><span class="line">                          <span class="string">@"fourth"</span>  : @(-<span class="number">3</span>),</span><br><span class="line">                          <span class="string">@"fifth"</span>   : @(<span class="number">3.0</span>),</span><br><span class="line">                          <span class="string">@"sixth"</span>   : @(<span class="number">3.1</span>),</span><br><span class="line">                          <span class="string">@"seventh"</span> : @(<span class="number">3.1</span>f),</span><br><span class="line">                          &#125;;</span><br><span class="line">    [dic writeToFile:<span class="keyword">self</span><span class="variable">.operateFilePath</span> atomically:<span class="literal">YES</span>];</span><br><span class="line">    <span class="comment">//打印文件内容</span></span><br><span class="line">    <span class="built_in">NSString</span> *stringcontent = [<span class="built_in">NSString</span> stringWithContentsOfFile:<span class="keyword">self</span><span class="variable">.operateFilePath</span> encoding:<span class="built_in">NSUTF8StringEncoding</span> error:<span class="literal">nil</span>];</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"NSString-读取内容 : %@"</span>,stringcontent);</span><br><span class="line">    <span class="comment">//文件内容转换回Dictionary</span></span><br><span class="line">    <span class="built_in">NSDictionary</span> *dicContent = [<span class="built_in">NSDictionary</span> dictionaryWithContentsOfFile:<span class="keyword">self</span><span class="variable">.operateFilePath</span>];</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"arrayContent : %@"</span>,dicContent);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行<code>writeArrayDataToPList</code>方法之后，打印结果如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">NSString-读取内容 : <span class="pi">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="doctype">&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="title">plist</span> <span class="attribute">version</span>=<span class="value">"1.0"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="title">array</span>&gt;</span></span><br><span class="line">true<span class="tag">&lt;<span class="title">integer</span>&gt;</span>123<span class="tag">&lt;/<span class="title">integer</span>&gt;</span></span><br><span class="line">true<span class="tag">&lt;<span class="title">string</span>&gt;</span>中国<span class="tag">&lt;/<span class="title">string</span>&gt;</span></span><br><span class="line">true<span class="tag">&lt;<span class="title">integer</span>&gt;</span>3<span class="tag">&lt;/<span class="title">integer</span>&gt;</span></span><br><span class="line">true<span class="tag">&lt;<span class="title">integer</span>&gt;</span>3<span class="tag">&lt;/<span class="title">integer</span>&gt;</span></span><br><span class="line">true<span class="tag">&lt;<span class="title">integer</span>&gt;</span>-3<span class="tag">&lt;/<span class="title">integer</span>&gt;</span></span><br><span class="line">true<span class="tag">&lt;<span class="title">real</span>&gt;</span>3<span class="tag">&lt;/<span class="title">real</span>&gt;</span></span><br><span class="line">true<span class="tag">&lt;<span class="title">real</span>&gt;</span>3.1000000000000001<span class="tag">&lt;/<span class="title">real</span>&gt;</span></span><br><span class="line">true<span class="tag">&lt;<span class="title">real</span>&gt;</span>3.0999999046325684<span class="tag">&lt;/<span class="title">real</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">array</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">plist</span>&gt;</span></span><br><span class="line">arrayContent : (</span><br><span class="line">    123,</span><br><span class="line">    "\U4e2d\U56fd",</span><br><span class="line">    3,</span><br><span class="line">    3,</span><br><span class="line">    "-3",</span><br><span class="line">    3,</span><br><span class="line">    "3.1",</span><br><span class="line">    "3.099999904632568"</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>你会发现对于浮点数，保存后不准确了，这个问题的根源大家自行google，或看下唐巧大神的<a href="http://www.wtoutiao.com/p/j8diif.html" target="_blank" rel="external">这篇文章</a>。如果只是涉及存取，建议大家还是存字符串比较好。如果涉及精确计算，可以参考<a href="http://arthurchen.blog.51cto.com/2483760/761426" target="_blank" rel="external">iOS开发：Objective-C精确的货币计算</a>。</p>
+<p>另外需要注意的是，如果集合或者字典中包含Dictionary、Array、Boolean、Data、Date、Number、String之外的任何类型，都无法写入plist文件，您可以自行实验一下：</p>
+<figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">//该方法无法写入plist文件</span><br><span class="line">- (void)writeDictionaryHaveObjectDataToPList &#123;</span><br><span class="line">    <span class="keyword">Person</span> *p1 = <span class="comment">[<span class="comment">[Person alloc]</span> init]</span>;</span><br><span class="line">    p1.personName = @<span class="string">"Jack"</span>;</span><br><span class="line">    p1.personPhoneNumber = @<span class="string">"13100000000"</span>;</span><br><span class="line">    <span class="keyword">Person</span> *p2 = <span class="comment">[<span class="comment">[Person alloc]</span> init]</span>;</span><br><span class="line">    p2.personName = @<span class="string">"Rose"</span>;</span><br><span class="line">    p2.personPhoneNumber = @<span class="string">"13788888888"</span>;</span><br><span class="line">    </span><br><span class="line">    NSDictionary *dic = @&#123;@<span class="string">"first"</span>   : p1,</span><br><span class="line">                          @<span class="string">"second"</span>  : p2,</span><br><span class="line">                          &#125;;</span><br><span class="line">    <span class="comment">[dic writeToFile:self.operateFilePath atomically:YES]</span>;</span><br><span class="line">    //打印文件内容</span><br><span class="line">    NSString *stringcontent = <span class="comment">[NSString stringWithContentsOfFile:self.operateFilePath encoding:NSUTF8StringEncoding error:nil]</span>;</span><br><span class="line">    NSLog(@<span class="string">"NSString-读取内容 : %@"</span>,stringcontent);</span><br><span class="line">    //文件内容转换回Dictionary</span><br><span class="line">    NSDictionary *dicContent = <span class="comment">[NSDictionary dictionaryWithContentsOfFile:self.operateFilePath]</span>;</span><br><span class="line">    NSLog(@<span class="string">"arrayContent : %@"</span>,dicContent);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="四、偏好设置（NSUserDefaults）">四、偏好设置（NSUserDefaults）</h2><p>NSUserDefaults适合存储轻量级的本地数据，用来保存应用程序设置和属性，用户保存的数据如用户名、密码。用户再次打开程序或开机后这些数据仍然存在。</p>
+<p>使用NSUserDefaults保存的数据，会保存在特定的plist文件中，实际上就是上文我们所说的使用属性列表进行数据持久化。只不过自己建立的plist文件，需要手动创建文件，读取文件，很麻烦，而使用NSUserDefaults则不用管这些东西，就像读字符串一样，直接读取就可以了。</p>
+<p>NSUserDefaults支持的数据格式有：NSNumber（Integer、Float、Double），NSString，NSDate，NSArray，NSDictionary，BOOL类型。如果要存储其他类型，则需要转换为前面的类型，才能用NSUserDefaults存储。</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor">#import <span class="title">"ViewController.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">ViewController</span> ()</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ViewController</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)viewDidLoad &#123;</span><br><span class="line">    [<span class="keyword">super</span> viewDidLoad];</span><br><span class="line">    </span><br><span class="line">    [<span class="keyword">self</span> save<span class="built_in">NSUserDefaults</span>];</span><br><span class="line">    </span><br><span class="line">    [<span class="keyword">self</span> read<span class="built_in">NSUserDefaults</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//保存数据到NSUserDefaults</span></span><br><span class="line">-(<span class="keyword">void</span>)save<span class="built_in">NSUserDefaults</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">NSString</span> *myString = <span class="string">@"lyl"</span>;</span><br><span class="line">    <span class="keyword">int</span> myInteger = <span class="number">100</span>;</span><br><span class="line">    <span class="keyword">float</span> myFloat = <span class="number">50.0</span>f;</span><br><span class="line">    <span class="keyword">double</span> myDouble = <span class="number">20.0</span>;</span><br><span class="line">    <span class="built_in">BOOL</span> isMe = <span class="literal">YES</span>;</span><br><span class="line">    <span class="built_in">NSDate</span> *myDate = [<span class="built_in">NSDate</span> date];</span><br><span class="line">    <span class="built_in">NSArray</span> *myArray = [<span class="built_in">NSArray</span> arrayWithObjects:<span class="string">@"hello"</span>, <span class="string">@"world"</span>, <span class="literal">nil</span>];</span><br><span class="line">    <span class="built_in">NSDictionary</span> *myDictionary = [<span class="built_in">NSDictionary</span> dictionaryWithObjects:[<span class="built_in">NSArray</span> arrayWithObjects:<span class="string">@"lyl"</span>, <span class="string">@"30"</span>, <span class="literal">nil</span>] forKeys:[<span class="built_in">NSArray</span> arrayWithObjects:<span class="string">@"name"</span>, <span class="string">@"age"</span>, <span class="literal">nil</span>]];</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//将上述数据全部存储到NSUserDefaults中</span></span><br><span class="line">    <span class="built_in">NSUserDefaults</span> *userDefaults = [<span class="built_in">NSUserDefaults</span> standardUserDefaults];</span><br><span class="line">    <span class="comment">//存储时，除NSNumber类型使用对应的类型意外，其他的都是使用setObject:forKey:</span></span><br><span class="line">    [userDefaults setInteger:myInteger forKey:<span class="string">@"myInteger"</span>];</span><br><span class="line">    [userDefaults setFloat:myFloat forKey:<span class="string">@"myFloat"</span>];</span><br><span class="line">    [userDefaults setDouble:myDouble forKey:<span class="string">@"myDouble"</span>];</span><br><span class="line">    [userDefaults setBool:isMe forKey:<span class="string">@"isMe"</span>];</span><br><span class="line">    [userDefaults setObject:myString forKey:<span class="string">@"myString"</span>];</span><br><span class="line">    [userDefaults setObject:myDate forKey:<span class="string">@"myDate"</span>];</span><br><span class="line">    [userDefaults setObject:myArray forKey:<span class="string">@"myArray"</span>];</span><br><span class="line">    [userDefaults setObject:myDictionary forKey:<span class="string">@"myDictionary"</span>];</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//这里建议同步存储到磁盘中，但是不是必须的</span></span><br><span class="line">    [userDefaults synchronize];</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//从NSUserDefaults中读取数据</span></span><br><span class="line">-(<span class="keyword">void</span>)read<span class="built_in">NSUserDefaults</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">NSUserDefaults</span> *userDefaultes = [<span class="built_in">NSUserDefaults</span> standardUserDefaults];</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//读取数据到各个label中</span></span><br><span class="line">    <span class="comment">//读取整型int类型的数据</span></span><br><span class="line">    <span class="built_in">NSInteger</span> myInteger = [userDefaultes integerForKey:<span class="string">@"myInteger"</span>];</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"%@"</span>,[<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"%ld"</span>,myInteger]);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//读取浮点型float类型的数据</span></span><br><span class="line">    <span class="keyword">float</span> myFloat = [userDefaultes floatForKey:<span class="string">@"myFloat"</span>];</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"%@"</span>, [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"%f"</span>,myFloat]);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//读取double类型的数据</span></span><br><span class="line">    <span class="keyword">double</span> myDouble = [userDefaultes doubleForKey:<span class="string">@"myDouble"</span>];</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"%@"</span>,[<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"%f"</span>,myDouble]);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//读取NSString类型的数据</span></span><br><span class="line">    <span class="built_in">NSString</span> *myString = [userDefaultes stringForKey:<span class="string">@"myString"</span>];</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"%@"</span>, myString);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//读取NSDate日期类型的数据</span></span><br><span class="line">    <span class="built_in">NSDate</span> *myDate = [userDefaultes valueForKey:<span class="string">@"myDate"</span>];</span><br><span class="line">    <span class="built_in">NSDateFormatter</span> *df = [[<span class="built_in">NSDateFormatter</span> alloc] init];</span><br><span class="line">    [df setDateFormat:<span class="string">@"yyyy-MM-dd HH:mm:ss"</span>];</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"%@"</span>,[<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"%@"</span>,[df stringFromDate:myDate]]);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//读取数组NSArray类型的数据</span></span><br><span class="line">    <span class="built_in">NSArray</span> *myArray = [userDefaultes arrayForKey:<span class="string">@"myArray"</span>];</span><br><span class="line">    <span class="built_in">NSString</span> *myArrayString = [[<span class="built_in">NSString</span> alloc] init];</span><br><span class="line">    <span class="keyword">for</span>(<span class="built_in">NSString</span> *str <span class="keyword">in</span> myArray)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"str= %@"</span>,str);</span><br><span class="line">        myArrayString = [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"%@  %@"</span>, myArrayString, str];</span><br><span class="line">        [myArrayString stringByAppendingString:str];</span><br><span class="line">        <span class="comment">//        [myArrayString stringByAppendingFormat:@"%@",str];</span></span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"myArrayString=%@"</span>,myArrayString);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"%@"</span>,myArrayString);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//读取字典类型NSDictionary类型的数据</span></span><br><span class="line">    <span class="built_in">NSDictionary</span> *myDictionary = [userDefaultes dictionaryForKey:<span class="string">@"myDictionary"</span>];</span><br><span class="line">    <span class="built_in">NSString</span> *myDicString = [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"name:%@, age:%ld"</span>,[myDictionary valueForKey:<span class="string">@"name"</span>], [[myDictionary valueForKey:<span class="string">@"age"</span>] integerValue]];</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"%@"</span>,myDicString);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<ol>
+<li><p>NSUserDefaults保存的数据,默认会存储在 /Library/Prefereces/[projectName].plist中，开发时可以通过Finder前往如下位置查看</p>
+ <figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; <span class="regexp">/Users/</span>richfitbi<span class="regexp">/Library/</span>Developer<span class="regexp">/CoreSimulator/</span>Devices<span class="regexp">/9DBB8396-CFC2-4320-A3D8-6FA2826DDF29/</span>data<span class="regexp">/Containers/</span>Data<span class="regexp">/Application/</span></span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>请根据自己的目录结构自行调整。</p>
+<ol>
+<li><p>使用偏好设置对数据进行保存之后, 它保存到系统的时间是不确定的，会在将来某一时间点自动将数据保存到Preferences文件夹下面，如果需要即刻将数据存储，可以使用[defaults synchronize];</p>
+</li>
+<li><p>所有的信息都写在一个文件中，即/Library/Prefereces/[projectName].plist中。</p>
+</li>
+</ol>
+</blockquote>
+<h2 id="五、对象归档（NSKeyedArchiver）">五、对象归档（NSKeyedArchiver）</h2><p>属性列表、偏好设置使用都有局限性，就是无法保存自定义的数据类。要解决这个问题，我们使用归档方法。归档方法实际就是 用 NSKeyedArchiver 对 自定义类进行编解码成 NSMutableData 后，再对NSMutableData实行序列化。具体的编解码是由NSCoder实现的。</p>
+<h3 id="1、名词解释">1、名词解释</h3><p>在开始讲NSKeyedArchiver之前，我们先解释一些名词：</p>
+<ul>
+<li>Archives/UnArchives</li>
+<li>Serializations/UnSerializations</li>
+<li>Encoding/Decoding</li>
+<li>Boxing/UnBoxing</li>
+</ul>
+<h4 id="（1）归档(Archives)和序列化(Serializations)">（1）归档(Archives)和序列化(Serializations)</h4><p>归档，在其他语言中又叫“序列化”，就是将对象保存到硬盘；解档，在其他语言又叫“反序列化”就是将硬盘文件还原成对象。其实归档就是数据存储的过程。</p>
+<p>事实上在iOS中，归档(Archives)和序列化(Serializations)有着不同的内涵。我们看一下官方文档<a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/Archiving/Archiving.html" target="_blank" rel="external">Archives and Serializations Programming Guide</a>中的Introduction，翻译过来就是：</p>
+<blockquote>
+<p>归档(Archives)和序列化(Serializations)是将对象转换成字节流的两种方式。字节流便于保存和网络传输。当字节流解码后，可恢复对象的数据结构。归档详细记录了数据和值的关联关系，而序列化仅仅记录属性列表的简单层级关系。</p>
+</blockquote>
+<p>说白了，归档(Archives)和序列化(Serializations)都是将对象转换成字节流以便保存或传输，区别在于：</p>
+<ul>
+<li>归档(Archives)：自定义对象转换为字节流</li>
+<li>序列化(Serializations)：某些特定类型（NSDictionary, NSArray, NSString, NSDate, NSNumber，NSData）的数据转换为字节流(通常将其保存为plist文件)</li>
+</ul>
+<p>相应的相反行为</p>
+<ul>
+<li>解档(UnArchives)：字节流转换为自定义对象</li>
+<li>反序列化(UnSerializations)：字节流(通常将其保存为plist文件)转换为某些特定类型（NSDictionary, NSArray, NSString, NSDate, NSNumber，NSData）</li>
+</ul>
+<h4 id="（2）编码(Encoding)和解码(Decoding)">（2）编码(Encoding)和解码(Decoding)</h4><p>归档时，我们需要对数据进行编码(Encoding)，比如</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[archiver <span class="string">encodeCGSize:</span>size1 <span class="string">forKey:</span>@<span class="string">"size"</span>];</span><br><span class="line">[archiver <span class="string">encodeObject:</span>number1 <span class="string">forKey:</span>@<span class="string">"number"</span>];</span><br><span class="line">[archiver <span class="string">encodeObject:</span>str1 <span class="string">forKey:</span>@<span class="string">"string"</span>];</span><br></pre></td></tr></table></figure>
+<p>解档时，我们需要对数据进行解码(Decoding)，比如</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">size2 = [unarchiver <span class="string">decodeCGSizeForKey:</span>@<span class="string">"size"</span>];</span><br><span class="line">number2 = [unarchiver <span class="string">decodeObjectForKey:</span>@<span class="string">"number"</span>];</span><br><span class="line">str2 = [unarchiver <span class="string">decodeObjectForKey:</span>@<span class="string">"string"</span>];</span><br></pre></td></tr></table></figure>
+<h4 id="（3）装箱(Boxing)和拆箱(UnBoxing)">（3）装箱(Boxing)和拆箱(UnBoxing)</h4><p>我们知道，数组和字典中只能存储对象类型，其他基本类型和结构体是无法直接放到数组和字典中。把基本类型或结构体转化为Object就是一个装箱(Boxing)的过程，反过来将这个Object对象转换为基本数据类型或结构体的过程就是拆箱(UnBoxing)。</p>
+<p>一般将基本数据类型装箱成NSNumber类型。是NSObject的子类，提供了大量方法来简化装箱、拆箱的操作。如<code>+(NSNumber *)numberWithInt:(int)value;</code>方法是对int类型数据装箱，而<code>-(int)intValue</code>方式是把NSNumber类型拆箱为int类型。</p>
+<p>对于结构体，则装箱成NSValue类型。对于常用的结构体Foundation已经为我们提供好了具体的装箱方法：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">+(<span class="tag">NSValue</span> *)<span class="rule"><span class="attribute">valueWithPoint</span>:<span class="value">(NSPoint)point</span></span>;</span><br><span class="line"></span><br><span class="line">+(<span class="tag">NSValue</span> *)<span class="rule"><span class="attribute">valueWithSize</span>:<span class="value">(NSSize)size</span></span>;</span><br><span class="line"></span><br><span class="line">+(<span class="tag">NSValue</span> *)<span class="rule"><span class="attribute">valueWithRect</span>:<span class="value">(NSRect)rect</span></span>;</span><br></pre></td></tr></table></figure>
+<p>对应的拆箱方法：</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">-<span class="list">(<span class="keyword">NSPoint</span>)</span>pointValue<span class="comment">;</span></span><br><span class="line"></span><br><span class="line">-<span class="list">(<span class="keyword">NSSize</span>)</span>sizeValue<span class="comment">;</span></span><br><span class="line"></span><br><span class="line">-<span class="list">(<span class="keyword">NSRect</span>)</span>rectValue<span class="comment">;</span></span><br></pre></td></tr></table></figure>
+<p>而对于自定义结构体，我们需要使用NSValue如下方法进行装箱：</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+(NSValue *)valueWithBytes:(<span class="keyword">const</span> <span class="keyword">void</span> *)<span class="keyword">value</span> objCType:(<span class="keyword">const</span> <span class="keyword">char</span> *)type;</span><br></pre></td></tr></table></figure>
+<p>调用下面的方法进行拆箱：</p>
+<figure class="highlight ceylon"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-(<span class="keyword">void</span>)getValue:(<span class="keyword">void</span> *)<span class="keyword">value</span>;</span><br></pre></td></tr></table></figure>
+<p>完整例子如下：</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor">#import <span class="title">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> &#123;</span><br><span class="line">    <span class="keyword">int</span> year;</span><br><span class="line">    <span class="keyword">int</span> month;</span><br><span class="line">    <span class="keyword">int</span> day;</span><br><span class="line">&#125; Date;</span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> test1()&#123;</span><br><span class="line">    <span class="built_in">CGPoint</span> point1=<span class="built_in">CGPointMake</span>(<span class="number">10</span>, <span class="number">20</span>);</span><br><span class="line">    <span class="built_in">NSValue</span> *value1=[<span class="built_in">NSValue</span> valueWithPoint:point1];<span class="comment">//对于系统自带类型一般都有直接的方法进行包装</span></span><br><span class="line">    <span class="built_in">NSArray</span> *array1=[<span class="built_in">NSArray</span> arrayWithObject:value1];<span class="comment">//放到数组中</span></span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"%@"</span>,array1);</span><br><span class="line">    <span class="comment">/*结果：</span><br><span class="line">     (</span><br><span class="line">     "NSPoint: &#123;10, 20&#125;"</span><br><span class="line">     )</span><br><span class="line">     */</span></span><br><span class="line">    </span><br><span class="line">    <span class="built_in">NSValue</span> *value2=[array1 lastObject];</span><br><span class="line">    <span class="built_in">CGPoint</span> point2=[value2 pointValue];<span class="comment">//同样对于系统自带的结构体有对应的取值方法</span></span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"x=%f,y=%f"</span>,point2<span class="variable">.x</span>,point2<span class="variable">.y</span>);<span class="comment">//结果：x=10.000000,y=20.000000</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> test2()&#123;</span><br><span class="line">    <span class="comment">//如果我们自己定义的结构体包装</span></span><br><span class="line">    Date date=&#123;<span class="number">2015</span>,<span class="number">9</span>,<span class="number">21</span>&#125;;</span><br><span class="line">    <span class="keyword">char</span> *type=@encode(Date);</span><br><span class="line">    <span class="built_in">NSValue</span> *value3=[<span class="built_in">NSValue</span> value:&amp;date withObjCType:type];<span class="comment">//第一参数传递结构体地址，第二个参数传递类型字符串</span></span><br><span class="line">    <span class="built_in">NSArray</span> *array2=[<span class="built_in">NSArray</span> arrayWithObject:value3];</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"%@"</span>,array2);</span><br><span class="line">    <span class="comment">/*结果：</span><br><span class="line">     (</span><br><span class="line">     "&lt;df070000 09000000 15000000&gt;"</span><br><span class="line">     )</span><br><span class="line">     */</span></span><br><span class="line">    </span><br><span class="line">    Date date2;</span><br><span class="line">    [value3 getValue:&amp;date2];<span class="comment">//取出对应的结构体，注意没有返回值</span></span><br><span class="line">    <span class="comment">//[value3 objCType]//取出包装内容的类型</span></span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"%i,%i,%i"</span>,date2<span class="variable">.year</span>,date2<span class="variable">.month</span>,date2<span class="variable">.day</span>); <span class="comment">//结果：2014,2,28</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> main(<span class="keyword">int</span> argc, <span class="keyword">const</span> <span class="keyword">char</span> * argv[]) &#123;</span><br><span class="line">    <span class="keyword">@autoreleasepool</span> &#123;</span><br><span class="line">        test1();</span><br><span class="line">        test2();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2、NSKeyedArchiver用法">2、NSKeyedArchiver用法</h3><p>要针对更多对象归档或者需要归档时能够加密的话就需要使用NSKeyedArchiver进行归档和解档，使用这种方式归档的范围更广而且归档内容是密文存储。</p>
+<ul>
+<li><p>从归档范围来讲NSKeyedArchiver适合所有ObjC对象，但是对于自定义对象我们需要实现NSCoding协议；</p>
+</li>
+<li><p>从归档方式来讲NSKeyedArchiver分为简单归档和复杂对象归档</p>
+<ul>
+<li><p>简单归档就是针对单个对象可以直接将对象作为根对象（不用设置key）</p>
+</li>
+<li><p>复杂对象就是针对多个对象，存储时不同对象需要设置不同的Key。</p>
+</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor">#import <span class="title">"ViewController.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">ViewController</span> ()</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span>(<span class="keyword">nonatomic</span>,<span class="keyword">strong</span>) <span class="built_in">NSString</span> *documentPath;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ViewController</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSString</span> *)documentPath &#123;</span><br><span class="line">    <span class="keyword">if</span> (!_documentPath) &#123;</span><br><span class="line">        _documentPath = [<span class="built_in">NSSearchPathForDirectoriesInDomains</span>(<span class="built_in">NSDocumentDirectory</span>, <span class="built_in">NSUserDomainMask</span>, <span class="literal">YES</span>) objectAtIndex:<span class="number">0</span>];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> _documentPath;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)viewDidLoad &#123;</span><br><span class="line">    [<span class="keyword">super</span> viewDidLoad];</span><br><span class="line"></span><br><span class="line">    <span class="comment">//[self test1];</span></span><br><span class="line">    [<span class="keyword">self</span> test2];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span><br><span class="line"> * 系统简单对象归档</span><br><span class="line"> */</span></span><br><span class="line">- (<span class="keyword">void</span>)test1 &#123;</span><br><span class="line">    <span class="comment">//NSString归档</span></span><br><span class="line">    <span class="built_in">NSString</span> *str1 = <span class="string">@"Hello,world!"</span>;</span><br><span class="line">    <span class="built_in">NSString</span> *filePath1 = [<span class="keyword">self</span><span class="variable">.documentPath</span> stringByAppendingPathComponent:<span class="string">@"archiver1.arc"</span>];</span><br><span class="line">    [<span class="built_in">NSKeyedArchiver</span> archiveRootObject:str1 toFile:filePath1];</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//NSString解档</span></span><br><span class="line">    <span class="built_in">NSString</span> *str2= [<span class="built_in">NSKeyedUnarchiver</span> unarchiveObjectWithFile:filePath1];</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"str2=%@"</span>,str2);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//NSArray归档</span></span><br><span class="line">    <span class="built_in">NSArray</span>  *array1 = @[<span class="string">@"A"</span>,@(<span class="number">123</span>),@(<span class="number">123.5</span>)];</span><br><span class="line">    <span class="built_in">NSString</span> *filePath2 = [<span class="keyword">self</span><span class="variable">.documentPath</span> stringByAppendingPathComponent:<span class="string">@"archiver2.arc"</span>];</span><br><span class="line">    [<span class="built_in">NSKeyedArchiver</span> archiveRootObject:array1 toFile:filePath2];</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//NSArray解档</span></span><br><span class="line">    <span class="built_in">NSArray</span> *array2 = [<span class="built_in">NSKeyedUnarchiver</span> unarchiveObjectWithFile:filePath2];</span><br><span class="line">    [array2 enumerateObjectsUsingBlock:^(<span class="keyword">id</span> obj, <span class="built_in">NSUInteger</span> idx, <span class="built_in">BOOL</span> *stop) &#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"array2[%lu]=%@"</span>,idx,obj);</span><br><span class="line">    &#125;];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span><br><span class="line"> * 系统复杂对象归档（多对象归档）</span><br><span class="line"> */</span></span><br><span class="line">- (<span class="keyword">void</span>)test2 &#123;</span><br><span class="line">    <span class="comment">//归档</span></span><br><span class="line">    <span class="built_in">NSString</span> *filePath3 = [<span class="keyword">self</span><span class="variable">.documentPath</span> stringByAppendingPathComponent:<span class="string">@"archiver3.arc"</span>];</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">int</span> int1 = <span class="number">64</span>;</span><br><span class="line">    <span class="built_in">CGSize</span> size1 = &#123;<span class="number">320.0</span>,<span class="number">960.0</span>&#125;;</span><br><span class="line">    <span class="built_in">NSNumber</span> *number1 = @<span class="number">3.14</span>;</span><br><span class="line">    <span class="built_in">NSString</span> *str1 = <span class="string">@"Hello,world!"</span>;</span><br><span class="line">    <span class="built_in">NSArray</span> *array1 = @[<span class="string">@"A"</span>,<span class="string">@"B"</span>,<span class="string">@"C"</span>];</span><br><span class="line">    <span class="built_in">NSDictionary</span> *dic1 = @&#123;<span class="string">@"name"</span>:<span class="string">@"LYL"</span>,<span class="string">@"age"</span>:@<span class="number">30</span>&#125;;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//同时对多个对象进行归档</span></span><br><span class="line">    <span class="built_in">NSMutableData</span> *data1 = [[<span class="built_in">NSMutableData</span> alloc]init];</span><br><span class="line">    <span class="built_in">NSKeyedArchiver</span> *archiver = [[<span class="built_in">NSKeyedArchiver</span> alloc] initForWritingWithMutableData:data1];<span class="comment">//定义归档对象</span></span><br><span class="line">    [archiver encodeInt:int1 forKey:<span class="string">@"int"</span>];<span class="comment">//对int1归档并指定一个key以便以后读取</span></span><br><span class="line">    [archiver encode<span class="built_in">CGSize</span>:size1 forKey:<span class="string">@"size"</span>];</span><br><span class="line">    [archiver encodeObject:number1 forKey:<span class="string">@"number"</span>];</span><br><span class="line">    [archiver encodeObject:str1 forKey:<span class="string">@"string"</span>];</span><br><span class="line">    [archiver encodeObject:array1 forKey:<span class="string">@"array"</span>];</span><br><span class="line">    [archiver encodeObject:dic1 forKey:<span class="string">@"dic"</span>];</span><br><span class="line">    </span><br><span class="line">    [archiver finishEncoding];<span class="comment">//结束归档</span></span><br><span class="line">    </span><br><span class="line">    [data1 writeToFile:filePath3 atomically:<span class="literal">YES</span>];<span class="comment">//写入文件</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">//解档</span></span><br><span class="line">    <span class="keyword">int</span> int2;</span><br><span class="line">    <span class="built_in">CGSize</span> size2;</span><br><span class="line">    <span class="built_in">NSNumber</span> *number2;</span><br><span class="line">    <span class="built_in">NSString</span> *str2;</span><br><span class="line">    <span class="built_in">NSArray</span> *array2;</span><br><span class="line">    <span class="built_in">NSDictionary</span> *dic2;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">NSData</span> *data2 = [[<span class="built_in">NSData</span> alloc] initWithContentsOfFile:filePath3];<span class="comment">//读出数据到NSData</span></span><br><span class="line">    <span class="built_in">NSKeyedUnarchiver</span> *unarchiver = [[<span class="built_in">NSKeyedUnarchiver</span> alloc]initForReadingWithData:data2];</span><br><span class="line">    int2 = [unarchiver decodeInt32ForKey:<span class="string">@"int"</span>];</span><br><span class="line">    <span class="comment">//int2 = [unarchiver decodeInt64ForKey:@"int"];</span></span><br><span class="line">    size2 = [unarchiver decode<span class="built_in">CGSizeForKey</span>:<span class="string">@"size"</span>];</span><br><span class="line">    number2 = [unarchiver decodeObjectForKey:<span class="string">@"number"</span>];</span><br><span class="line">    str2 = [unarchiver decodeObjectForKey:<span class="string">@"string"</span>];</span><br><span class="line">    array2 = [unarchiver decodeObjectForKey:<span class="string">@"array"</span>];</span><br><span class="line">    dic2 = [unarchiver decodeObjectForKey:<span class="string">@"dic"</span>];</span><br><span class="line">    </span><br><span class="line">    [unarchiver finishDecoding];</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"int2=%i,size=%@,number2=%@,str2=%@,array2=%@,dic2=%@"</span>,int2,<span class="built_in">NSStringFromCGSize</span>(size2),number2,str2,array2,dic2);</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>接下来看一下自定义的对象如何归档，上面说了如果要对自定义对象进行归档那么这个对象必须实现NSCoding协议，在这个协议中有两个方法都必须实现：</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">-(<span class="keyword">void</span>)encodeWithCoder:(<span class="built_in">NSCoder</span> *)aCoder;<span class="comment">//通过给定的Archiver对消息接收者进行编码；</span></span><br><span class="line"></span><br><span class="line">-(<span class="keyword">id</span>)initWithCoder:(<span class="built_in">NSCoder</span> *)aDecoder;<span class="comment">//从一个给定的Unarchiver的数据返回一个初始化对象；</span></span><br></pre></td></tr></table></figure>
+<p>这两个方法分别在归档和解档时调用。</p>
+<p>Person.h<br><figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor">#import <span class="title">&lt;Foundation/Foundation.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Person</span> : <span class="title">NSObject</span>&lt;<span class="title">NSCoding</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>,<span class="keyword">copy</span>) <span class="built_in">NSString</span> *name;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>,<span class="keyword">assign</span>) <span class="keyword">int</span> age;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>,<span class="keyword">assign</span>) <span class="keyword">float</span> height;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>,<span class="keyword">assign</span>) <span class="built_in">NSDate</span> *birthday;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure></p>
+<p>Person.m</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor">#import <span class="title">"Person.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">Person</span></span></span><br><span class="line"></span><br><span class="line"><span class="preprocessor">#pragma mark 解码</span></span><br><span class="line">-(<span class="keyword">id</span>)initWithCoder:(<span class="built_in">NSCoder</span> *)aDecoder&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"decode..."</span>);</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">self</span> = [<span class="keyword">super</span> init]) &#123;</span><br><span class="line">        <span class="keyword">self</span><span class="variable">.name</span> = [aDecoder decodeObjectForKey:<span class="string">@"name"</span>];</span><br><span class="line">        <span class="keyword">self</span><span class="variable">.age</span> = [aDecoder decodeInt32ForKey:<span class="string">@"age"</span>];</span><br><span class="line">        <span class="keyword">self</span><span class="variable">.height</span> = [aDecoder decodeFloatForKey:<span class="string">@"heiht"</span>];</span><br><span class="line">        <span class="keyword">self</span><span class="variable">.birthday</span> = [aDecoder decodeObjectForKey:<span class="string">@"birthday"</span>];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="preprocessor">#pragma mark 编码</span></span><br><span class="line">-(<span class="keyword">void</span>)encodeWithCoder:(<span class="built_in">NSCoder</span> *)aCoder&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"encode..."</span>);</span><br><span class="line">    [aCoder encodeObject:_name forKey:<span class="string">@"name"</span>];</span><br><span class="line">    [aCoder encodeInt32:_age forKey:<span class="string">@"age"</span> ];</span><br><span class="line">    [aCoder encodeFloat:_height forKey:<span class="string">@"height"</span>];</span><br><span class="line">    [aCoder encodeObject:_birthday forKey:<span class="string">@"birthday"</span>];</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="preprocessor">#pragma mark 重写描述</span></span><br><span class="line">-(<span class="built_in">NSString</span> *)description&#123;</span><br><span class="line">    <span class="built_in">NSDateFormatter</span> *formater1 = [[<span class="built_in">NSDateFormatter</span> alloc]init];</span><br><span class="line">    formater1<span class="variable">.dateFormat</span> = <span class="string">@"yyyy-MM-dd"</span>;</span><br><span class="line">    <span class="keyword">return</span> [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"name=%@,age=%i,height=%.2f,birthday=%@"</span>,_name,_age,_height,[formater1 stringFromDate:_birthday]];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>ViewController.h</p>
+<figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">- (void)test3 &#123;</span><br><span class="line">    //归档</span><br><span class="line">    <span class="keyword">Person</span> *person1 = <span class="comment">[<span class="comment">[Person alloc]</span> init]</span>;</span><br><span class="line">    person1.name = @<span class="string">"Kenshin"</span>;</span><br><span class="line">    person1.age = 28;</span><br><span class="line">    person1.height = 1.72;</span><br><span class="line">    NSDateFormatter *formater1 = <span class="comment">[<span class="comment">[NSDateFormatter alloc]</span> init]</span>;</span><br><span class="line">    formater1.dateFormat = @<span class="string">"yyyy-MM-dd"</span>;</span><br><span class="line">    person1.birthday = <span class="comment">[formater1 dateFromString:@"1986-08-08"]</span>;</span><br><span class="line">    </span><br><span class="line">    NSString *filePath4 = <span class="comment">[self.documentPath stringByAppendingPathComponent:@"archiver4.arc"]</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">[NSKeyedArchiver archiveRootObject:person1 toFile:filePath4]</span>;</span><br><span class="line">    </span><br><span class="line">    //解档</span><br><span class="line">    <span class="keyword">Person</span> *person2= <span class="comment">[NSKeyedUnarchiver unarchiveObjectWithFile:filePath4]</span>;</span><br><span class="line">    NSLog(@<span class="string">"%@"</span>,person2);</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>注意：对自定义对象进行归档</p>
+<ul>
+<li>必须遵循并实现NSCoding协议</li>
+<li>保存文件的扩展名可以任意指定</li>
+<li>继承时必须先调用父类的归档解档方法</li>
+</ul>
+</blockquote>
+<h2 id="六、SQLite3">六、SQLite3</h2><p>之前的所有存储方法，都是覆盖存储。如果想要增加一条数据就必须把整个文件读出来，然后修改数据后再把整个内容覆盖写入文件。所以它们都不适合存储大量的内容。要存储大量数据，我们需要使用SQLite数据库。</p>
+<p>Mac上自带安装了SQLite3 ,如果你之前接触过关系型数据库，可以通过命令行来对SQLite进行初步的认识:</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Last login: Thu Oct <span class="number">15</span> <span class="number">16</span>:<span class="number">52</span>:<span class="number">02</span> <span class="function_start"><span class="keyword">on</span></span> ttys000</span><br><span class="line">RichfitBIdeMacBook-Pro:~ richfitbi$ sqlite3 test.db</span><br><span class="line">SQLite <span class="property">version</span> <span class="number">3.8</span>.10.2 <span class="number">2015</span>-<span class="number">05</span>-<span class="number">20</span> <span class="number">18</span>:<span class="number">17</span>:<span class="number">19</span></span><br><span class="line">Enter <span class="string">".help"</span> <span class="keyword">for</span> usage hints.</span><br><span class="line">sqlite&gt; create table <span class="keyword">if</span> <span class="keyword">not</span> exists names(<span class="property">id</span> <span class="type">integer</span> primary key asc, <span class="property">name</span> <span class="type">text</span>); </span><br><span class="line">sqlite&gt; insert <span class="keyword">into</span> names(<span class="property">name</span>) values('LYL');</span><br><span class="line">sqlite&gt; select * <span class="keyword">from</span> names;</span><br><span class="line"><span class="number">1</span>|LYL</span><br></pre></td></tr></table></figure>
+<h3 id="SQLite数据库的几个特点：">SQLite数据库的几个特点：</h3><ol>
+<li>基于C语言开发的轻型数据库</li>
+<li>在iOS中需要使用C语言语法进行数据库操作、访问（无法使用ObjC直接访问，因为libsqlite3框架基于C语言编写）</li>
+<li>SQLite中采用的是动态数据类型，即使创建时定义了一种类型，在实际操作时也可以存储其他类型，但是推荐建库时使用合适的类型（特别是应用需要考虑跨平台的情况时）</li>
+<li>建立连接后通常不需要关闭连接（尽管可以手动关闭）</li>
+</ol>
+<h3 id="SQLite数据类型：">SQLite数据类型：</h3><ul>
+<li>integer : 整数</li>
+<li>real : 实数（浮点数）</li>
+<li>text : 文本字符串</li>
+<li>blob : 二进制数据，比如文件，图片之类的</li>
+</ul>
+<p>其中，主键必须设置成integer</p>
+<h3 id="iOS中操作SQLite数据库步骤">iOS中操作SQLite数据库步骤</h3><p>在iOS中操作SQLite数据库可以分为以下几步（注意先要添加库文件：libsqlite3.dylib，IOS9 之后变为libsqlite3.tbd, 并导入主头文件）：</p>
+<ol>
+<li>打开数据库，利用<code>sqlite3_open()</code>打开数据库会指定一个数据库文件保存路径，如果文件存在则直接打开，否则创建并打开。打开数据库会得到一个sqlite3类型的对象，后面需要借助这个对象进行其他操作。</li>
+<li>执行SQL语句，执行SQL语句又包括有返回值的语句和无返回值语句。</li>
+<li>对于无返回值的语句（如增加、删除、修改等）直接通过<code>sqlite3_exec()</code>函数执行；</li>
+<li>对于有返回值的语句则:<br>首先通过<code>sqlite3_prepare_v2()</code>进行sql语句评估（语法检测），<br>然后通过<code>sqlite3_step()</code>依次取出查询结果的每一行数据，对于每行数据都可以通过对应的<code>sqlite3_column_类型()</code>型方法获得对应列的数据，如此反复循环直到遍历完成。当然，最后需要<code>sqlite3_finalize()</code>释放句柄。</li>
+</ol>
+<p>在整个操作过程中无需管理数据库连接，对于嵌入式SQLite操作是持久连接（尽管可以通过<code>sqlite3_close()</code>关闭），不需要开发人员自己释放连接。纵观整个操作过程，其实与其他平台的开发没有明显的区别，较为麻烦的就是数据读取，在iOS平台中使用C进行数据读取采用了游标的形式，每次只能读取一行数据，较为麻烦。</p>
+<h3 id="示例">示例</h3><p>下面通过一个简单的例子来体验一下如何在iOS中操作SQLite数据库：</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br></pre></td><td class="code"><pre><span class="line"><span class="preprocessor">#import <span class="title">"ViewController.h"</span></span></span><br><span class="line"><span class="preprocessor">#import <span class="title">"sqlite3.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="preprocessor">#define kDatabaseName @<span class="title">"database.sqlite3"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">ViewController</span> ()</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">copy</span>, <span class="keyword">nonatomic</span>) <span class="built_in">NSString</span> *databaseFilePath;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">ViewController</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)viewDidLoad &#123;</span><br><span class="line">    [<span class="keyword">super</span> viewDidLoad];</span><br><span class="line">    </span><br><span class="line">    [<span class="keyword">self</span> testDatabase];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)testDatabase&#123;</span><br><span class="line">    <span class="comment">//1.获取数据库文件路径</span></span><br><span class="line">    <span class="built_in">NSArray</span> *paths = <span class="built_in">NSSearchPathForDirectoriesInDomains</span>(<span class="built_in">NSDocumentDirectory</span>, <span class="built_in">NSUserDomainMask</span>, <span class="literal">YES</span>);</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"paths: %@"</span>,paths);</span><br><span class="line">    <span class="built_in">NSString</span> *documentsDirectory = [paths objectAtIndex:<span class="number">0</span>];</span><br><span class="line">    <span class="keyword">self</span><span class="variable">.databaseFilePath</span> = [documentsDirectory stringByAppendingPathComponent:kDatabaseName];</span><br><span class="line">    <span class="comment">//2.打开或创建数据库。sqlite3_open：把一个文件名称传递给他，它会自动检测这个文件是否存在，如果不存在的话，会自动创建相应的文件。</span></span><br><span class="line">    sqlite3 *database;</span><br><span class="line">    <span class="built_in">NSInteger</span> result = sqlite3_open([<span class="keyword">self</span><span class="variable">.databaseFilePath</span> UTF8String], &amp;database);</span><br><span class="line">    <span class="keyword">if</span> (result == SQLITE_OK) &#123;</span><br><span class="line">        <span class="comment">//3.创建一个数据库表</span></span><br><span class="line">        <span class="keyword">const</span> <span class="keyword">char</span>  *createTableSql=<span class="string">"CREATE TABLE IF NOT EXISTS t_person (id integer PRIMARY KEY AUTOINCREMENT,name text NOT NULL,age integer NOT NULL);"</span>;</span><br><span class="line">        <span class="keyword">char</span> *errmsg = <span class="literal">NULL</span>;</span><br><span class="line">        sqlite3_exec(database, createTableSql, <span class="literal">NULL</span>, <span class="literal">NULL</span>, &amp;errmsg);</span><br><span class="line">        <span class="keyword">if</span> (errmsg) &#123;</span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"创表失败：%s---%s---%d"</span>, errmsg,__FILE__,__LINE__);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"创表成功！"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//4.插入数据</span></span><br><span class="line">        <span class="keyword">char</span> *errmsg2 = <span class="literal">NULL</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;<span class="number">20</span>; i++) &#123;</span><br><span class="line">            <span class="built_in">NSString</span> *name = [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"Person %d"</span>,i];</span><br><span class="line">            <span class="keyword">int</span> age = arc4random_uniform(<span class="number">20</span>)+<span class="number">10</span>;</span><br><span class="line">            <span class="built_in">NSString</span> *insertSql = [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"INSERT INTO t_person (name,age) VALUES ('%@',%d);"</span>,name,age];</span><br><span class="line">            sqlite3_exec(database, insertSql<span class="variable">.UTF8String</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>, &amp;errmsg2);</span><br><span class="line">            <span class="keyword">if</span> (errmsg2) &#123;<span class="comment">//如果有错误信息</span></span><br><span class="line">                <span class="built_in">NSLog</span>(<span class="string">@"插入数据失败--%s"</span>,errmsg);</span><br><span class="line">             &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">                 <span class="built_in">NSLog</span>(<span class="string">@"插入数据成功"</span>);</span><br><span class="line">             &#125;</span><br><span class="line">         &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">//sqlite3_exec() 方法可以执行任何SQL语句，比如创表、更新、插入和删除操作。但是一般不用它执行查询语句，因为它不会返回查询到的数据。</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment">//5.查询</span></span><br><span class="line">        <span class="keyword">const</span> <span class="keyword">char</span> *selectSql = <span class="string">"SELECT id,name,age FROM t_person WHERE age&lt;20;"</span>;</span><br><span class="line">        sqlite3_stmt *stmt = <span class="literal">NULL</span>;</span><br><span class="line">        <span class="comment">//进行查询前的准备工作。</span></span><br><span class="line">        <span class="comment">//sqlite3_prepare_v2(sqlite3 *db,const char *zSql,int nByte,sqlite3_stmt **ppStmt,const char **pzTail);第一个参数为数据库的句柄，第二个参数为sql语句，第三个参数为sql的长度（如果设置为-1，则代表系统会自动计算sql语句的长度），第四个参数用来取数据，第五个参数为尾部一般用不上可直接写NULL</span></span><br><span class="line">        <span class="keyword">if</span> (sqlite3_prepare_v2(database, selectSql, -<span class="number">1</span>, &amp;stmt, <span class="literal">NULL</span>)==SQLITE_OK) &#123;</span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"查询语句没有问题"</span>);</span><br><span class="line">            <span class="comment">//每调用一次sqlite3_step函数，stmt就会指向下一条记录</span></span><br><span class="line">            <span class="keyword">while</span> (sqlite3_step(stmt) == SQLITE_ROW) &#123;<span class="comment">//找到一条记录</span></span><br><span class="line">                <span class="comment">//取出数据</span></span><br><span class="line">                <span class="comment">//(1)取出第0列字段的值（int类型的值）</span></span><br><span class="line">                <span class="keyword">int</span> ID = sqlite3_column_int(stmt, <span class="number">0</span>);</span><br><span class="line">                <span class="comment">//(2)取出第1列字段的值（text类型的值）</span></span><br><span class="line">                <span class="keyword">const</span> <span class="keyword">unsigned</span> <span class="keyword">char</span> *name = sqlite3_column_text(stmt, <span class="number">1</span>);</span><br><span class="line">                <span class="comment">//(3)取出第2列字段的值（int类型的值）</span></span><br><span class="line">                <span class="keyword">int</span> age = sqlite3_column_int(stmt, <span class="number">2</span>);</span><br><span class="line">                <span class="comment">// NSLog(@"%d %s %d",ID,name,age);</span></span><br><span class="line">                printf(<span class="string">"%d %s %d\n"</span>,ID,name,age);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"查询语句有问题"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        sqlite3_finalize(stmt);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">//6 带占位符插入数据</span></span><br><span class="line">        <span class="keyword">char</span> *insertSql2 = <span class="string">"insert into t_person(name, age) values(?, ?);"</span>;</span><br><span class="line">        sqlite3_stmt *stmt2;</span><br><span class="line">        <span class="keyword">if</span> (sqlite3_prepare_v2(database, insertSql2, -<span class="number">1</span>, &amp;stmt2, <span class="literal">NULL</span>) == SQLITE_OK) &#123;</span><br><span class="line">            sqlite3_bind_text(stmt2, <span class="number">1</span>, <span class="string">"母鸡"</span>, -<span class="number">1</span>, <span class="literal">NULL</span>);</span><br><span class="line">            sqlite3_bind_int(stmt2, <span class="number">2</span>, <span class="number">27</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> (sqlite3_step(stmt2) != SQLITE_DONE) &#123;</span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"带占位符插入数据错误"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        sqlite3_finalize(stmt2);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span>&#123;</span><br><span class="line">        sqlite3_close(database);</span><br><span class="line">        <span class="built_in">NSAssert</span>(<span class="number">0</span>, <span class="string">@"打开数据库失败！"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="重要函数说明">重要函数说明</h3><p>总结一下几个重要函数：</p>
+<ul>
+<li>打开数据库。</li>
+</ul>
+<figure class="highlight d"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//把一个文件名称传递给他，它会自动检测这个文件是否存在，如果不存在的话，会自动创建相应的文件</span></span><br><span class="line"><span class="keyword">int</span> sqlite3_open(</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> <span class="built_in">char</span> *filename,   <span class="comment">// 数据库的文件路径</span></span><br><span class="line"></span><br><span class="line">    sqlite3 **ppDb          <span class="comment">// 数据库实例</span></span><br><span class="line"></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>sqlite3_exec()</code> 可以执行任何SQL语句，比如创表、更新、插入和删除操作。但是一般不用它执行查询语句，因为它不会返回查询到的数据。</li>
+</ul>
+<figure class="highlight delphi"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//执行任何SQL语句</span></span><br><span class="line">int sqlite3_exec(</span><br><span class="line"></span><br><span class="line">    sqlite3*,                                  <span class="comment">// 一个打开的数据库实例</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> char *sql,                           <span class="comment">// 需要执行的SQL语句</span></span><br><span class="line"></span><br><span class="line">    int <span class="comment">(*callback)(void*,int,char**,char**)</span>,  <span class="comment">// SQL语句执行完毕后的回调</span></span><br><span class="line"></span><br><span class="line">    void *,                                    <span class="comment">// 回调函数的第1个参数</span></span><br><span class="line"></span><br><span class="line">    char **errmsg                              <span class="comment">// 错误信息</span></span><br><span class="line"></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>sqlite3_prepare_v2()</code>进行查询前的准备工作(验证SQL语句)。</li>
+</ul>
+<figure class="highlight d"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> sqlite3_prepare_v2(</span><br><span class="line"></span><br><span class="line">    sqlite3 *db,            <span class="comment">// 数据库实例</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> <span class="built_in">char</span> *zSql,       <span class="comment">// 需要检查的SQL语句</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> nByte,              <span class="comment">// SQL语句的最大字节长度（如果设置为-1，则代表系统会自动计算sql语句的长度）</span></span><br><span class="line"></span><br><span class="line">    sqlite3_stmt **ppStmt,  <span class="comment">// sqlite3_stmt实例，用来获得数据库数据</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> <span class="built_in">char</span> **pzTail <span class="comment">//一般用不上可直接写NULL</span></span><br><span class="line"></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>sqlite3_step()</code> 遍历查询结果。参数为<code>sqlite3_step(sqlite3_stmt*)</code>，stmt可以理解为查询出的一行数据。每调用一次<code>sqlite3_step</code>函数，stmt就会指向下一行数据。</li>
+<li><code>sqlite3_column_类型()</code> 该方法用于获得对应列的数据。</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//(1)取出第0列字段的值（int类型的值）</span></span><br><span class="line"><span class="keyword">int</span> ID = sqlite3_column_int(stmt, <span class="number">0</span>);</span><br><span class="line"><span class="comment">//(2)取出第1列字段的值（text类型的值）</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">unsigned</span> <span class="keyword">char</span> *name = <span class="keyword">sqlite3_column_t</span>ext(stmt, <span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+<p>数据类型分为以下几种：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">sqlite3_column_double</span><span class="params">(sqlite3_stmt*, <span class="keyword">int</span> iCol)</span></span>;  <span class="comment">// 浮点数据</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sqlite3_column_int</span><span class="params">(sqlite3_stmt*, <span class="keyword">int</span> iCol)</span></span>; <span class="comment">// 整型数据</span></span><br><span class="line"></span><br><span class="line"><span class="function">sqlite3_int64 <span class="title">sqlite3_column_int64</span><span class="params">(sqlite3_stmt*, <span class="keyword">int</span> iCol)</span></span>; <span class="comment">// 长整型数据</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">void</span> *sqlite3_column_blob(sqlite3_stmt*, <span class="keyword">int</span> iCol); <span class="comment">// 二进制文本数据</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">unsigned</span> <span class="keyword">char</span> *<span class="keyword">sqlite3_column_t</span>ext(sqlite3_stmt*, <span class="keyword">int</span> iCol);  <span class="comment">// 字符串数据</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>sqlite3_bind_text()</code>：大部分绑定函数都只需要前3个参数</li>
+</ul>
+<ol>
+<li>第1个参数是sqlite3_stmt *类型</li>
+<li>第2个参数指占位符的位置，第一个占位符的位置是1，不是0</li>
+<li>第3个参数指占位符要绑定的值</li>
+<li>第4个参数指在第3个参数中所传递数据的长度，对于C字符串，可以传递-1代替字符串的长度</li>
+<li>第5个参数是一个可选的函数回调，一般用于在语句执行后完成内存清理工作</li>
+</ol>
+<ul>
+<li>sqlite_finalize()：销毁sqlite3_stmt *对象</li>
+</ul>
+<h3 id="PreparedStatement方式处理SQL请求">PreparedStatement方式处理SQL请求</h3><p>上面代码最后部分提到了“带占位符插入数据”，即PreparedStatement方式处理SQL请求，过程如下：</p>
+<p>1、验证语句：<code>sqlite3_prepare_v2</code></p>
+<p>2、 绑定<code>sqlite3_bind_XXX()</code>：大部分绑定函数都只需要前3个参数。</p>
+<ul>
+<li>第1个参数是sqlite3_stmt *类型</li>
+<li>第2个参数指占位符的位置，第一个占位符的位置是1，不是0</li>
+<li>第3个参数指占位符要绑定的值</li>
+<li>第4个参数指在第3个参数中所传递数据的长度，对于C字符串，可以传递-1代替字符串的长度</li>
+<li>第5个参数是一个可选的函数回调，一般用于在语句执行后完成内存清理工作</li>
+</ul>
+<p>3、执行过程:</p>
+<figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sqlite3_step</span><span class="params">(sqlite3_stmt*)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>可能的返回值：</p>
+<ul>
+<li>SQLITE_BUSY:   数据库被锁定，需要等待再次尝试直到成功。</li>
+<li>SQLITE_DONE:   成功执行过程（需要再次执行一遍以恢复数据库状态）</li>
+<li>SQLITE_ROW:    返回一行结果（使用sqlite3_column_xxx(sqlite3_stmt*,, int iCol)得到每一列的结果。</li>
+<li>SQLITE_ERROR:  运行错误，过程无法再次调用（错误内容参考sqlite3_errmsg函数返回值）</li>
+<li>SQLITE_MISUSE: 错误的使用了本函数（一般是过程没有正确的初始化）</li>
+</ul>
+<p>4、结束的时候清理statement对象：</p>
+<figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sqlite3_finalize</span><span class="params">(sqlite3_stmt *pStmt)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>应该在关闭数据库之前清理过程中占用的资源。</p>
+<p>5、重置过程的执行 </p>
+<figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sqlite3_reset</span><span class="params">(sqlite3_stmt *pStmt)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>过程将回到没有执行之前的状态，绑定的参数不会变化。</p>
+<h3 id="其他工具函数">其他工具函数</h3><ul>
+<li>得到结果总共的列数</li>
+</ul>
+<figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sqlite3_column_count</span><span class="params">(sqlite3_stmt *pStmt)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>如果过程没有返回值，如update，将返回0</p>
+<ul>
+<li>得到当前行中包含的数据个数</li>
+</ul>
+<figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sqlite3_data_count</span><span class="params">(sqlite3_stmt *pStmt)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>如果sqlite3_step返回SQLITE_ROW，可以得到列数，否则为零。</p>
+<ul>
+<li>得到数据行中某个列的数据的类型</li>
+</ul>
+<figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sqlite3_column_type</span><span class="params">(sqlite3_stmt*, <span class="keyword">int</span> iCol)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>返回值：SQLITE_INTEGER，SQLITE_FLOAT，SQLITE_TEXT，SQLITE_BLOB，SQLITE_NULL</p>
+<p>实际开发中，会对这些操作进行封装，这里就不再赘述了，大家可以参考：<a href="http://www.cnblogs.com/kenshincui/p/4077833.html" target="_blank" rel="external">iOS开发系列—数据存取</a>。当然在实际开发中，我们用的更多的还是FMDB，我会在以后的博客中进行总结。</p>
+<h2 id="七、Core_Data">七、Core Data</h2><p>Core Data是IOS中的ORM(对象关系映射),类似Java中的Hibernate。</p>
+<p>对于从未接触过Core Data的朋友，强烈推荐下<a href="http://open.163.com/movie/2014/1/1/D/M9H7S9F1H_M9H80SS1D.html" target="_blank" rel="external">斯坦福大学公开课</a>中关于Core Data的讲解。由于Core Data内容比较多，我会在后续博文中再介绍。</p>
+<!-- more -->
+<blockquote>
+<p>参考：</p>
+<p><a href="http://www.cocoachina.com/industry/20130328/5908.html" target="_blank" rel="external">iOS中常用的四种数据持久化方法简介</a></p>
+<p><a href="http://superman474.blog.163.com/blog/static/1206614620118525537389/" target="_blank" rel="external">IOS持久化数据——（保存数据的一系列方法  ）</a></p>
+<p><a href="http://blog.csdn.net/tianyitianyi1/article/details/7713103" target="_blank" rel="external">IOS 四种保存数据的方式</a></p>
+<p><a href="http://seven-sally.lofter.com/post/19d861_54e83e" target="_blank" rel="external">iOS开发-文件管理</a></p>
+<p><a href="http://blog.sina.com.cn/s/blog_923fdd9b01014fun.html" target="_blank" rel="external">iOS开发之查找目录</a></p>
+<p><a href="http://blog.sina.com.cn/s/blog_8c87ba3b0100t89v.html" target="_blank" rel="external">NSBundle介绍</a></p>
+<p><a href="http://www.cnblogs.com/wzk89/p/3939782.html" target="_blank" rel="external">iOS开发备忘录：属性列表文件数据持久化</a></p>
+<p><a href="http://www.cnblogs.com/wendingding/p/3773867.html" target="_blank" rel="external">iOS开发UI篇—ios应用数据存储方式（XML属性列表-plist）</a></p>
+<p><a href="http://www.cnblogs.com/wendingding/p/3775293.html" target="_blank" rel="external">iOS开发UI篇—ios应用数据存储方式(归档) </a></p>
+<p><a href="http://www.cnblogs.com/wendingding/p/3775178.html" target="_blank" rel="external">iOS开发UI篇—ios应用数据存储方式(偏好设置)</a></p>
+<p><a href="http://www.cocoachina.com/ios/20150720/12610.html" target="_blank" rel="external">iOS中几种数据持久化方案：我要永远地记住你！</a></p>
+<p><a href="http://www.cnblogs.com/kenshincui/p/3885689.html#autoid-0-0-0" target="_blank" rel="external">iOS开发系列—Objective-C之Foundation框架</a></p>
+<p><a href="http://geeklu.com/2012/01/ios-persistence/" target="_blank" rel="external">iOS持久化</a></p>
+<p><a href="http://www.cnblogs.com/kenshincui/p/4077833.html" target="_blank" rel="external">iOS开发系列—数据存取</a></p>
+<p><a href="http://www.cnblogs.com/wendingding/p/3871792.html" target="_blank" rel="external">iOS开发数据库篇—SQLite常用的函数</a></p>
+</blockquote>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/本地存储/" rel="tag">#本地存储</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/09/17/Runloop学习笔记/" rel="next">Runloop学习笔记</a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+            </div>
+
+            
+
+            
+              <div class="comments" id="comments">
+                
+                  <div id="disqus_thread">
+                    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+                  </div>
+                
+              </div>
+            
+        </div>
+
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目錄
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            本站概覽
+          </li>
+        </ul>
+      
+
+      <section class="site-overview">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="/avatar.png" alt="YL" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">YL</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description">IOS技术总结</p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">10</span>
+              <span class="site-state-item-name">文章</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">3</span>
+              <span class="site-state-item-name">分類</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">12</span>
+              <span class="site-state-item-name">標籤</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://aliang9585.github.io" target="_blank">GitHub</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/ytlvy" target="_blank">Twitter</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://nshipster.com" target="_blank">NSHipster</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.mikeash.com/pyblog" target="_blank">NSBlog</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.objc.io" target="_blank">objcio</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.raywenderlich.com" target="_blank">raywenderlich</a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+          <div class="cc-license motion-element" itemprop="license">
+            <a href="http://creativecommons.org/licenses/by-nc-sa/4.0" class="cc-opacity" target="_blank">
+              <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons" />
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator"></div>
+          <div class="post-toc">
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、iOS中的沙盒机制"><span class="nav-number">1.</span> <span class="nav-text">一、iOS中的沙盒机制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是沙盒"><span class="nav-number">1.1.</span> <span class="nav-text">什么是沙盒</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#沙盒模型到底有哪些好处呢?"><span class="nav-number">1.2.</span> <span class="nav-text">沙盒模型到底有哪些好处呢?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#iOS_App沙盒中的目录"><span class="nav-number">1.3.</span> <span class="nav-text">iOS App沙盒中的目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#模拟器沙盒的位置："><span class="nav-number">1.4.</span> <span class="nav-text">模拟器沙盒的位置：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、文件系统"><span class="nav-number">2.</span> <span class="nav-text">二、文件系统</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、获取沙盒目录"><span class="nav-number">2.1.</span> <span class="nav-text">1、获取沙盒目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、NSString关于路径的处理方法"><span class="nav-number">2.2.</span> <span class="nav-text">2、NSString关于路径的处理方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3、NSBundle"><span class="nav-number">2.3.</span> <span class="nav-text">3、NSBundle</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4、NSData"><span class="nav-number">2.4.</span> <span class="nav-text">4、NSData</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5、NSFileManager"><span class="nav-number">2.5.</span> <span class="nav-text">5、NSFileManager</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6、NSFileHandle"><span class="nav-number">2.6.</span> <span class="nav-text">6、NSFileHandle</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、属性列表（Property_List）"><span class="nav-number">3.</span> <span class="nav-text">三、属性列表（Property List）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、属性列表的结构"><span class="nav-number">3.1.</span> <span class="nav-text">1、属性列表的结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、用属性列表保存数据"><span class="nav-number">3.2.</span> <span class="nav-text">2、用属性列表保存数据</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、偏好设置（NSUserDefaults）"><span class="nav-number">4.</span> <span class="nav-text">四、偏好设置（NSUserDefaults）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#五、对象归档（NSKeyedArchiver）"><span class="nav-number">5.</span> <span class="nav-text">五、对象归档（NSKeyedArchiver）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、名词解释"><span class="nav-number">5.1.</span> <span class="nav-text">1、名词解释</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#（1）归档(Archives)和序列化(Serializations)"><span class="nav-number">5.1.1.</span> <span class="nav-text">（1）归档(Archives)和序列化(Serializations)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#（2）编码(Encoding)和解码(Decoding)"><span class="nav-number">5.1.2.</span> <span class="nav-text">（2）编码(Encoding)和解码(Decoding)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#（3）装箱(Boxing)和拆箱(UnBoxing)"><span class="nav-number">5.1.3.</span> <span class="nav-text">（3）装箱(Boxing)和拆箱(UnBoxing)</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、NSKeyedArchiver用法"><span class="nav-number">5.2.</span> <span class="nav-text">2、NSKeyedArchiver用法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#六、SQLite3"><span class="nav-number">6.</span> <span class="nav-text">六、SQLite3</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SQLite数据库的几个特点："><span class="nav-number">6.1.</span> <span class="nav-text">SQLite数据库的几个特点：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SQLite数据类型："><span class="nav-number">6.2.</span> <span class="nav-text">SQLite数据类型：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#iOS中操作SQLite数据库步骤"><span class="nav-number">6.3.</span> <span class="nav-text">iOS中操作SQLite数据库步骤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#示例"><span class="nav-number">6.4.</span> <span class="nav-text">示例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#重要函数说明"><span class="nav-number">6.5.</span> <span class="nav-text">重要函数说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PreparedStatement方式处理SQL请求"><span class="nav-number">6.6.</span> <span class="nav-text">PreparedStatement方式处理SQL请求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#其他工具函数"><span class="nav-number">6.7.</span> <span class="nav-text">其他工具函数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#七、Core_Data"><span class="nav-number">7.</span> <span class="nav-text">七、Core Data</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator"></div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+    </main>
+
+    <footer id="footer" class="footer">
+        <div class="footer-inner">
+            <div class="copyright" >
+  
+  &copy; &nbsp; 
+  <span itemprop="copyrightYear">2015</span>
+  <span class="with-love">
+    <i class="icon-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">YL</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 強力驅動
+</div>
+
+<div class="theme-info">
+  主題 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+        </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+</div>
+
+<script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+  
+    
+    
+
+  
+
+    <script type="text/javascript">
+      var disqus_shortname = 'aliang9585githubio';
+      var disqus_identifier = '2015/09/21/iOS中数据持久化学习笔记/';
+      var disqus_title = 'iOS中数据持久化学习笔记';
+      var disqus_url = 'http://aliang9585.github.io/2015/09/21/iOS中数据持久化学习笔记/';
+
+      function run_disqus_script(disqus_script){
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+
+      run_disqus_script('count.js');
+      
+        run_disqus_script('embed.js');
+      
+    </script>
+  
+
+
+  
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.4"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.4"></script>
+  
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/js/motion_global.js?v=0.4.4" id="motion.global"></script>
+
+
+
+  <script type="text/javascript" src="/js/search-toggle.js"></script>
+
+
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.4" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+          var self = this;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      $(indicator).velocity('stop').velocity({
+        opacity: action === 'show' ? 0.4 : 0
+      }, { duration: 100 });
+    }
+
+  });
+</script>
+
+
+  <script type="text/javascript" id="sidebar.nav">
+    $(document).ready(function () {
+      var html = $('html');
+
+      $('.sidebar-nav li').on('click', function () {
+        var item = $(this);
+        var activeTabClassName = 'sidebar-nav-active';
+        var activePanelClassName = 'sidebar-panel-active';
+        if (item.hasClass(activeTabClassName)) {
+          return;
+        }
+
+        var currentTarget = $('.' + activePanelClassName);
+        var target = $('.' + item.data('target'));
+
+        currentTarget.velocity('transition.slideUpOut', 200, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', 200)
+            .addClass(activePanelClassName);
+        });
+
+        item.siblings().removeClass(activeTabClassName);
+        item.addClass(activeTabClassName);
+      });
+
+      $('.post-toc a').on('click', function (e) {
+        e.preventDefault();
+        var offset = $(escapeSelector(this.getAttribute('href'))).offset().top;
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        });
+      });
+
+      // Expand sidebar on post detail page by default, when post has a toc.
+      var $tocContent = $('.post-toc-content');
+      if (isDesktop() && CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    });
+  </script>
+
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        if (CONFIG.sidebar === 'always') {
+            displaySidebar();
+        }
+    });
+</script>
+
+
+
+
+
+
+
+
+<!-- lazyload -->
+<script type="text/javascript" src="/js/lazyload.js"></script>
+<script type="text/javascript">
+    jQuery(function () {
+        jQuery("#posts img").lazyload({
+            placeholder: "/images/loading.gif",
+            effect: "fadeIn"
+        });
+    });
+</script>
+</body>
+</html>
