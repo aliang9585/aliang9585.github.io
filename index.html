@@ -180,6 +180,92 @@
           
           
             
+              <a class="post-title-link" href="/2015/10/30/Core Data入门教程/" itemprop="url">
+                Core Data入门教程
+              </a>
+            
+          
+        </h1>
+      
+
+      <div class="post-meta">
+        <span class="post-time">
+          發表於
+          <time itemprop="dateCreated" datetime="2015-10-30T22:42:11+08:00" content="2015-10-30">
+            2015-10-30
+          </time>
+        </span>
+
+        
+          <span class="post-category" >
+            &nbsp; | &nbsp; 分類於
+            
+              <span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a href="/categories/Core-Data/" itemprop="url" rel="index"><span itemprop="name">Core Data</span></a></span>
+
+              
+              
+
+            
+          </span>
+        
+
+        
+          
+            <span class="post-comments-count">
+            &nbsp; | &nbsp;
+            <a href="/2015/10/30/Core Data入门教程/#comments" itemprop="discussionUrl">
+              <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2015/10/30/Core Data入门教程/" itemprop="commentsCount"></span>
+            </a>
+          </span>
+          
+        
+      </div>
+    </header>
+
+    <div class="post-body">
+
+      
+      
+
+      
+        
+          <p>本文是在斯坦福大学公开课 <a href="http://open.163.com/movie/2014/1/1/D/M9H7S9F1H_M9H80SS1D.html">Lecture 12 : Core Data </a>、<a href="http://open.163.com/movie/2014/1/5/5/M9H7S9F1H_M9H80V155.html">Lecture 13 Final Project Overview</a>课程笔记的基础上，进行了修改和扩充。未接触过Core Data的朋友可以先看下这两节公开课。当然，您也可以直接看本教程，基本上课程中讲到的内容精华下文都会包含。</p>
+<p>公开课中讲解的内容，主要是基于UIManagedDocument来管理Core Data。大家可能很难搜索到类似的资料。国内资料还是基于苹果官网做法-使用三大核心对象管理Core Data，因此我在课程笔记中，用红色标题来补充这些内容，请大家阅读时加以区分。在第一部分的末尾，我会给出这两种方式的完整代码。</p>
+<p>本文整体内容比较初级，没有涉及Core Data中线程同步、缓存刷新、回滚操作、防止误删等内容，想学习这些内容的请关注我后续文章。</p>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2015/10/30/Core Data入门教程/#more" rel="contents">
+              閱讀全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      
+      
+        <h1 class="post-title" itemprop="name headline">
+          
+          
+            
               <a class="post-title-link" href="/2015/09/21/iOS中数据持久化学习笔记/" itemprop="url">
                 iOS中数据持久化学习笔记
               </a>
@@ -947,91 +1033,13 @@
 
 
     
-      
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      
-      
-        <h1 class="post-title" itemprop="name headline">
-          
-          
-            
-              <a class="post-title-link" href="/2015/07/15/内存管理剖析(MRC)/" itemprop="url">
-                内存管理剖析(MRC)
-              </a>
-            
-          
-        </h1>
-      
-
-      <div class="post-meta">
-        <span class="post-time">
-          發表於
-          <time itemprop="dateCreated" datetime="2015-07-15T00:00:00+08:00" content="2015-07-15">
-            2015-07-15
-          </time>
-        </span>
-
-        
-
-        
-          
-            <span class="post-comments-count">
-            &nbsp; | &nbsp;
-            <a href="/2015/07/15/内存管理剖析(MRC)/#comments" itemprop="discussionUrl">
-              <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2015/07/15/内存管理剖析(MRC)/" itemprop="commentsCount"></span>
-            </a>
-          </span>
-          
-        
-      </div>
-    </header>
-
-    <div class="post-body">
-
-      
-      
-
-      
-        
-          <p>参考文章：</p>
-<blockquote>
-<p><a href="http://www.cnblogs.com/VinceYuan/archive/2010/03/08/1680488.html">iPhone/Mac Objective-C内存管理教程和原理剖析-VinceYuan</a></p>
-</blockquote>
-<h2 id="第一章：基本原理">第一章：基本原理</h2><h5 id="1、Objective-C的对象生成于堆之上，生成之后，需要一个指针来指向它。">1、Objective-C的对象生成于堆之上，生成之后，需要一个指针来指向它。</h5><figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ClassA *obj1 = <span class="comment">[<span class="comment">[ClassA alloc]</span> init]</span>;</span><br></pre></td></tr></table></figure>
-<h5 id="2、Objective-C的对象在使用完成之后不会自动销毁，需要执行dealloc来释放空间（销毁），否则内存泄露。">2、Objective-C的对象在使用完成之后不会自动销毁，需要执行dealloc来释放空间（销毁），否则内存泄露。</h5><figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">[obj1 dealloc]</span><span class="comment">;</span></span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>这带来了一个问题。下面代码中obj2是否需要调用dealloc？</p>
-</blockquote>
-<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ClassA *obj1 = [[ClassA alloc] init]<span class="comment">;</span></span><br><span class="line">ClassA *obj2 = obj1<span class="comment">;</span></span><br><span class="line">[obj1 hello]<span class="comment">; //输出hello</span></span><br><span class="line">[obj1 dealloc]<span class="comment">;</span></span><br><span class="line">[obj2 hello]<span class="comment">; //能够执行这一行和下一行吗？</span></span><br><span class="line">[obj2 dealloc]<span class="comment">;</span></span><br></pre></td></tr></table></figure>
-          <div class="post-more-link text-center">
-            <a class="btn" href="/2015/07/15/内存管理剖析(MRC)/#more" rel="contents">
-              閱讀全文 &raquo;
-            </a>
-          </div>
-        
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">&raquo;</a>
+  </nav>
+
 
             </div>
 
@@ -1064,21 +1072,21 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">10</span>
+              <span class="site-state-item-count">11</span>
               <span class="site-state-item-name">文章</span>
             </a>
           </div>
 
           <div class="site-state-item site-state-categories">
             <a href="/categories">
-              <span class="site-state-item-count">3</span>
+              <span class="site-state-item-count">4</span>
               <span class="site-state-item-name">分類</span>
               </a>
           </div>
 
           <div class="site-state-item site-state-tags">
             <a href="/tags">
-              <span class="site-state-item-count">12</span>
+              <span class="site-state-item-count">14</span>
               <span class="site-state-item-name">標籤</span>
               </a>
           </div>
