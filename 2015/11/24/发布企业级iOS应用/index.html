@@ -1,0 +1,741 @@
+<!doctype html>
+<html class="theme-next use-motion theme-next-mist">
+<head>
+    
+
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5"/>
+
+
+
+  <link href='//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+
+
+<link rel="stylesheet" type="text/css" href="/css/main.css?v=0.4.4"/>
+
+
+    <meta name="description" content="IOS技术总结" />
+
+
+
+  <meta name="keywords" content="企业证书," />
+
+
+
+
+
+  <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.4" />
+
+
+<meta name="description" content="大部分企业级iOS应用开发者，都很少接触发布应用的环节。这些工作一般都会是你的项目经理、技术主管来负责。不过我觉得作为iOS开发者，不了解如何发布企业级应用，有些不完美。刚好最近帮助另外一个部门的同事解决了一些发布问题，借此机会，把过程总结一下，希望可以带给大家一些参考。
+一、发布应用完整流程大家想了解完整的流程，可以参考App Distribution Guide。
+本文我们主要讲解发布企业级i">
+<meta property="og:type" content="article">
+<meta property="og:title" content="发布企业级iOS应用">
+<meta property="og:url" content="http://aliang9585.github.io/2015/11/24/发布企业级iOS应用/index.html">
+<meta property="og:site_name" content="LYL's Blog">
+<meta property="og:description" content="大部分企业级iOS应用开发者，都很少接触发布应用的环节。这些工作一般都会是你的项目经理、技术主管来负责。不过我觉得作为iOS开发者，不了解如何发布企业级应用，有些不完美。刚好最近帮助另外一个部门的同事解决了一些发布问题，借此机会，把过程总结一下，希望可以带给大家一些参考。
+一、发布应用完整流程大家想了解完整的流程，可以参考App Distribution Guide。
+本文我们主要讲解发布企业级i">
+<meta property="og:image" content="https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/Art/1_administration_tasks_2x.png">
+<meta property="og:image" content="http://7xkfcm.com1.z0.glb.clouddn.com/Enterprise%20Deployment%20Flow@2x.png">
+<meta property="og:image" content="http://7xkfcm.com1.z0.glb.clouddn.com/iOS%20Member%20Center%20-%20inventory@2x.png">
+<meta property="og:image" content="http://7xkfcm.com1.z0.glb.clouddn.com/iOS%20Certificates-1@2x.png">
+<meta property="og:image" content="http://7xkfcm.com1.z0.glb.clouddn.com/certSigningRequest@2x.png">
+<meta property="og:image" content="http://7xkfcm.com1.z0.glb.clouddn.com/iOS%20Certificates-2@2x.png">
+<meta property="og:image" content="http://7xkfcm.com1.z0.glb.clouddn.com/iOS%20Member%20Center%20-%20AppID@2x.png">
+<meta property="og:image" content="http://7xkfcm.com1.z0.glb.clouddn.com/iOS%20Member%20Center%20-%20Provision1@2x.png">
+<meta property="og:image" content="http://7xkfcm.com1.z0.glb.clouddn.com/iOS%20Member%20Center%20-%20Provision2@2x.png">
+<meta property="og:image" content="http://7xkfcm.com1.z0.glb.clouddn.com/iOS%20Member%20Center%20-%20Provision3@2x.png">
+<meta property="og:image" content="http://7xkfcm.com1.z0.glb.clouddn.com/XCode-Account@2x.png">
+<meta property="og:image" content="http://7xkfcm.com1.z0.glb.clouddn.com/XCode-Archive@2x.png">
+<meta property="og:image" content="http://7xkfcm.com1.z0.glb.clouddn.com/XCode-Export@2x.png">
+<meta property="og:updated_time" content="2015-11-24T13:14:10.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="发布企业级iOS应用">
+<meta name="twitter:description" content="大部分企业级iOS应用开发者，都很少接触发布应用的环节。这些工作一般都会是你的项目经理、技术主管来负责。不过我觉得作为iOS开发者，不了解如何发布企业级应用，有些不完美。刚好最近帮助另外一个部门的同事解决了一些发布问题，借此机会，把过程总结一下，希望可以带给大家一些参考。
+一、发布应用完整流程大家想了解完整的流程，可以参考App Distribution Guide。
+本文我们主要讲解发布企业级i">
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: 'post'
+  };
+</script>
+
+    <title> 发布企业级iOS应用 // LYL's Blog </title>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage" lang="">
+<!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?a7a4364608485ad7bc5d2abeacd05591";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+<div class="container one-column page-post-detail">
+    <div class="headband"></div>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+        <div class="header-inner"><h1 class="site-meta">
+  <span class="logo-line-before"><i></i></span>
+  <a href="/" class="brand" rel="start">
+      <span class="logo">
+        <i class="icon-logo"></i>
+      </span>
+      <span class="site-title">LYL's Blog</span>
+  </a>
+  <span class="logo-line-after"><i></i></span>
+</h1>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon icon-home"></i> <br />
+            首頁
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            <i class="menu-item-icon icon-categories"></i> <br />
+            分類
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            <i class="menu-item-icon icon-about"></i> <br />
+            關於
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            <i class="menu-item-icon icon-archives"></i> <br />
+            歸檔
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            <i class="menu-item-icon icon-tags"></i> <br />
+            標籤
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+        </div>
+    </header>
+
+    <main id="main" class="main">
+        <div class="main-inner">
+            <div id="content" class="content">
+                
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      
+      
+        <h1 class="post-title" itemprop="name headline">
+          
+          
+            
+              发布企业级iOS应用
+            
+          
+        </h1>
+      
+
+      <div class="post-meta">
+        <span class="post-time">
+          發表於
+          <time itemprop="dateCreated" datetime="2015-11-24T10:32:02+08:00" content="2015-11-24">
+            2015-11-24
+          </time>
+        </span>
+
+        
+          <span class="post-category" >
+            &nbsp; | &nbsp; 分類於
+            
+              <span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a href="/categories/发布应用/" itemprop="url" rel="index"><span itemprop="name">发布应用</span></a></span>
+
+              
+              
+
+            
+          </span>
+        
+
+        
+          
+            <span class="post-comments-count">
+            &nbsp; | &nbsp;
+            <a href="/2015/11/24/发布企业级iOS应用/#comments" itemprop="discussionUrl">
+              <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2015/11/24/发布企业级iOS应用/" itemprop="commentsCount"></span>
+            </a>
+          </span>
+          
+        
+      </div>
+    </header>
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><p>大部分企业级iOS应用开发者，都很少接触发布应用的环节。这些工作一般都会是你的项目经理、技术主管来负责。不过我觉得作为iOS开发者，不了解如何发布企业级应用，有些不完美。刚好最近帮助另外一个部门的同事解决了一些发布问题，借此机会，把过程总结一下，希望可以带给大家一些参考。</p>
+<h2 id="一、发布应用完整流程">一、发布应用完整流程</h2><p><img src="https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/Art/1_administration_tasks_2x.png" alt="image description"><br>大家想了解完整的流程，可以参考<a href="https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/Introduction/Introduction.html" target="_blank" rel="external">App Distribution Guide</a>。</p>
+<p>本文我们主要讲解发布企业级iOS应用流程中，Member Center 和 Xcode 操作的内容。</p>
+<h2 id="二、发布企业级iOS应用流程">二、发布企业级iOS应用流程</h2><p>发布企业级iOS应用流程如下图所示：</p>
+<p><img src="http://7xkfcm.com1.z0.glb.clouddn.com/Enterprise%20Deployment%20Flow@2x.png" alt="image description"></p>
+<a id="more"></a>
+<h3 id="1、前提条件">1、前提条件</h3><p>在进行下面操作之前，有个前提条件：你必须是 iOS Developer Enterprise Program 中的成员，且用户角色必须是Agent或者Admin（工作中我们一般情况下都是最多能有Admin角色）。因此你必须让公司iOS Memeber Center 管理者邀请你加入并分配给你至少是Admin角色。有关不同角色的权限，可以参考<a href="https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/ManagingYourTeam/ManagingYourTeam.html#//apple_ref/doc/uid/TP40012582-CH16-SW1" target="_blank" rel="external">Managing Your Team in Member Center</a>。管理者邀请界面如下：</p>
+<p><img src="http://7xkfcm.com1.z0.glb.clouddn.com/iOS%20Member%20Center%20-%20inventory@2x.png" alt="image description"></p>
+<p>之后用你自己的账号进入开发者中心，按照提示加入相应Team即可。</p>
+<h3 id="2、创建发布证书_Certificate">2、创建发布证书 Certificate</h3><h4 id="（1）下载发布证书">（1）下载发布证书</h4><p>在你的Member Center中，选中Certificates-&gt;Production,如果你们已经有了Certificate文件，把它下载下来，你会发现是个ios_distribution.cer文件，直接双击就安装到你的钥匙串工具中了。</p>
+<blockquote>
+<p>其实此时你是拥有了私钥，并且该私钥和Member Center存储的公钥是对应的，这部分内容会在下文中详细解释。</p>
+</blockquote>
+<h4 id="（2）创建全新的发布证书">（2）创建全新的发布证书</h4><p>如果没有Certificate，则需要你重新创建一个，其步骤如下图所示：</p>
+<p><img src="http://7xkfcm.com1.z0.glb.clouddn.com/iOS%20Certificates-1@2x.png" alt="image description"></p>
+<p>你会发现第3步时，要求你选择一个CSR文件。CSR文件即.certSigningRequest文件。创建过程如下：打开钥匙串访问工具，钥匙串访问-&gt;证书助理-&gt;从证书颁发机构请求证书:</p>
+<p><img src="http://7xkfcm.com1.z0.glb.clouddn.com/certSigningRequest@2x.png" alt="image description"></p>
+<p>填写相关信息，其中：用户电子邮件地址、常用名称未必填项，CA电子邮件地址可以不填写（尽管它提示“必需”）。这里要注意“常用名称”，最好起名时和你MAC用户名一致，或者起个起码容易辨认的名字。因为当你下载发布证书（即上述ios_distribution.cer文件），双击安装后，在钥匙串访问工具可以通过该名称方便的找到它：<br><img src="http://7xkfcm.com1.z0.glb.clouddn.com/iOS%20Certificates-2@2x.png" alt="image description"></p>
+<p>之后，选择“存储到磁盘”，下一步，即可在本地保存一个CSR文件。创建全新的发布证书时，选择这个CSR文件即可。</p>
+<p>发布证书创建完毕之后，你也需要把它下载下来，双击安装到你的钥匙串工具中。</p>
+<h3 id="3、创建App_ID">3、创建App ID</h3><p><img src="http://7xkfcm.com1.z0.glb.clouddn.com/iOS%20Member%20Center%20-%20AppID@2x.png" alt="image description"></p>
+<p>这个过程没什么好说的，大家看图就明白了。只是要注意：</p>
+<ul>
+<li>Name 起名时最好能够一眼辨认，因为可能你的Team会创建N多App ID，随意起名找起来会很麻烦。另外，此处不知道何时出现了改版，以前Name起名时可以有下划线，现在不允许了，因此之前如果你有创建过带下划线的名称，如今要进行修改时，必须更换Name。</li>
+<li>Bundle ID 要与你的App工程保持完全一致，包括大小写，否则是不可能打包成功的。</li>
+</ul>
+<h3 id="4、创建配置文件_Provision">4、创建配置文件 Provision</h3><p><img src="http://7xkfcm.com1.z0.glb.clouddn.com/iOS%20Member%20Center%20-%20Provision1@2x.png" alt="image description"></p>
+<p><img src="http://7xkfcm.com1.z0.glb.clouddn.com/iOS%20Member%20Center%20-%20Provision2@2x.png" alt="image description"></p>
+<p>我们可以看出，创建配置文件 Provision 的过程，实际就是把 APP ID 与 发布证书 Certificate 绑定到一起的过程。下载后，可以看到这是一个.mobileprovision文件。</p>
+<p>需要注意的是，配置文件 Provision 的有效期是一年。一年之后，如果你没有发新的App版本，原有应用会出现如下错误警告:应用“XXX”无法打开，以为预置描述文件已过期。</p>
+<p>因此，你的团队需要维护这些Provision，在文件到期前需要重新Generate一下Provision，并且重新打包发布一个新的App版本，以免影响用户使用。操作过程如下图所示：</p>
+<p><img src="http://7xkfcm.com1.z0.glb.clouddn.com/iOS%20Member%20Center%20-%20Provision3@2x.png" alt="image description"></p>
+<h3 id="5、Xcode打包配置">5、Xcode打包配置</h3><p>选中工程，打开Build Settings标签，找到Code Signing。如下图1所示配置相关信息。其中最主要的是：</p>
+<ul>
+<li>Code Signing identity下的Release，选中你们的发布证书-Certificate </li>
+<li>Provision Profile下的Release，选中你们的描述文件-Provision</li>
+</ul>
+<p>在设置时如果没有出现相应的Provisioning Profiles选项，如下图2所示，打开XCode-&gt;Preferences-&gt;Account，双击账号所在Team，弹出下图3所示的对话框，DownLoad你需要的Provisioning Profiles，之后就可以选择它了。</p>
+<p><img src="http://7xkfcm.com1.z0.glb.clouddn.com/XCode-Account@2x.png" alt="image description"></p>
+<h3 id="6、Archive并导出发布文件">6、Archive并导出发布文件</h3><h4 id="（1）Archive">（1）Archive</h4><p>XCode 最近几个版本的Archive都有所不同。撰写本文时，我用的是XCode Version 7.1.1 (7B1005)，Archive时选择如下所示：</p>
+<p><img src="http://7xkfcm.com1.z0.glb.clouddn.com/XCode-Archive@2x.png" alt="image description"></p>
+<h4 id="（2）打开Organizer">（2）打开Organizer</h4><p>Build成功之后，会出现下面图1所示的Organizer界面。</p>
+<blockquote>
+<p>这个界面关闭后，可以通过XCode-&gt;Window-&gt;Organizer 重新打开。</p>
+</blockquote>
+<h4 id="（3）导出-ipa文件">（3）导出.ipa文件</h4><p>点击Organizer界面最右侧的Export，弹出图2所示的对话框，让你选择导出方法。选择第3个-Save for Enterprise Deployment</p>
+<blockquote>
+<p>对话框中选项1、3、4都容易理解，只有第2个Save for Ad Hoc Deployment 不知所云。其实，它是说保存到本地，准备在账号添加的可使用设备上使用。在正式发布之前，我们都希望App能在周围的朋友之间先进行测试，提提意见，修改完善之后再发布到App Store上。Apple考虑到这一点，因此通过Ad Hoc来实现发布前的用户测试。从另一个角度讲也就是通过Ad Hoc将未发布的App 给其他人提前免费使用。</p>
+</blockquote>
+<p>接下来，选择你所在的Team（图3）。</p>
+<blockquote>
+<p>这一步真不知道干嘛用，之前打包配置时已经选了，为什么在此还要选？希望知道的朋友可以告诉我。</p>
+</blockquote>
+<p>选择支持设备（图4），一般都会选第一个，选第二个的话这能指定特定设备，如iPad Air 2才能使用。</p>
+<p><img src="http://7xkfcm.com1.z0.glb.clouddn.com/XCode-Export@2x.png" alt="image description"></p>
+<p>选择是否创建概要文件（图5）。<br>Include manifest for over-the-air installation 勾选上则会创建plist文件。<br>勾选之后，会让你填写一些信息，比如网站地址什么的，这里就不再截图了，一看就明白。只是在此建议plist文件名与ipa名一致，方面后期管理。</p>
+<blockquote>
+<p>over-the-air: OTA 目的是让企业用户能够在脱离Apple App Store的情况下通过网页无线发布 iOS 应用。简单来讲就是在Safari中点击一个链接就可以在iPhone或iPad上下载并安装应用（目前很多越狱软件都是使用的这种发布方式）。更多内容可以参考<a href="http://help.apple.com/deployment/ios/#/apda0e3426d7" target="_blank" rel="external">iOS 部署参考</a>。</p>
+</blockquote>
+<p>这里还有一个选项-Rebuild from bitcode（图6）, 大家自己阅读它的含义吧，在此勾选上就行了。</p>
+<h2 id="三、部署到服务器">三、部署到服务器</h2><p>这部分内容不是本文重点，大家参考这些文章吧：</p>
+<p><a href="http://blog.csdn.net/hliq5399/article/details/49741667" target="_blank" rel="external">iOS开发企业版ipa分发 以及在线安装</a></p>
+<p><a href="http://www.360doc.com/content/15/1010/22/20918780_504774501.shtml" target="_blank" rel="external">iOS开发企业版ipa分发</a></p>
+<p>此外还有一些解决Https问题的文章，大家可以阅读：</p>
+<p><a href="http://blog.csdn.net/x32sky/article/details/21237573" target="_blank" rel="external">http://blog.csdn.net/x32sky/article/details/21237573</a></p>
+<p><a href="http://stackoverflow.com/questions/20276907/enterprise-app-deployment-doesnt-%20work-on-ios-7-1/22325916#22325916" target="_blank" rel="external">http://stackoverflow.com/questions/20276907/enterprise-app-deployment-doesnt-%20work-on-ios-7-1/22325916#22325916</a></p>
+<p><a href="http://www.wosign.com/support/ssl_installation.htm" target="_blank" rel="external">http://www.wosign.com/support/ssl_installation.htm</a></p>
+<p><a href="http://m.blog.csdn.net/blog/SiamPig/21560401" target="_blank" rel="external">http://m.blog.csdn.net/blog/SiamPig/21560401</a></p>
+<p><a href="http://www.cnblogs.com/janken/p/3726017.html" target="_blank" rel="external">http://www.cnblogs.com/janken/p/3726017.html</a></p>
+<h2 id="四、理解你做的这些事情">四、理解你做的这些事情</h2><p>证书是什么玩意，什么是Provisioning Profile，你做了上述那么多工作，应该要彻底明白自己到底干了什么。这个话题本文不再展开讨论，只列出两篇极好的文章，供大家参考。</p>
+<p><a href="http://ryantang.me/blog/2013/09/03/apple-account-2/" target="_blank" rel="external">苹果开发者账号那些事儿（二）</a></p>
+<p><a href="http://ryantang.me/blog/2013/11/28/apple-account-3/" target="_blank" rel="external">苹果开发者账号那些事儿（三）</a></p>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/企业证书/" rel="tag">#企业证书</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/10/30/Core Data入门教程/" rel="next">Core Data入门教程</a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+            </div>
+
+            
+
+            
+              <div class="comments" id="comments">
+                
+                  <div id="disqus_thread">
+                    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+                  </div>
+                
+              </div>
+            
+        </div>
+
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目錄
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            本站概覽
+          </li>
+        </ul>
+      
+
+      <section class="site-overview">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="/avatar.png" alt="YL" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">YL</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description">IOS技术总结</p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">12</span>
+              <span class="site-state-item-name">文章</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">5</span>
+              <span class="site-state-item-name">分類</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">15</span>
+              <span class="site-state-item-name">標籤</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="http://aliang9585.github.io" target="_blank">GitHub</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/ytlvy" target="_blank">Twitter</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://nshipster.com" target="_blank">NSHipster</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.mikeash.com/pyblog" target="_blank">NSBlog</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.objc.io" target="_blank">objcio</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.raywenderlich.com" target="_blank">raywenderlich</a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+          <div class="cc-license motion-element" itemprop="license">
+            <a href="http://creativecommons.org/licenses/by-nc-sa/4.0" class="cc-opacity" target="_blank">
+              <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons" />
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator"></div>
+          <div class="post-toc">
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、发布应用完整流程"><span class="nav-number">1.</span> <span class="nav-text">一、发布应用完整流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、发布企业级iOS应用流程"><span class="nav-number">2.</span> <span class="nav-text">二、发布企业级iOS应用流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、前提条件"><span class="nav-number">2.1.</span> <span class="nav-text">1、前提条件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、创建发布证书_Certificate"><span class="nav-number">2.2.</span> <span class="nav-text">2、创建发布证书 Certificate</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#（1）下载发布证书"><span class="nav-number">2.2.1.</span> <span class="nav-text">（1）下载发布证书</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#（2）创建全新的发布证书"><span class="nav-number">2.2.2.</span> <span class="nav-text">（2）创建全新的发布证书</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3、创建App_ID"><span class="nav-number">2.3.</span> <span class="nav-text">3、创建App ID</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4、创建配置文件_Provision"><span class="nav-number">2.4.</span> <span class="nav-text">4、创建配置文件 Provision</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5、Xcode打包配置"><span class="nav-number">2.5.</span> <span class="nav-text">5、Xcode打包配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6、Archive并导出发布文件"><span class="nav-number">2.6.</span> <span class="nav-text">6、Archive并导出发布文件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#（1）Archive"><span class="nav-number">2.6.1.</span> <span class="nav-text">（1）Archive</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#（2）打开Organizer"><span class="nav-number">2.6.2.</span> <span class="nav-text">（2）打开Organizer</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#（3）导出-ipa文件"><span class="nav-number">2.6.3.</span> <span class="nav-text">（3）导出.ipa文件</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、部署到服务器"><span class="nav-number">3.</span> <span class="nav-text">三、部署到服务器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、理解你做的这些事情"><span class="nav-number">4.</span> <span class="nav-text">四、理解你做的这些事情</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator"></div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+    </main>
+
+    <footer id="footer" class="footer">
+        <div class="footer-inner">
+            <div class="copyright" >
+  
+  &copy; &nbsp; 
+  <span itemprop="copyrightYear">2015</span>
+  <span class="with-love">
+    <i class="icon-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">YL</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 強力驅動
+</div>
+
+<div class="theme-info">
+  主題 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+        </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+</div>
+
+<script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+  
+    
+    
+
+  
+
+    <script type="text/javascript">
+      var disqus_shortname = 'aliang9585githubio';
+      var disqus_identifier = '2015/11/24/发布企业级iOS应用/';
+      var disqus_title = '发布企业级iOS应用';
+      var disqus_url = 'http://aliang9585.github.io/2015/11/24/发布企业级iOS应用/';
+
+      function run_disqus_script(disqus_script){
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+
+      run_disqus_script('count.js');
+      
+        run_disqus_script('embed.js');
+      
+    </script>
+  
+
+
+  
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.4"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.4"></script>
+  
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/js/motion_global.js?v=0.4.4" id="motion.global"></script>
+
+
+
+  <script type="text/javascript" src="/js/search-toggle.js"></script>
+
+
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.4" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+          var self = this;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      $(indicator).velocity('stop').velocity({
+        opacity: action === 'show' ? 0.4 : 0
+      }, { duration: 100 });
+    }
+
+  });
+</script>
+
+
+  <script type="text/javascript" id="sidebar.nav">
+    $(document).ready(function () {
+      var html = $('html');
+
+      $('.sidebar-nav li').on('click', function () {
+        var item = $(this);
+        var activeTabClassName = 'sidebar-nav-active';
+        var activePanelClassName = 'sidebar-panel-active';
+        if (item.hasClass(activeTabClassName)) {
+          return;
+        }
+
+        var currentTarget = $('.' + activePanelClassName);
+        var target = $('.' + item.data('target'));
+
+        currentTarget.velocity('transition.slideUpOut', 200, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', 200)
+            .addClass(activePanelClassName);
+        });
+
+        item.siblings().removeClass(activeTabClassName);
+        item.addClass(activeTabClassName);
+      });
+
+      $('.post-toc a').on('click', function (e) {
+        e.preventDefault();
+        var offset = $(escapeSelector(this.getAttribute('href'))).offset().top;
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        });
+      });
+
+      // Expand sidebar on post detail page by default, when post has a toc.
+      var $tocContent = $('.post-toc-content');
+      if (isDesktop() && CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    });
+  </script>
+
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        if (CONFIG.sidebar === 'always') {
+            displaySidebar();
+        }
+    });
+</script>
+
+
+
+
+
+
+
+
+<!-- lazyload -->
+<script type="text/javascript" src="/js/lazyload.js"></script>
+<script type="text/javascript">
+    jQuery(function () {
+        jQuery("#posts img").lazyload({
+            placeholder: "/images/loading.gif",
+            effect: "fadeIn"
+        });
+    });
+</script>
+</body>
+</html>
