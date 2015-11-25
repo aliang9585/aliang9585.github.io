@@ -62,7 +62,7 @@
 <meta property="og:image" content="http://7xkfcm.com1.z0.glb.clouddn.com/XCode-Account@2x.png">
 <meta property="og:image" content="http://7xkfcm.com1.z0.glb.clouddn.com/XCode-Archive@2x.png">
 <meta property="og:image" content="http://7xkfcm.com1.z0.glb.clouddn.com/XCode-Export@2x.png">
-<meta property="og:updated_time" content="2015-11-24T13:14:10.000Z">
+<meta property="og:updated_time" content="2015-11-25T13:59:36.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="发布企业级iOS应用">
 <meta name="twitter:description" content="大部分企业级iOS应用开发者，都很少接触发布应用的环节。这些工作一般都会是你的项目经理、技术主管来负责。不过我觉得作为iOS开发者，不了解如何发布企业级应用，有些不完美。刚好最近帮助另外一个部门的同事解决了一些发布问题，借此机会，把过程总结一下，希望可以带给大家一些参考。
@@ -313,9 +313,42 @@
 <p><a href="http://www.wosign.com/support/ssl_installation.htm" target="_blank" rel="external">http://www.wosign.com/support/ssl_installation.htm</a></p>
 <p><a href="http://m.blog.csdn.net/blog/SiamPig/21560401" target="_blank" rel="external">http://m.blog.csdn.net/blog/SiamPig/21560401</a></p>
 <p><a href="http://www.cnblogs.com/janken/p/3726017.html" target="_blank" rel="external">http://www.cnblogs.com/janken/p/3726017.html</a></p>
-<h2 id="四、理解你做的这些事情">四、理解你做的这些事情</h2><p>证书是什么玩意，什么是Provisioning Profile，你做了上述那么多工作，应该要彻底明白自己到底干了什么。这个话题本文不再展开讨论，只列出两篇极好的文章，供大家参考。</p>
+<h2 id="四、理解你做的这些事情">四、理解你做的这些事情</h2><p>从Member Center左侧导航栏我们可以看出，你做的这些工作，都是围绕3个东西：</p>
+<ol>
+<li>Certificates</li>
+<li>Identifiers-App IDs</li>
+<li>Provisioning Profile</li>
+</ol>
+<p>英文直译：</p>
+<ol>
+<li>证书/凭证</li>
+<li>标识符-App IDs</li>
+<li>配置文件</li>
+</ol>
+<p>要解释这几个东西，我们需要先了解一下这几个概念：</p>
+<ul>
+<li>公钥和私钥（Public Key and Private Key）</li>
+<li>摘要（Digest）</li>
+<li>签名（Signature）</li>
+<li>数字签名（Digital Signature）</li>
+<li>数字证书（Digital Certificate）</li>
+<li>证书中心（Certificate Authority，简称CA）</li>
+</ul>
+<p>公钥和私钥是成对的，它们互相解密。公钥加密，私钥解密。私钥数字签名，公钥验证。</p>
+<p>数字签名（Digital Signature）由两部分组成。使用HASH函数可以生成数据的”摘要”（Digest），用私钥对摘要（Digest）进行加密，生成”数字签名”（Signature）。</p>
+<p>对于公钥，我们无法确认它就是属于某人的。因此需要有个组织-证书中心（Certificate Authority，简称CA），能够颁发一个证书-数字证书（Digital Certificate），通过这个证书能够证明，某个公钥就是某人的。</p>
+<p>下面摘抄一些百度百科的原文：</p>
+<blockquote>
+<p>数字签名，顾名思义，就是使普通签章的数字化，他们的特性都是某人可以轻易制造签章，但他人却难以仿冒。数字签名可以永久地与被签署信息结合，无法自信息上移除。数字签名大致包含两个算法：一个是签署，使用私密钥匙处理信息或信息的哈希值而产生签章；另一个是验证，使用公开钥匙验证签章的真实性。RSA和DSA是两种最流行的数字签名机制。数字签名是公开钥匙基础建设（public key infranstructures, PKI）以及许多网络安全机制（SSL/TLS, VPNs等）的基础。</p>
+<p>数字签名主要功能：保证信息传输的完整性、发送者的身份认证、防止交易中的抵赖发生。</p>
+<p>数字签名技术是将摘要信息用发送者的私钥加密，与原文一起传送给接收者。接收者只有用发送者的公钥才能解密被加密的摘要信息，然后用HASH函数对收到的原文产生一个摘要信息，与解密的摘要信息对比。如果相同，则说明收到的信息是完整的，在传输过程中没有被修改，否则说明信息被修改过，因此数字签名能够验证信息的完整性。</p>
+</blockquote>
+<p>我相信你看完这些一定会不知所云。因为你需要阅读下这篇文章：<a href="http://www.youdzone.com/signature.html" target="_blank" rel="external">What is a Digital Signature</a>。英文不好的可以看看<a href="http://www.blogjava.net/yxhxj2006/archive/2012/10/15/389547.html" target="_blank" rel="external">这篇翻译</a>。不过还是推荐你先读一遍英文原版的内容，因为很容易把一些词汇和苹果官方文档的内容联系在一起，便于深入理解。</p>
+<p>而要了解苹果做的事情，你需要阅读这些文章：</p>
+<p>官方文档<a href="https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/MaintainingCertificates/MaintainingCertificates.html#//apple_ref/doc/uid/TP40012582-CH31-SW1" target="_blank" rel="external">Maintaining Your Signing Identities and Certificates</a>中。</p>
 <p><a href="http://ryantang.me/blog/2013/09/03/apple-account-2/" target="_blank" rel="external">苹果开发者账号那些事儿（二）</a></p>
 <p><a href="http://ryantang.me/blog/2013/11/28/apple-account-3/" target="_blank" rel="external">苹果开发者账号那些事儿（三）</a></p>
+<p>好了，匆匆收场。不是不想写了，而是我也理解的不是很透彻，但找到了深入理解的方向和文章，希望能够和大家共同进步。</p>
 </span>
       
     </div>
